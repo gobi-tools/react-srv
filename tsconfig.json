@@ -12,7 +12,9 @@
     "types": ["node"],
     "rootDir": "src",
     "outDir": "dist",
-    "verbatimModuleSyntax": false
+    "verbatimModuleSyntax": false,
+    "declaration": true,
+    "declarationMap": true,
   },
   "include": ["src"]
 }

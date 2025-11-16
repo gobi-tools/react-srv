@@ -1,29 +1,39 @@
 {
- "name": "react-srv",
- "version": "1.0.0",
- "scripts": {
-  "build": "npx ts-node scripts/extract-theme.ts && tsc",
-  "postbuild": "tsc-alias",
-  "dev": "tsx src/server",
-  "dev:watch": "tsx watch src/server",
-  "start": "node dist/server.js"
- },
- "keywords": [],
- "author": "Gabriel Coman",
- "license": "MIT",
- "dependencies": {
-  "serialize-javascript": "^7.0.0"
- },
- "devDependencies": {
-  "@types/node": "^24.10.1",
-  "@types/react": "^19.2.0",
-  "@types/react-dom": "^19.2.0",
-  "@types/serialize-javascript": "^5.0.4",
-  "esbuild": "^0.25.11",
-  "react": "^19.2.0",
-  "react-dom": "^19.2.0",
-  "tsc-alias": "^1.8.16",
-  "tsx": "^4.20.6",
-  "typescript": "^5.9.3"
- }
+  "name": "react-srv",
+  "version": "0.0.1",
+  "description": "Lightweight JSX renderer for Node",
+  "scripts": {
+    "build": "tsc",
+    "prepublishOnly": "npm run build"
+  },
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "keywords": [],
+  "author": "Gabriel Coman",
+  "license": "MIT",
+  "type": "module",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "files": [
+    "dist/"
+  ],
+  "dependencies": {
+    "serialize-javascript": "^7.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^24.10.1",
+    "@types/react": "^19.2.0",
+    "@types/react-dom": "^19.2.0",
+    "@types/serialize-javascript": "^5.0.4",
+    "esbuild": "^0.25.11",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "tsc-alias": "^1.8.16",
+    "tsx": "^4.20.6",
+    "typescript": "^5.9.3"
+  }
 }
