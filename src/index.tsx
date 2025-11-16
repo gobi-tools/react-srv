@@ -170,3 +170,6 @@ export default class ReactSrv {
     return null;
   }
 }
+
+// Keep named export for flexibility
+export { ReactSrv };
