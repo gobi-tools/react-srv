@@ -1,6 +1,6 @@
 {
   "name": "react-srv",
-  "version": "0.0.4",
+  "version": "0.0.6",
   "description": "Lightweight JSX renderer for Node",
   "scripts": {
     "build": "tsc",
@@ -12,12 +12,6 @@
   "author": "Gabriel Coman",
   "license": "MIT",
   "type": "module",
-  "exports": {
-    ".": {
-      "import": "./dist/index.js",
-      "types": "./dist/index.d.ts"
-    }
-  },
   "files": [
     "dist"
   ],

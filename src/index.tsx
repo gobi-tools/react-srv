@@ -6,7 +6,6 @@ import React from "react";
 import ReactDOMServer from "react-dom/server";
 import { renderToString } from "react-dom/server";
 import serialize from "serialize-javascript";
-import { fileURLToPath } from "url";
 
 type TReactSrvConfig = {
   reactVersion: string;
@@ -93,7 +92,7 @@ export default class ReactSrv {
     await this.clearFolder(dest);
     console.log(`✅ Cleared ${dest} folder.`);
 
-    const extension = '';
+    const extension = '.tsx';
     const pages = fs.readdirSync(source).filter(f => f.endsWith(extension));
     for (const page of pages) {
       const pageName = this.toKebabCase(page.replaceAll(extension, ''));
@@ -109,8 +108,6 @@ export default class ReactSrv {
       const js = result.outputFiles[0].text;
 
       // 2️⃣ Load the compiled module dynamically
-      // @ts-ignore
-      const __dirname = path.dirname(fileURLToPath(import.meta.url));
       const tempFile = path.join(__dirname, `temp-${pageName}.mjs`);
       fs.writeFileSync(tempFile, js);
       const { default: Page } = await import(`file://${tempFile}`);
@@ -150,7 +147,7 @@ export default class ReactSrv {
   /**
   * Recursively search for a file inside a folder.
   * @param dir folder to start searching
-  * @param fileName file to find, e.g., "Home"
+  * @param fileName file to find, e.g., "Home.tsx"
   * @returns full path if found, or null
   */
   private findFileRecursive(dir: string, fileName: string): string | null {
@@ -170,6 +167,3 @@ export default class ReactSrv {
     return null;
   }
 }
-
-// Keep named export for flexibility
-export { ReactSrv };
