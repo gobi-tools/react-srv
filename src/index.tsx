@@ -20,7 +20,11 @@ export default class ReactSrv {
     folder: '.',
   }) { }
 
-  get bundlePath(): string {
+  get reactBundlePath(): string {
+    return '/_react_runtime.js';
+  }
+
+  get pageBundlePath(): string {
     return '/_page_bundle/:pageName.js';
   }
 
@@ -28,7 +32,7 @@ export default class ReactSrv {
     return 'application/javascript';
   }
 
-  bundleReact(): string {
+  reactBundle(): string {
     return `
       import React from "${this.config.reactLocation}/react@${this.config.reactVersion}";
       import { hydrateRoot } from "${this.config.reactLocation}/react-dom@${this.config.reactVersion}/client";
@@ -37,7 +41,7 @@ export default class ReactSrv {
       window.__HYDRATE_ROOT__ = hydrateRoot;`;
   }
 
-  bundle(params: any): string {
+  pageBundle(params: any): string {
     const { pageName } = params;
     const fileName = `${pageName}.tsx`;
     const entryPath = this.findFileRecursive(this.config.folder, fileName);
@@ -72,7 +76,7 @@ export default class ReactSrv {
 
     const doctype = `<!DOCTYPE html>`;
     const htmlProps = `<script>window.__INITIAL_PROPS__ = ${safeProps};</script>`;
-    const reactHidrator = `<script type="module" src="/_react_runtime.js"></script>`;
+    const reactHidrator = `<script type="module" src="${this.reactBundlePath}"></script>`;
     const pageHidrator = `<script type="module">
       import Component from "/_page_bundle/${fileName}.js";
       window.__HYDRATE_ROOT__(
