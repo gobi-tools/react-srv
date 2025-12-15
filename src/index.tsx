@@ -14,8 +14,6 @@ type TReactSrvConfig = {
 };
 
 export default class ReactSrv {
-  private readonly bundleChache = new Map<string, string>();
-
   constructor(private readonly config: TReactSrvConfig = {
     reactVersion: "19.2.0",
     reactLocation: 'https://esm.sh',
@@ -28,6 +26,15 @@ export default class ReactSrv {
 
   get bundleType(): string {
     return 'application/javascript';
+  }
+
+  bundleReact(): string {
+    return `
+      import React from "${this.config.reactLocation}/react@${this.config.reactVersion}";
+      import { hydrateRoot } from "${this.config.reactLocation}/react-dom@${this.config.reactVersion}/client";
+
+      window.__REACT__ = React;
+      window.__HYDRATE_ROOT__ = hydrateRoot;`;
   }
 
   bundle(params: any): string {
@@ -54,8 +61,6 @@ export default class ReactSrv {
       .replace(/from\s+["']react\/jsx-runtime["']/g, `from "${this.config.reactLocation}/react@${this.config.reactVersion}/jsx-runtime"`)
       .replace(/from\s+["']react\/jsx-dev-runtime["']/g, `from "${this.config.reactLocation}/react@${this.config.reactVersion}/jsx-dev-runtime"`);
 
-    this.bundleChache.set(pageName, code);
-
     return code;
   }
 
@@ -67,16 +72,15 @@ export default class ReactSrv {
 
     const doctype = `<!DOCTYPE html>`;
     const htmlProps = `<script>window.__INITIAL_PROPS__ = ${safeProps};</script>`;
-    const dynamicModule = `<script type="module">
-      import React from "${this.config.reactLocation}/react@${this.config.reactVersion}";
-      import { hydrateRoot } from "${this.config.reactLocation}/react-dom@${this.config.reactVersion}/client";
+    const reactHidrator = `<script type="module" src="/_react_runtime.js"></script>`;
+    const pageHidrator = `<script type="module">
       import Component from "/_page_bundle/${fileName}.js";
-      hydrateRoot(
+      window.__HYDRATE_ROOT__(
         document.getElementsByTagName('body')[0],
-        React.createElement(Component.default || Component, window.__INITIAL_PROPS__)
+        window.__REACT__.createElement(Component.default || Component, window.__INITIAL_PROPS__)
       );
     </script>`;
-    return `${doctype}\n${html}\n${htmlProps}\n${dynamicModule}`;
+    return `${doctype}\n${html}\n${htmlProps}\n${reactHidrator}\n${pageHidrator}`;
   }
 
   async buildStatic(source: string, pub: string, dest: string) {
