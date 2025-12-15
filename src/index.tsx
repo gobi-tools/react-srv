@@ -70,6 +70,9 @@ export default class ReactSrv {
 
   render(Component: React.FC<any>, props: any): string {
     const html = renderToString(<Component {...props} />);
+    const htmlFooter = '</body></html>';
+    const trimmedHtml = html.replaceAll(htmlFooter, '');
+
     const safeProps = serialize(props, { isJSON: true });
     const safePageName = serialize(Component.name, { isJSON: true });
     const fileName = safePageName.replaceAll("\"", "");
@@ -84,7 +87,7 @@ export default class ReactSrv {
         window.__REACT__.createElement(Component.default || Component, window.__INITIAL_PROPS__)
       );
     </script>`;
-    return `${doctype}\n${html}\n${htmlProps}\n${reactHidrator}\n${pageHidrator}`;
+    return `${doctype}\n${trimmedHtml}\n${htmlProps}\n${reactHidrator}\n${pageHidrator}\n${htmlFooter}`;
   }
 
   async buildStatic(source: string, pub: string, dest: string) {
