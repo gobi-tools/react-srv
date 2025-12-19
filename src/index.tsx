@@ -11,7 +11,6 @@ type TReactSrvConfig = {
   reactVersion: string;
   reactLocation: string;
   folder: string;
-  rootElem: string,
   Layout: React.FC<any>,
 };
 
@@ -24,14 +23,13 @@ export function DefaultLayout({ children }) {
       </body>
     </html>
   );
-}
+};
 
 export default class ReactSrv {
   constructor(private readonly config: TReactSrvConfig = {
     reactVersion: "19.2.0",
     reactLocation: 'https://esm.sh',
     folder: '.',
-    rootElem: 'root',
     Layout: DefaultLayout,
   }) { }
 
@@ -84,28 +82,14 @@ export default class ReactSrv {
   }
 
   render(Component: React.FC<any>, props: any): string {
-    // const html = renderToString(<Component {...props} />);
-    
+    const rootId = 'root';
     const safeProps = serialize(props, { isJSON: true });
     const safePageName = serialize(Component.name, { isJSON: true });
     const fileName = safePageName.replaceAll("\"", "");
 
-    const htmlProps = `<script>window.__INITIAL_PROPS__ = ${safeProps};</script>`;
-    const reactHidrator = `<script type="module" src="${this.reactBundlePath}"></script>`;
-    const pageHidrator = `<script type="module">
-      import Component from "/_page_bundle/${fileName}.js";
-      if (!window.__hydrated) {
-        window.__hydrated = true;
-        window.__HYDRATE_ROOT__(
-          document.getElementById('${this.config.rootElem}'),
-          window.__REACT__.createElement(Component.default || Component, window.__INITIAL_PROPS__)
-        );
-      }
-    </script>`;
-
-    const lay = (
-      <this.config.Layout>
-        <div id="root">
+    const html = (
+      <this.config.Layout {...props}>
+        <div id={rootId}>
           <Component { ...props} />
         </div>
         <script dangerouslySetInnerHTML={{__html: `window.__INITIAL_PROPS__ = ${safeProps};`}}></script>
@@ -115,38 +99,14 @@ export default class ReactSrv {
           if (!window.__hydrated) {
             window.__hydrated = true;
             window.__HYDRATE_ROOT__(
-              document.getElementById('${this.config.rootElem}'),
+              document.getElementById('${rootId}'),
               window.__REACT__.createElement(Component.default || Component, window.__INITIAL_PROPS__)
             );
           }`}}></script>
       </this.config.Layout>
     );
 
-    return renderToString(lay);
-
-    // const html = renderToString(<Component {...props} />);
-    // // const htmlFooter = '</body></html>';
-    // // const trimmedHtml = html.replaceAll(htmlFooter, '');
-
-    // const safeProps = serialize(props, { isJSON: true });
-    // const safePageName = serialize(Component.name, { isJSON: true });
-    // const fileName = safePageName.replaceAll("\"", "");
-
-    // // const doctype = `<!DOCTYPE html>`;
-    // const htmlProps = `<script>window.__INITIAL_PROPS__ = ${safeProps};</script>`;
-    // const reactHidrator = `<script type="module" src="${this.reactBundlePath}"></script>`;
-    // const pageHidrator = `<script type="module">
-    //   import Component from "/_page_bundle/${fileName}.js";
-    //   if (!window.__hydrated) {
-    //     window.__hydrated = true;
-    //     window.__HYDRATE_ROOT__(
-    //       document.getElementById('${this.config.rootElem}'),
-    //       window.__REACT__.createElement(Component.default || Component, window.__INITIAL_PROPS__)
-    //     );
-    //   }
-    // </script>`;
-    // return `${html}`;
-    // // return `${html}\n${htmlProps}\n${reactHidrator}\n${pageHidrator}`;
+    return renderToString(html);
   }
 
   async buildStatic(source: string, pub: string, dest: string) {
