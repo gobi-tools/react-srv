@@ -7,13 +7,13 @@ import { renderToString, renderToStaticMarkup } from "react-dom/server";
 import serialize from "serialize-javascript";
 
 type TReactSrvConfig = {
-  reactVersion: string;
-  reactLocation: string;
-  folder: string;
-  Layout: React.FC<any>,
+  reactVersion?: string;
+  reactLocation?: string;
+  folder?: string;
+  Document?: React.FC<any>,
 };
 
-export function DefaultLayout({ children }) {
+export function DefaultDocument({ children }) {
   return (
     <html>
       <head></head>
@@ -24,13 +24,22 @@ export function DefaultLayout({ children }) {
   );
 };
 
+const DefaultReactSrvConfig: TReactSrvConfig = {
+  reactVersion: '19.2.0',
+  reactLocation: 'https://esm.sh',
+  folder: '.',
+  Document: DefaultDocument
+};
+
 export default class ReactSrv {
-  constructor(private readonly config: TReactSrvConfig = {
-    reactVersion: "19.2.0",
-    reactLocation: 'https://esm.sh',
-    folder: '.',
-    Layout: DefaultLayout,
-  }) { }
+  private readonly config: TReactSrvConfig;
+
+  constructor(readonly userConfig: TReactSrvConfig) {
+    this.config = { 
+      ...DefaultReactSrvConfig, 
+      ...userConfig,
+    };
+  }
 
   get reactBundlePath(): string {
     return '/_react_runtime.js';
@@ -88,7 +97,7 @@ export default class ReactSrv {
 
     const doctyoe = '<!DOCTYPE html>';
     const page = (
-      <this.config.Layout {...props}>
+      <this.config.Document {...props}>
         <div id={rootId}>
           <Component {...props} />
         </div>
@@ -104,7 +113,7 @@ export default class ReactSrv {
               window.__REACT__.createElement(Component.default || Component, window.__INITIAL_PROPS__)
             );
           }`}}></script>
-      </this.config.Layout>
+      </this.config.Document>
     );
 
     return `${doctyoe}\n${renderToString(page)}`;
@@ -147,11 +156,11 @@ export default class ReactSrv {
       // 3️⃣ Render to static HTML
       const rootId = 'root';
       const document = (
-        <this.config.Layout>
+        <this.config.Document>
           <div id={rootId}>
             {React.createElement(Page)}
           </div>
-        </this.config.Layout>
+        </this.config.Document>
       );
       const html = renderToStaticMarkup(document);
 
