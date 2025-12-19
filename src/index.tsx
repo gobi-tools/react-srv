@@ -3,8 +3,7 @@ import fs from "fs";
 import { rm, cp } from "fs/promises";
 import path from "path";
 import React from "react";
-import ReactDOMServer from "react-dom/server";
-import { renderToString } from "react-dom/server";
+import { renderToString, renderToStaticMarkup } from "react-dom/server";
 import serialize from "serialize-javascript";
 
 type TReactSrvConfig = {
@@ -87,15 +86,16 @@ export default class ReactSrv {
     const safePageName = serialize(Component.name, { isJSON: true });
     const fileName = safePageName.replaceAll("\"", "");
 
-    const doctyoe = '<!DOCTYPE html>'; 
+    const doctyoe = '<!DOCTYPE html>';
     const page = (
       <this.config.Layout {...props}>
         <div id={rootId}>
-          <Component { ...props} />
+          <Component {...props} />
         </div>
-        <script dangerouslySetInnerHTML={{__html: `window.__INITIAL_PROPS__ = ${safeProps};`}}></script>
+        <script dangerouslySetInnerHTML={{ __html: `window.__INITIAL_PROPS__ = ${safeProps};` }}></script>
         <script type="module" src={this.reactBundlePath}></script>
-        <script type="module" dangerouslySetInnerHTML={{__html: `
+        <script type="module" dangerouslySetInnerHTML={{
+          __html: `
           import Component from "/_page_bundle/${fileName}.js";
           if (!window.__hydrated) {
             window.__hydrated = true;
@@ -106,7 +106,7 @@ export default class ReactSrv {
           }`}}></script>
       </this.config.Layout>
     );
-    
+
     return `${doctyoe}\n${renderToString(page)}`;
   }
 
@@ -145,7 +145,15 @@ export default class ReactSrv {
       fs.unlinkSync(tempFile);
 
       // 3️⃣ Render to static HTML
-      const html = ReactDOMServer.renderToStaticMarkup(React.createElement(Page));
+      const rootId = 'root';
+      const document = (
+        <this.config.Layout>
+          <div id={rootId}>
+            {React.createElement(Page)}
+          </div>
+        </this.config.Layout>
+      );
+      const html = renderToStaticMarkup(document);
 
       // 4️⃣ Wrap in <!DOCTYPE html> and save to disk
       const fullHtml = "<!DOCTYPE html>" + html;
