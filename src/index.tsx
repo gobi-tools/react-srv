@@ -11,13 +11,28 @@ type TReactSrvConfig = {
   reactVersion: string;
   reactLocation: string;
   folder: string;
+  rootElem: string,
+  Layout: React.FC<any>,
 };
+
+export function DefaultLayout({ children }) {
+  return (
+    <html>
+      <head></head>
+      <body>
+        {children}
+      </body>
+    </html>
+  );
+}
 
 export default class ReactSrv {
   constructor(private readonly config: TReactSrvConfig = {
     reactVersion: "19.2.0",
     reactLocation: 'https://esm.sh',
     folder: '.',
+    rootElem: 'root',
+    Layout: DefaultLayout,
   }) { }
 
   get reactBundlePath(): string {
@@ -69,25 +84,69 @@ export default class ReactSrv {
   }
 
   render(Component: React.FC<any>, props: any): string {
-    const html = renderToString(<Component {...props} />);
-    const htmlFooter = '</body></html>';
-    const trimmedHtml = html.replaceAll(htmlFooter, '');
-
+    // const html = renderToString(<Component {...props} />);
+    
     const safeProps = serialize(props, { isJSON: true });
     const safePageName = serialize(Component.name, { isJSON: true });
     const fileName = safePageName.replaceAll("\"", "");
 
-    const doctype = `<!DOCTYPE html>`;
     const htmlProps = `<script>window.__INITIAL_PROPS__ = ${safeProps};</script>`;
     const reactHidrator = `<script type="module" src="${this.reactBundlePath}"></script>`;
     const pageHidrator = `<script type="module">
       import Component from "/_page_bundle/${fileName}.js";
-      window.__HYDRATE_ROOT__(
-        document.getElementsByTagName('body')[0],
-        window.__REACT__.createElement(Component.default || Component, window.__INITIAL_PROPS__)
-      );
+      if (!window.__hydrated) {
+        window.__hydrated = true;
+        window.__HYDRATE_ROOT__(
+          document.getElementById('${this.config.rootElem}'),
+          window.__REACT__.createElement(Component.default || Component, window.__INITIAL_PROPS__)
+        );
+      }
     </script>`;
-    return `${doctype}\n${trimmedHtml}\n${htmlProps}\n${reactHidrator}\n${pageHidrator}\n${htmlFooter}`;
+
+    const lay = (
+      <this.config.Layout>
+        <div id="root">
+          <Component { ...props} />
+        </div>
+        <script dangerouslySetInnerHTML={{__html: `window.__INITIAL_PROPS__ = ${safeProps};`}}></script>
+        <script type="module" src={this.reactBundlePath}></script>
+        <script type="module" dangerouslySetInnerHTML={{__html: `
+          import Component from "/_page_bundle/${fileName}.js";
+          if (!window.__hydrated) {
+            window.__hydrated = true;
+            window.__HYDRATE_ROOT__(
+              document.getElementById('${this.config.rootElem}'),
+              window.__REACT__.createElement(Component.default || Component, window.__INITIAL_PROPS__)
+            );
+          }`}}></script>
+      </this.config.Layout>
+    );
+
+    return renderToString(lay);
+
+    // const html = renderToString(<Component {...props} />);
+    // // const htmlFooter = '</body></html>';
+    // // const trimmedHtml = html.replaceAll(htmlFooter, '');
+
+    // const safeProps = serialize(props, { isJSON: true });
+    // const safePageName = serialize(Component.name, { isJSON: true });
+    // const fileName = safePageName.replaceAll("\"", "");
+
+    // // const doctype = `<!DOCTYPE html>`;
+    // const htmlProps = `<script>window.__INITIAL_PROPS__ = ${safeProps};</script>`;
+    // const reactHidrator = `<script type="module" src="${this.reactBundlePath}"></script>`;
+    // const pageHidrator = `<script type="module">
+    //   import Component from "/_page_bundle/${fileName}.js";
+    //   if (!window.__hydrated) {
+    //     window.__hydrated = true;
+    //     window.__HYDRATE_ROOT__(
+    //       document.getElementById('${this.config.rootElem}'),
+    //       window.__REACT__.createElement(Component.default || Component, window.__INITIAL_PROPS__)
+    //     );
+    //   }
+    // </script>`;
+    // return `${html}`;
+    // // return `${html}\n${htmlProps}\n${reactHidrator}\n${pageHidrator}`;
   }
 
   async buildStatic(source: string, pub: string, dest: string) {
