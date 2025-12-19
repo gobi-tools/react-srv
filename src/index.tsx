@@ -87,7 +87,8 @@ export default class ReactSrv {
     const safePageName = serialize(Component.name, { isJSON: true });
     const fileName = safePageName.replaceAll("\"", "");
 
-    const html = (
+    const doctyoe = '<!DOCTYPE html>'; 
+    const page = (
       <this.config.Layout {...props}>
         <div id={rootId}>
           <Component { ...props} />
@@ -105,8 +106,8 @@ export default class ReactSrv {
           }`}}></script>
       </this.config.Layout>
     );
-
-    return renderToString(html);
+    
+    return `${doctyoe}\n${renderToString(page)}`;
   }
 
   async buildStatic(source: string, pub: string, dest: string) {
