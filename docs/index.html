@@ -1,12 +1,12 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <title>React Srv</title>
-  <link rel="stylesheet" href="styles.css" />
-</head>
-<body>
-  <h1>React Srv</h1>
-  <p>Hello, world!</p>
-</body>
-</html>
+<!DOCTYPE html><html lang="en"><head><meta charSet="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title></title><meta name="description" content="React Srv Official Page"/><meta name="author" content="Gabriel Coman"/><meta name="color-scheme" content="light dark"/><link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/gobi-tools/css-theme@refs/heads/main/dist/theme.scholar.min.css"/></head><body><div id="root"><header><div class="hero align-center"><h2>React Srv</h2><p>React Srv is a small project that allows you to very quickly serve React pages from an existing route.</p></div></header><main><section><p>All you need to do is define a React component in a .tsx file:</p><figure><pre><code>export default function Page(props: { title: string }) {
+  return &lt;&gt;
+    &lt;h1&gt;Hello, world!&lt;/h1&gt;
+    &lt;p&gt;Demo time&lt;/p&gt;
+  &lt;/&gt;
+}</code></pre><figcaption>page.tsx</figcaption></figure><p>And React Srv will render it as static HTML you can send down the wire:</p><figure><pre><code>const app = express();
+const react = new ReactSrv();
+
+app.get(&#x27;/&#x27;, (_, res) =&gt; {
+  return res.status(200).send(react.render(Page));
+});
+</code></pre><figcaption>server.tsx</figcaption></figure></section></main></div></body></html>

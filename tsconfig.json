@@ -13,6 +13,7 @@
     "rootDir": "src",
     "outDir": "dist",
     "verbatimModuleSyntax": false,
+    "noImplicitAny": false,
     "declaration": true,
     "declarationMap": true,
   },

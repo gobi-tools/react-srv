@@ -5,6 +5,7 @@ import path from "path";
 import React from "react";
 import { renderToString, renderToStaticMarkup } from "react-dom/server";
 import serialize from "serialize-javascript";
+import { fileURLToPath } from "url";
 
 type TReactSrvConfig = {
   reactVersion?: string;
@@ -35,8 +36,8 @@ export default class ReactSrv {
   private readonly config: TReactSrvConfig;
 
   constructor(readonly userConfig: TReactSrvConfig) {
-    this.config = { 
-      ...DefaultReactSrvConfig, 
+    this.config = {
+      ...DefaultReactSrvConfig,
       ...userConfig,
     };
   }
@@ -95,7 +96,7 @@ export default class ReactSrv {
     const safePageName = serialize(Component.name, { isJSON: true });
     const fileName = safePageName.replaceAll("\"", "");
 
-    const doctyoe = '<!DOCTYPE html>';
+    const doctype = '<!DOCTYPE html>';
     const page = (
       <this.config.Document {...props}>
         <div id={rootId}>
@@ -116,7 +117,7 @@ export default class ReactSrv {
       </this.config.Document>
     );
 
-    return `${doctyoe}\n${renderToString(page)}`;
+    return `${doctype}\n${renderToString(page)}`;
   }
 
   async buildStatic(source: string, pub: string, dest: string) {
@@ -143,10 +144,14 @@ export default class ReactSrv {
         platform: "node",
         format: "esm",
         write: false,
+        // jsx: "automatic",
+        // external: ["react", "react-dom"],
       });
 
       const js = result.outputFiles[0].text;
 
+      /* re-create __dirname */
+      const __dirname = path.dirname(fileURLToPath(import.meta.url));
       // 2️⃣ Load the compiled module dynamically
       const tempFile = path.join(__dirname, `temp-${pageName}.mjs`);
       fs.writeFileSync(tempFile, js);

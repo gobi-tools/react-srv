@@ -4,7 +4,8 @@
   "description": "Lightweight JSX renderer for Node",
   "scripts": {
     "build": "tsc",
-    "prepublishOnly": "npm run build"
+    "prepublishOnly": "npm run build",
+    "build:docs": "tsx scripts/build.docs.tsx"
   },
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
