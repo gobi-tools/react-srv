@@ -4,8 +4,21 @@ export default function Index() {
   return <>
     <header>
       <div className="hero align-center">
-        <h2>React Srv</h2>
-        <p>React Srv is a small project that allows you to very quickly serve React pages from an existing route.</p>
+        <h1>React Srv</h1>
+        <p>
+          <b>
+            React Srv is a small project that allows you to very quickly serve React pages from an existing route.
+          </b>
+        </p>
+        <p>
+          <a href="https://github.com/gobi-tools/react-srv" target="_blank">
+            <button>
+              <img src="GitHub_Invertocat_White.svg" alt="GitHub Logo" />
+              <span>Source</span>
+            </button>
+          </a>
+        </p>
+        <br />
       </div>
     </header>
     <main>
@@ -23,7 +36,7 @@ export default function Index() {
           <figcaption>page.tsx</figcaption>
         </figure>
         <p>
-          And React Srv will render it as static HTML you can send down the wire: 
+          And React Srv will render it as static HTML you can send down the wire:
         </p>
         <figure>
           <pre><code>{`const app = express();
