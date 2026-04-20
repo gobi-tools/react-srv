@@ -65,10 +65,4 @@ export default function Page() {
       &lt;Button/&gt;
     &lt;/&gt;
   }
-}</code></pre><figcaption>Page.tsx</figcaption></figure><p>This requires a little bit of extra setup. When calling the <code>render</code> method we output plain HTML. Interactivity is provided by JavaScript, specifically by the React code that listens to events, propagates changes, ensures optimal re-renders, etc. This needs to be loaded in, so in <code>server.ts</code> you&#x27;ll need to add:</p><figure><pre><code>app.get(react.reactBundlePath, (_, res) =&gt;
-  res.type(react.bundleType).send(react.reactBundle())
-);
-
-app.get(react.pageBundlePath, (req, res) =&gt;
-  res.type(react.bundleType).send(react.pageBundle(req.params))
-);</code></pre><figcaption>server.ts</figcaption></figure></section><section><h2>Zustand</h2></section><section><h2>Cache</h2></section><section><h2>Static websites</h2></section><blockquote class="success"><p class="group"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-info-icon lucide-info"><circle cx="12" cy="12" r="10"></circle><path d="M12 16v-4"></path><path d="M12 8h.01"></path></svg><b>Info</b></p><p>You can see a working example <a href="https://github.com/gobi-tools/react-srv/tree/main/docs-examples" target="_blank">here</a>.</p></blockquote></main></div></body></html>
+}</code></pre><figcaption>Page.tsx</figcaption></figure></section><section><h2>Zustand</h2></section><section><h2>Cache</h2></section><section><h2>Static websites</h2></section><blockquote class="success"><p class="group"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-info-icon lucide-info"><circle cx="12" cy="12" r="10"></circle><path d="M12 16v-4"></path><path d="M12 8h.01"></path></svg><b>Info</b></p><p>You can see a working example <a href="https://github.com/gobi-tools/react-srv/tree/main/docs-examples" target="_blank">here</a>.</p></blockquote></main></div></body></html>

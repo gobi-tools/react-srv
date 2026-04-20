@@ -188,23 +188,6 @@ export default function Page() {
 }`}</code></pre>
           <figcaption>Page.tsx</figcaption>
         </figure>
-        <p>
-          This requires a little bit of extra setup. 
-          When calling the <code>render</code> method we output plain HTML. 
-          Interactivity is provided by JavaScript, specifically by the React code that listens to 
-          events, propagates changes, ensures optimal re-renders, etc. This needs to be loaded in, so in <code>server.ts</code> you'll
-          need to add:
-        </p>
-        <figure>
-          <pre><code>{`app.get(react.reactBundlePath, (_, res) =>
-  res.type(react.bundleType).send(react.reactBundle())
-);
-
-app.get(react.pageBundlePath, (req, res) =>
-  res.type(react.bundleType).send(react.pageBundle(req.params))
-);`}</code></pre>
-          <figcaption>server.ts</figcaption>
-        </figure>
       </section>
 
       {/* zustand */}
