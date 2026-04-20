@@ -1,4 +1,4 @@
-import { EXAMPLE_GIT_URL, PRODUCT_NAME, REACT_COMPONENTS_URL, REACT_PROPS_URL, REACT_URL } from "./constants";
+import { EXAMPLE_GIT_URL, PRODUCT_NAME, REACT_COMPONENTS_URL, REACT_HOOKS_URL, REACT_PROPS_URL, REACT_URL } from "./constants";
 
 export default function Index() {
   return <>
@@ -121,14 +121,14 @@ const react = new ReactSrv({ Document });`}</code></pre>
           you can split a big page into multiple components.
         </p>
         <figure>
-          <pre><code>{`function MyButton() { 
-  return <button>Click me!</button>
+          <pre><code>{`function Greeting() { 
+  return <p>Today is a fine day!</p>
 }
 
 export default function Page() {
   return <>
     <h1>Hello, world!</h1>
-    <MyButton/>
+    <Greeting/>
   </>
 }`}</code></pre>
           <figcaption>Page.tsx</figcaption>
@@ -145,7 +145,7 @@ export default function Page() {
           <pre><code>{`export default function Page(props: { name: string }) {
   return <>
     <h1>Hello, {props.name}!</h1>
-    <MyButton/>
+    <Greeting/>
   </>
 }`}</code></pre>
           <figcaption>Page.tsx</figcaption>
@@ -162,9 +162,49 @@ export default function Page() {
         </figure>
       </section>
 
-      {/* internal state & serving dynamic content  */}
+      {/* internal state / hooks / serving dynami content  */}
       <section>
-        <h2>State</h2>
+        <h2>Hooks</h2>
+        <p>
+          For interactivity you can use all types of <a href={REACT_HOOKS_URL} target="_blank">React hooks</a>, like <code>useState</code> or <code>useEffect</code>. 
+        </p>
+        <figure>
+          <pre><code>{`function Button () {
+  const [clicks, setClicks] = useState(0);
+
+  return <p>
+    <button onClick={() => setClicks(clicks+1)}>Clicks {clicks}</button>
+  </p>
+
+  ...
+
+  export default function Page(props: { name: string }) {
+    return <>
+      <h1>Hello, {props.name}!</h1>
+      <Greeting/>
+      <Button/>
+    </>
+  }
+}`}</code></pre>
+          <figcaption>Page.tsx</figcaption>
+        </figure>
+        <p>
+          This requires a little bit of extra setup. 
+          When calling the <code>render</code> method we output plain HTML. 
+          Interactivity is provided by JavaScript, specifically by the React code that listens to 
+          events, propagates changes, ensures optimal re-renders, etc. This needs to be loaded in, so in <code>server.ts</code> you'll
+          need to add:
+        </p>
+        <figure>
+          <pre><code>{`app.get(react.reactBundlePath, (_, res) =>
+  res.type(react.bundleType).send(react.reactBundle())
+);
+
+app.get(react.pageBundlePath, (req, res) =>
+  res.type(react.bundleType).send(react.pageBundle(req.params))
+);`}</code></pre>
+          <figcaption>server.ts</figcaption>
+        </figure>
       </section>
 
       {/* zustand */}
