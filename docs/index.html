@@ -1,7 +1,6 @@
 <!DOCTYPE html><html lang="en"><head><meta charSet="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><link rel="preload" as="image" href="GitHub_Invertocat_White.svg"/><title></title><meta name="description" content="React Srv Official Page"/><meta name="author" content="Gabriel Coman"/><meta name="color-scheme" content="light dark"/><link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/gobi-tools/css-theme@refs/heads/main/dist/theme.scholar.min.css"/></head><body><div id="root"><header><div class="hero align-center"><h1>React Srv</h1><p>React Srv is a small project that allows you to very quickly serve React pages from an existing route.</p><p><a href="https://github.com/gobi-tools/react-srv" target="_blank"><button><img src="GitHub_Invertocat_White.svg" alt="GitHub Logo"/><span>Source</span></button></a></p><br/></div></header><main><section><p>All you need to do is define a React component in a .tsx file:</p><figure><pre><code>export default function Page() {
   return &lt;&gt;
     &lt;h1&gt;Hello, world!&lt;/h1&gt;
-    &lt;p&gt;Demo time&lt;/p&gt;
   &lt;/&gt;
 }</code></pre><figcaption>page.tsx</figcaption></figure><p>And React Srv will render it as static HTML you can send down the wire:</p><figure><pre><code>const app = express();
 const react = new ReactSrv({});
@@ -9,7 +8,7 @@ const react = new ReactSrv({});
 app.get(&#x27;/&#x27;, (_, res) =&gt; {
   return res.status(200).send(react.render(Page, {}));
 });
-</code></pre><figcaption>server.tsx</figcaption></figure></section><section><h2>Setup</h2><p>First, install the latest versions of the <code>react-srv</code> library and <a href="https://react.dev/" target="_blank">React</a>:</p><figure><pre><code>npm i react-srv
+</code></pre><figcaption>server.ts</figcaption></figure></section><section><h2>Setup</h2><p>First, install the latest versions of the <code>react-srv</code> library and <a href="https://react.dev/" target="_blank">React</a>:</p><figure><pre><code>npm i react-srv
 
 # install react &amp; react-dom
 npm i react@19.2.0
@@ -21,4 +20,33 @@ npm i @types/react-dom@19.2.0 --save-dev</code></pre><figcaption>install depende
     &quot;jsx&quot;: &quot;react-jsx&quot;,
     &quot;jsxImportSource&quot;: &quot;react&quot;
   }
-}</code></pre><figcaption>tsconfig.json</figcaption></figcaption></section></main></div></body></html>
+}</code></pre><figcaption>tsconfig.json</figcaption></figcaption></section><section><h2>Documents</h2><p>React Srv will wrap all components in a default HTML document. You may create a custom one ...</p><figure><pre><code>export default function Document({ children }) {
+  return &lt;html lang=&quot;en&quot;&gt;
+    &lt;head&gt;
+      &lt;title&gt;My document&lt;/title&gt;
+      {/*... all other meta tags, link tags, etc */
+    &lt;/head&gt;
+    &lt;body&gt;
+      {children}
+    &lt;/body&gt;
+  &lt;/html&gt;
+}</code></pre><figcaption>Document.tsx</figcaption></figure><p>... which you can reference when creating the <code>ReactSrv</code> instance:</p><figure><pre><code>import Document from &quot;./Document&quot;;
+
+const react = new ReactSrv({ Document });</code></pre><figcaption>server.ts</figcaption></figure><p>In this way you  can even have different documents for different routes, if you wish.</p></section><section><h2>Components</h2><p>Just like in <a href="https://react.dev/learn#components" target="_blanl">any React app</a>, you can split a big page into multiple components.</p><figure><pre><code>function MyButton() { 
+  return &lt;button&gt;Click me!&lt;/button&gt;
+}
+
+export default function Page() {
+  return &lt;&gt;
+    &lt;h1&gt;Hello, world!&lt;/h1&gt;
+    &lt;MyButton/&gt;
+  &lt;/&gt;
+}</code></pre><figcaption>Page.tsx</figcaption></figure></section><section><h2>Props</h2><p>Pages and components don&#x27;t need to be static. You can define any <a href="https://react.dev/learn/passing-props-to-a-component" target="_blank">props</a> ...</p><figure><pre><code>export default function Page(props: { name: string }) {
+  return &lt;&gt;
+    &lt;h1&gt;Hello, {props.name}!&lt;/h1&gt;
+    &lt;MyButton/&gt;
+  &lt;/&gt;
+}</code></pre><figcaption>Page.tsx</figcaption></figure><p>... and pass them to the rendering function.</p><figure><pre><code>app.get(&#x27;/&#x27;, (req, res) =&gt; {
+  const name = req.query[&#x27;name&#x27;];
+  return res.status(200).send(react.render(Page, { name }));
+});</code></pre><figcaption>server.ts</figcaption></figure></section><section><h2>State</h2></section><section><h2>Zustand</h2></section><section><h2>Cache</h2></section><section><h2>Static websites</h2></section></main></div></body></html>
