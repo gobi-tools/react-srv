@@ -1,4 +1,4 @@
-import { PRODUCT_NAME, REACT_COMPONENTS_URL, REACT_PROPS_URL, REACT_URL } from "./constants";
+import { EXAMPLE_GIT_URL, PRODUCT_NAME, REACT_COMPONENTS_URL, REACT_PROPS_URL, REACT_URL } from "./constants";
 
 export default function Index() {
   return <>
@@ -184,11 +184,25 @@ export default function Page() {
 
       <blockquote className="success">
         <p className="group">
-          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-info-icon lucide-info"><circle cx="12" cy="12" r="10" /><path d="M12 16v-4" /><path d="M12 8h.01" /></svg>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            className="lucide lucide-info-icon lucide-info">
+            <circle cx="12" cy="12" r="10" />
+            <path d="M12 16v-4" />
+            <path d="M12 8h.01" />
+          </svg>
           <b>Info</b>
         </p>
         <p>
-          You can see a working example <a href="" target="_blank">here</a>.
+          You can see a working example <a href={EXAMPLE_GIT_URL} target="_blank">here</a>.
         </p>
       </blockquote>
     </main>
