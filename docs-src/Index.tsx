@@ -57,8 +57,8 @@ app.get('/', (_, res) => {
 # install react & react-dom
 npm i react@19.2.0
 npm i react-dom@19.2.0
-npm i @types/react@19.2.0
-npm i @types/react-dom@19.2.0`}</code></pre>
+npm i @types/react@19.2.0 --save-dev
+npm i @types/react-dom@19.2.0 --save-dev`}</code></pre>
           <figcaption>install dependencies</figcaption>
         </figure>
         <p>
