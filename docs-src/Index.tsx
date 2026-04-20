@@ -1,14 +1,10 @@
-import Document from "./Document";
-
 export default function Index() {
   return <>
     <header>
       <div className="hero align-center">
         <h1>React Srv</h1>
         <p>
-          <b>
-            React Srv is a small project that allows you to very quickly serve React pages from an existing route.
-          </b>
+          React Srv is a small project that allows you to very quickly serve React pages from an existing route.
         </p>
         <p>
           <a href="https://github.com/gobi-tools/react-srv" target="_blank">
@@ -27,7 +23,7 @@ export default function Index() {
           All you need to do is define a React component in a .tsx file:
         </p>
         <figure>
-          <pre><code>{`export default function Page(props: { title: string }) {
+          <pre><code>{`export default function Page() {
   return <>
     <h1>Hello, world!</h1>
     <p>Demo time</p>
@@ -40,14 +36,44 @@ export default function Index() {
         </p>
         <figure>
           <pre><code>{`const app = express();
-const react = new ReactSrv();
+const react = new ReactSrv({});
 
 app.get('/', (_, res) => {
-  return res.status(200).send(react.render(Page));
+  return res.status(200).send(react.render(Page, {}));
 });
 `}</code></pre>
           <figcaption>server.tsx</figcaption>
         </figure>
+      </section>
+
+      <section>
+        <h2>Setup</h2>
+        <p>
+          First, install the latest versions of the <code>react-srv</code> library and <a href="https://react.dev/" target="_blank">React</a>:
+        </p>
+        <figure>
+          <pre><code>{`npm i react-srv
+
+# install react & react-dom
+npm i react@19.2.0
+npm i react-dom@19.2.0
+npm i @types/react@19.2.0
+npm i @types/react-dom@19.2.0`}</code></pre>
+          <figcaption>install dependencies</figcaption>
+        </figure>
+        <p>
+          Then add the following entries to your <code>.tsconfig</code>
+        </p>
+        <figcaption>
+          <pre><code>{`{
+  "compilerOptions: {
+    ...
+    "jsx": "react-jsx",
+    "jsxImportSource": "react"
+  }
+}`}</code></pre>
+          <figcaption>tsconfig.json</figcaption>
+        </figcaption>
       </section>
     </main>
   </>
