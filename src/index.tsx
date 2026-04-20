@@ -32,7 +32,7 @@ const DefaultReactSrvConfig: TReactSrvConfig = {
   Document: DefaultDocument
 };
 
-export default class ReactSrv {
+export default class ReactSrv2 {
   private readonly config: TReactSrvConfig;
 
   constructor(readonly userConfig: TReactSrvConfig) {
@@ -42,40 +42,51 @@ export default class ReactSrv {
     };
   }
 
-  get reactBundlePath(): string {
-    return '/_react_runtime.js';
-  }
+  private inlineHydrationBundle(params: { pageName: string; rootId: string }): string {
+    const { pageName, rootId } = params;
 
-  get pageBundlePath(): string {
-    return '/_page_bundle/:pageName.js';
-  }
-
-  get bundleType(): string {
-    return 'application/javascript';
-  }
-
-  reactBundle(): string {
-    return `
-      import React from "${this.config.reactLocation}/react@${this.config.reactVersion}";
-      import { hydrateRoot } from "${this.config.reactLocation}/react-dom@${this.config.reactVersion}/client";
-
-      window.__REACT__ = React;
-      window.__HYDRATE_ROOT__ = hydrateRoot;`;
-  }
-
-  pageBundle(params: any): string {
-    const { pageName } = params;
     const fileName = `${pageName}.tsx`;
     const entryPath = this.findFileRecursive(this.config.folder, fileName);
 
+    if (!entryPath) {
+      throw new Error(`Could not find page file: ${fileName}`);
+    }
+
+    const entryDir = path.dirname(entryPath);
+    const entryBase = path.basename(entryPath);
+
     const result = esbuild.buildSync({
-      entryPoints: [entryPath!],
+      stdin: {
+        contents: `
+        import React from "react";
+        import { hydrateRoot } from "react-dom/client";
+        import Page from "./${entryBase}";
+
+        const root = document.getElementById(${JSON.stringify(rootId)});
+        if (!root) {
+          throw new Error("react-srv: Could not find hydration root.");
+        }
+
+        if (!globalThis.__REACT_SRV_HYDRATED__) {
+          globalThis.__REACT_SRV_HYDRATED__ = true;
+
+          hydrateRoot(
+            root,
+            React.createElement(Page, globalThis.__INITIAL_PROPS__ || {})
+          );
+        }
+      `,
+        resolveDir: entryDir,
+        sourcefile: `react-srv-hydrate-${pageName}.tsx`,
+        loader: "tsx",
+      },
       bundle: true,
       format: "esm",
       platform: "browser",
-      jsx: "automatic",
       write: false,
-      external: ["react", "react-dom", "react/jsx-runtime", "react/jsx-dev-runtime"],
+      jsx: "automatic",
+      jsxImportSource: "react",
+      external: ["react", "react-dom", "react-dom/client", "react/jsx-runtime", "react/jsx-dev-runtime"],
     });
 
     let code = result.outputFiles[0].text;
@@ -91,36 +102,44 @@ export default class ReactSrv {
   }
 
   render(Component: React.FC<any>, props: any): string {
-    const rootId = 'root';
+    const rootId = "root";
     const safeProps = serialize(props, { isJSON: true });
-    const safePageName = serialize(Component.name, { isJSON: true });
-    const fileName = safePageName.replaceAll("\"", "");
 
-    const doctype = '<!DOCTYPE html>';
+    const pageName = Component.name;
+    if (!pageName) {
+      throw new Error(
+        "react-srv: Component.name is empty. Please use a named component export."
+      );
+    }
+
     const page = (
       <this.config.Document {...props}>
         <div id={rootId}>
           <Component {...props} />
         </div>
-        <script dangerouslySetInnerHTML={{ __html: `window.__INITIAL_PROPS__ = ${safeProps};` }}></script>
-        <script type="module" src={this.reactBundlePath}></script>
-        <script type="module" dangerouslySetInnerHTML={{
-          __html: `
-          import Component from "/_page_bundle/${fileName}.js";
-          if (!window.__hydrated) {
-            window.__hydrated = true;
-            window.__HYDRATE_ROOT__(
-              document.getElementById('${rootId}'),
-              window.__REACT__.createElement(Component.default || Component, window.__INITIAL_PROPS__)
-            );
-          }`}}></script>
+
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `globalThis.__INITIAL_PROPS__ = ${safeProps};`,
+          }}
+        />
+
+        <script
+          type="module"
+          dangerouslySetInnerHTML={{
+            __html: this.inlineHydrationBundle({
+              pageName,
+              rootId,
+            }),
+          }}
+        />
       </this.config.Document>
     );
 
-    return `${doctype}\n${renderToString(page)}`;
+    return `<!DOCTYPE html>\n${renderToString(page)}`;
   }
 
-  async buildStatic(source: string, pub: string, dest: string) {
+  async prerender(source: string, pub: string, dest: string) {
     const sourceInfo = fs.lstatSync(source);
     if (!sourceInfo || !sourceInfo.isDirectory()) {
       throw new Error(`Source dir ${source} must be a folder`);
@@ -179,29 +198,6 @@ export default class ReactSrv {
     console.log(`✅ Copied public asset folder ${pub}`);
   }
 
-  private toKebabCase(str: string): string {
-    return str
-      // insert a hyphen before any uppercase letter (except at the start)
-      .replace(/([a-z0-9])([A-Z])/g, '$1)$2')
-      // convert the whole thing to lowercase
-      .toLowerCase();
-  }
-
-  private async clearFolder(path: string) {
-    await rm(path, { recursive: true, force: true });
-    fs.mkdirSync(path);
-  }
-
-  private async copyFolderContents(src: string, dest: string) {
-    await cp(src, dest, { recursive: true });
-  }
-
-  /**
-  * Recursively search for a file inside a folder.
-  * @param dir folder to start searching
-  * @param fileName file to find, e.g., "Home.tsx"
-  * @returns full path if found, or null
-  */
   private findFileRecursive(dir: string, fileName: string): string | null {
     const entries = fs.readdirSync(dir, { withFileTypes: true });
 
@@ -217,5 +213,22 @@ export default class ReactSrv {
     }
 
     return null;
+  }
+
+  private toKebabCase(str: string): string {
+    return str
+      // insert a hyphen before any uppercase letter (except at the start)
+      .replace(/([a-z0-9])([A-Z])/g, '$1)$2')
+      // convert the whole thing to lowercase
+      .toLowerCase();
+  }
+
+  private async clearFolder(path: string) {
+    await rm(path, { recursive: true, force: true });
+    fs.mkdirSync(path);
+  }
+
+  private async copyFolderContents(src: string, dest: string) {
+    await cp(src, dest, { recursive: true });
   }
 }
