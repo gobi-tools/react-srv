@@ -90,7 +90,7 @@ npm i @types/react-dom@19.2.0 --save-dev`}</code></pre>
   return <html lang="en">
     <head>
       <title>My document</title>
-      {/*... all other meta tags, link tags, etc */
+      {/*... all other meta tags, link tags, etc */}
     </head>
     <body>
       {children}
