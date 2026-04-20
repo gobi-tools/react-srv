@@ -48,7 +48,7 @@ app.get('/', (_, res) => {
         </figure>
       </section>
 
-      {/* install */ }
+      {/* install */}
       <section>
         <h2>Setup</h2>
         <p>
@@ -117,7 +117,7 @@ const react = new ReactSrv({ Document });`}</code></pre>
       <section>
         <h2>Components</h2>
         <p>
-          Just like in <a href={REACT_COMPONENTS_URL} target="_blanl">any React app</a>, 
+          Just like in <a href={REACT_COMPONENTS_URL} target="_blanl">any React app</a>,
           you can split a big page into multiple components.
         </p>
         <figure>
@@ -151,7 +151,7 @@ export default function Page() {
           <figcaption>Page.tsx</figcaption>
         </figure>
         <p>
-          ... and pass them to the rendering function. 
+          ... and pass them to the rendering function.
         </p>
         <figure>
           <pre><code>{`app.get('/', (req, res) => {
@@ -176,11 +176,21 @@ export default function Page() {
       <section>
         <h2>Cache</h2>
       </section>
-      
+
       {/* static websites */}
       <section>
         <h2>Static websites</h2>
       </section>
+
+      <blockquote className="success">
+        <p className="group">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-info-icon lucide-info"><circle cx="12" cy="12" r="10" /><path d="M12 16v-4" /><path d="M12 8h.01" /></svg>
+          <b>Info</b>
+        </p>
+        <p>
+          You can see a working example <a href="" target="_blank">here</a>.
+        </p>
+      </blockquote>
     </main>
   </>
 }

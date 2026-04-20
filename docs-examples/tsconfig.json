@@ -1,0 +1,14 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "nodenext",
+    "jsx": "react-jsx",
+    "jsxImportSource": "react",
+    "rootDir": "src",
+    "outDir": "dist",
+    "verbatimModuleSyntax": false
+  },
+  "include": [
+    "src"
+  ]
+}

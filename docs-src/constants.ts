@@ -1,0 +1,4 @@
+export const PRODUCT_NAME = 'React Srv';
+export const REACT_URL = 'https://react.dev/';
+export const REACT_COMPONENTS_URL = 'https://react.dev/learn#components';
+export const REACT_PROPS_URL = 'https://react.dev/learn/passing-props-to-a-component';
