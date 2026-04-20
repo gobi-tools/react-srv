@@ -144,6 +144,7 @@ export default class ReactSrv {
         platform: "node",
         format: "esm",
         write: false,
+        external: ["react", "react-dom", "react/jsx-runtime", "react/jsx-dev-runtime"],
       });
 
       const js = result.outputFiles[0].text;
