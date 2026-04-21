@@ -42,7 +42,7 @@ export default class ReactSrv2 {
     };
   }
 
-  private inlineHydrationBundle(params: { pageName: string; rootId: string }): string {
+  private buildDevHydrationBundle(params: { pageName: string; rootId: string }): string {
     const { pageName, rootId } = params;
 
     const fileName = `${pageName}.tsx`;
@@ -96,10 +96,23 @@ export default class ReactSrv2 {
     return code;
   }
 
-  render(Component: React.FC<any>, props: any = {}): string {
-    const rootId = "root";
-    const safeProps = serialize(props, { isJSON: true });
+  private readBuiltHydrationBundle(params: { pageName: string; rootId: string }): string {
+    return '';
+  }
 
+  private isProduction(): boolean {
+    return false;
+  }
+
+  private getHydrationCode(params: { pageName: string; rootId: string }): string {
+    if (this.isProduction()) {
+      return this.readBuiltHydrationBundle(params);
+    }
+
+    return this.buildDevHydrationBundle(params);
+  }
+
+  private resolvePageName(Component: React.FC<any>): string {
     const pageName = Component.name;
     if (!pageName) {
       throw new Error(
@@ -107,27 +120,23 @@ export default class ReactSrv2 {
       );
     }
 
+    return pageName;
+  }
+
+  render(Component: React.FC<any>, props: any = {}): string {
+    const rootId = "root";
+    const safeProps = serialize(props, { isJSON: true });
+    const pageName = this.resolvePageName(Component);
+
+    const hydrationCode = this.getHydrationCode({ pageName, rootId });
+
     const page = (
       <this.config.Document {...props}>
         <div id={rootId}>
           <Component {...props} />
         </div>
-
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `globalThis.__INITIAL_PROPS__ = ${safeProps};`,
-          }}
-        />
-
-        <script
-          type="module"
-          dangerouslySetInnerHTML={{
-            __html: this.inlineHydrationBundle({
-              pageName,
-              rootId,
-            }),
-          }}
-        />
+        <script dangerouslySetInnerHTML={{ __html: `globalThis.__INITIAL_PROPS__ = ${safeProps};` }}/>
+        <script type="module" dangerouslySetInnerHTML={{ __html: hydrationCode }}/>
       </this.config.Document>
     );
 
