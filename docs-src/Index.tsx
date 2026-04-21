@@ -41,7 +41,7 @@ export default function Index() {
 const react = new ReactSrv({});
 
 app.get('/', (_, res) => {
-  return res.status(200).send(react.render(Page, {}));
+  return res.status(200).send(react.render(Page));
 });
 `}</code></pre>
           <figcaption>server.ts</figcaption>
