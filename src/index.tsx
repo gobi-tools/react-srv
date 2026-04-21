@@ -45,16 +45,15 @@ export default class ReactSrv2 {
   private inlineHydrationBundle(params: { pageName: string; rootId: string }): string {
     const { pageName, rootId } = params;
 
-    const fileName = `${pageName}.tsx`;
-    const entryPath = this.resolvePageEntry(fileName);
-
-    if (!entryPath) {
-      throw new Error(`Could not find page file: ${fileName}`);
-    }
-
+    // const fileName = `${pageName}.tsx`;
+    // const entryPath = this.findFileRecursive(this.config.folder, fileName);
+    // const entryPath = this.resolvePageEntry(fileName);
+    const entryPath = this.resolvePageEntry(pageName);
     const entryDir = path.dirname(entryPath);
     const entryBase = path.basename(entryPath);
 
+    console.log('LOG HERE 1', entryPath, entryBase);
+    
     const result = esbuild.buildSync({
       stdin: {
         contents: `
@@ -101,7 +100,7 @@ export default class ReactSrv2 {
     return code;
   }
 
-  render(Component: React.FC<any>, props: any = {}): string {
+  render(Component: React.FC<any>, props: any): string {
     const rootId = "root";
     const safeProps = serialize(props, { isJSON: true });
 
