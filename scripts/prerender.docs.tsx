@@ -11,8 +11,8 @@ console.log(__dirname, path.join(__dirname, '../docs-src'));
 
 const srv = new ReactSrv({ 
   Document,
-  srcDir: './docs-src',
-  outDir: './docs',
+  srcPath: './docs-src',
+  outPath: './docs',
 });
 
 (async () => {

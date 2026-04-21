@@ -11,7 +11,8 @@ import fg from "fast-glob";
 type TReactSrvConfig = {
   reactVersion?: string;
   reactLocation?: string;
-  srcDir?: string;
+  srcPath?: string;
+  outPath?: string,
   outDir?: string,
   Document?: React.FC<any>,
   isProd?: boolean,
@@ -31,8 +32,9 @@ export function DefaultDocument({ children }) {
 const DefaultReactSrvConfig: TReactSrvConfig = {
   reactVersion: '19.2.0',
   reactLocation: 'https://esm.sh',
-  srcDir: '.',
-  outDir: './dist',
+  srcPath: '.',
+  outPath: './dist',
+  outDir: 'react-srv',
   isProd: false,
   Document: DefaultDocument
 };
@@ -45,19 +47,22 @@ export default class ReactSrv {
       ...DefaultReactSrvConfig,
       ...userConfig,
     };
-    FileUtils.validateDir(this.config.srcDir);
-    FileUtils.validateDir(this.config.outDir);
+    FileUtils.validateDir(this.config.srcPath);
+    FileUtils.validateDir(this.config.outPath);
   }
 
   async prebundle() {
-    await this.prepFolder(`${this.config.outDir}/react-srv`);
-    const files = await FileUtils.getTSXTiles(this.config.srcDir);
+    const bundleFolder = this.getBundleFolderPath();
+    await FileUtils.recreateFolder(bundleFolder);
+    
+    const files = await FileUtils.getTSXTiles(this.config.srcPath);
     for (const file of files) {
       const pageName = FileUtils.getTSXName(file);
       const rootId = 'root';
       const code = this.bundle({ pageName, rootId });
-      fs.writeFileSync(`${this.config.outDir}/react-srv/${pageName}.js`, code, 'utf8');
-      console.log('Wrote', `${this.config.outDir}/react-srv/${pageName}.js`);
+      const bundlePath = this.getBundleFilePath(pageName);
+      fs.writeFileSync(bundlePath, code, 'utf8');
+      console.log('Wrote', bundlePath);
     }
   }
 
@@ -65,7 +70,7 @@ export default class ReactSrv {
     const { pageName, rootId } = params;
 
     const fileName = `${pageName}.tsx`;
-    const entryPath = this.findFileRecursive(this.config.srcDir, fileName);
+    const entryPath = this.findFileRecursive(this.config.srcPath, fileName);
     const entryDir = path.dirname(entryPath);
     const entryBase = path.basename(entryPath);
 
@@ -116,8 +121,8 @@ export default class ReactSrv {
   }
 
   private readBundle(params: { pageName: string; rootId: string }): string {
-    const bundlePath = path.join(this.config.outDir, `react-srv/${params.pageName}.js`);
-    let code = fs.readFileSync(bundlePath, "utf8");
+    const bundlePath = this.getBundleFilePath(params.pageName);
+    let code = fs.readFileSync(bundlePath, 'utf8');
     return code;
   }
 
@@ -161,9 +166,9 @@ export default class ReactSrv {
   }
 
   async prerender() {
-    const { srcDir: source, outDir: dest } = this.config;
+    const { srcPath: source, outPath: dest } = this.config;
 
-    await this.prepFolder(dest);
+    await FileUtils.recreateFolder(dest);
     console.log(`✅ Cleared ${dest} folder.`);
 
     const files = await FileUtils.getTSXTiles(source);
@@ -182,9 +187,8 @@ export default class ReactSrv {
 
       const js = result.outputFiles[0].text;
 
-      /* re-create __dirname */
-      const __dirname = path.dirname(fileURLToPath(import.meta.url));
       // 2️⃣ Load the compiled module dynamically
+      const __dirname = path.dirname(fileURLToPath(import.meta.url));
       const tempFile = path.join(__dirname, `temp-${outName}.mjs`);
       fs.writeFileSync(tempFile, js);
       const { default: Page } = await import(`file://${tempFile}`);
@@ -226,9 +230,13 @@ export default class ReactSrv {
     return null;
   }
 
-  private async prepFolder(path: string) {
-    await rm(path, { recursive: true, force: true });
-    fs.mkdirSync(path);
+  private getBundleFolderPath(): string {
+    return path.join(this.config.outPath, this.config.outDir);
+  }
+
+  private getBundleFilePath(page: string): string {
+    const folder = this.getBundleFolderPath();
+    return path.join(folder, `${page}.js`);
   }
 }
 
@@ -251,10 +259,11 @@ class FileUtils {
   }
 
   static toKebabCase(str: string): string {
-    return str
-      // insert a hyphen before any uppercase letter (except at the start)
-      .replace(/([a-z0-9])([A-Z])/g, '$1)$2')
-      // convert the whole thing to lowercase
-      .toLowerCase();
+    return str.replace(/([a-z0-9])([A-Z])/g, '$1)$2').toLowerCase();
+  }
+
+  static async recreateFolder(path: string) {
+    await rm(path, { recursive: true, force: true });
+    fs.mkdirSync(path);
   }
 };

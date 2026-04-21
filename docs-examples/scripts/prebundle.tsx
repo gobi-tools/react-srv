@@ -3,7 +3,7 @@ import Document from "../../docs-src/Document";
 
 const srv = new ReactSrv({ 
   Document, 
-  srcDir: './src', 
+  srcPath: './src', 
 });
 
 srv.prebundle();
