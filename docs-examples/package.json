@@ -10,13 +10,13 @@
     "build": "tsc",
     "prebuild": "tsx scripts/prebuild.tsx",
     "dev": "tsx src/index",
-    "start": "node dist/index.js"
+    "start": "NODE_ENV=production node dist/index.js"
   },
   "dependencies": {
     "express": "^5.2.1",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
-    "react-srv": "file:../react-srv-0.0.36.tgz"
+    "react-srv": "file:../react-srv-0.0.37.tgz"
   },
   "devDependencies": {
     "@types/express": "^5.0.6",

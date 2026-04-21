@@ -6,7 +6,10 @@ import Document from './Document';
 const app = express()
 const port = 3000
 
-const react = new ReactSrv({ Document });
+const react = new ReactSrv({ 
+  Document, 
+  isProd: process.env.NODE_ENV === 'production',
+});
 
 app.get('/', (req, res) => {
   const name = req.query['name'];

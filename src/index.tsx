@@ -14,6 +14,7 @@ type TReactSrvConfig = {
   srcFolder?: string;
   outDir?: string,
   Document?: React.FC<any>,
+  isProd?: boolean,
 };
 
 export function DefaultDocument({ children }) {
@@ -32,6 +33,7 @@ const DefaultReactSrvConfig: TReactSrvConfig = {
   reactLocation: 'https://esm.sh',
   srcFolder: '.',
   outDir: './dist/react-srv',
+  isProd: false,
   Document: DefaultDocument
 };
 
@@ -117,12 +119,9 @@ export default class ReactSrv {
     return code;
   }
 
-  private isProduction(): boolean {
-    return true;
-  }
-
   private getHydrationCode(params: { pageName: string; rootId: string }): string {
-    if (this.isProduction()) {
+    console.log('Answering in isProd ===', this.config.isProd === true, 'mode')
+    if (this.config.isProd === true) {
       return this.readBuiltHydrationBundle(params);
     }
 
