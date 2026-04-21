@@ -1,6 +1,6 @@
 import * as esbuild from "esbuild";
 import fs from "fs";
-import { rm, cp } from "fs/promises";
+import { rm } from "fs/promises";
 import path from "path";
 import React from "react";
 import { renderToString, renderToStaticMarkup } from "react-dom/server";
@@ -11,7 +11,7 @@ import fg from "fast-glob";
 type TReactSrvConfig = {
   reactVersion?: string;
   reactLocation?: string;
-  srcFolder?: string;
+  srcDir?: string;
   outDir?: string,
   Document?: React.FC<any>,
   isProd?: boolean,
@@ -31,8 +31,8 @@ export function DefaultDocument({ children }) {
 const DefaultReactSrvConfig: TReactSrvConfig = {
   reactVersion: '19.2.0',
   reactLocation: 'https://esm.sh',
-  srcFolder: '.',
-  outDir: './dist/react-srv',
+  srcDir: '.',
+  outDir: './dist',
   isProd: false,
   Document: DefaultDocument
 };
@@ -45,25 +45,27 @@ export default class ReactSrv {
       ...DefaultReactSrvConfig,
       ...userConfig,
     };
+    FileUtils.validateDir(this.config.srcDir);
+    FileUtils.validateDir(this.config.outDir);
   }
 
-  async prebuild() {
-    await this.clearFolder(this.config.outDir);
-    const files = await fg(`${this.config.srcFolder}/**/*.tsx`);
+  async prebundle() {
+    await this.prepFolder(`${this.config.outDir}/react-srv`);
+    const files = await FileUtils.getTSXTiles(this.config.srcDir);
     for (const file of files) {
-      const pageName = file.split('/').pop().replace('.tsx', '');
+      const pageName = FileUtils.getTSXName(file);
       const rootId = 'root';
-      const code = this.buildDevHydrationBundle({ pageName, rootId });
-      fs.writeFileSync(`${this.config.outDir}/${pageName}.js`, code, 'utf8');
+      const code = this.bundle({ pageName, rootId });
+      fs.writeFileSync(`${this.config.outDir}/react-srv/${pageName}.js`, code, 'utf8');
       console.log('Wrote', `${pageName}.js`);
     }
   }
 
-  private buildDevHydrationBundle(params: { pageName: string; rootId: string }): string {
+  private bundle(params: { pageName: string; rootId: string }): string {
     const { pageName, rootId } = params;
 
     const fileName = `${pageName}.tsx`;
-    const entryPath = this.findFileRecursive(this.config.srcFolder, fileName);
+    const entryPath = this.findFileRecursive(this.config.srcDir, fileName);
     const entryDir = path.dirname(entryPath);
     const entryBase = path.basename(entryPath);
 
@@ -113,19 +115,18 @@ export default class ReactSrv {
     return code;
   }
 
-  private readBuiltHydrationBundle(params: { pageName: string; rootId: string }): string {
+  private readBundle(params: { pageName: string; rootId: string }): string {
     const bundlePath = path.join(this.config.outDir, `${params.pageName}.js`);
     let code = fs.readFileSync(bundlePath, "utf8");
     return code;
   }
 
   private getHydrationCode(params: { pageName: string; rootId: string }): string {
-    console.log('Answering in isProd ===', this.config.isProd === true, 'mode')
     if (this.config.isProd === true) {
-      return this.readBuiltHydrationBundle(params);
+      return this.readBundle(params);
     }
 
-    return this.buildDevHydrationBundle(params);
+    return this.bundle(params);
   }
 
   private resolvePageName(Component: React.FC<any>): string {
@@ -159,26 +160,19 @@ export default class ReactSrv {
     return `<!DOCTYPE html>\n${renderToString(page)}`;
   }
 
-  async prerender(source: string, pub: string, dest: string) {
-    const sourceInfo = fs.lstatSync(source);
-    if (!sourceInfo || !sourceInfo.isDirectory()) {
-      throw new Error(`Source dir ${source} must be a folder`);
-    }
-    const destInfo = fs.lstatSync(dest);
-    if (!destInfo || !destInfo.isDirectory()) {
-      throw new Error(`Dest dir ${dest} must be a folder`);
-    }
+  async prerender() {
+    const { srcDir: source, outDir: dest } = this.config;
 
-    await this.clearFolder(dest);
+    await this.prepFolder(dest);
     console.log(`✅ Cleared ${dest} folder.`);
 
-    const extension = '.tsx';
-    const pages = fs.readdirSync(source).filter(f => f.endsWith(extension));
-    for (const page of pages) {
-      const pageName = this.toKebabCase(page.replaceAll(extension, ''));
+    const files = await FileUtils.getTSXTiles(source);
+    for (const file of files) {
+      const pageName = FileUtils.getTSXName(file);
+      const outName = FileUtils.toKebabCase(pageName);
 
       const result = esbuild.buildSync({
-        entryPoints: [path.join(source, page)],
+        entryPoints: [file],
         bundle: true,
         platform: "node",
         format: "esm",
@@ -191,7 +185,7 @@ export default class ReactSrv {
       /* re-create __dirname */
       const __dirname = path.dirname(fileURLToPath(import.meta.url));
       // 2️⃣ Load the compiled module dynamically
-      const tempFile = path.join(__dirname, `temp-${pageName}.mjs`);
+      const tempFile = path.join(__dirname, `temp-${outName}.mjs`);
       fs.writeFileSync(tempFile, js);
       const { default: Page } = await import(`file://${tempFile}`);
       fs.unlinkSync(tempFile);
@@ -209,13 +203,10 @@ export default class ReactSrv {
 
       // 4️⃣ Wrap in <!DOCTYPE html> and save to disk
       const fullHtml = "<!DOCTYPE html>" + html;
-      fs.writeFileSync(`${dest}/${pageName}.html`, fullHtml);
+      fs.writeFileSync(`${dest}/${outName}.html`, fullHtml);
 
-      console.log(`✅ Built ${dest}/${pageName}.html`);
+      console.log(`✅ Built ${dest}/${outName}.html`);
     }
-
-    await this.copyFolderContents(pub, dest);
-    console.log(`✅ Copied public asset folder ${pub}`);
   }
 
   private findFileRecursive(dir: string, fileName: string): string | null {
@@ -235,20 +226,35 @@ export default class ReactSrv {
     return null;
   }
 
-  private toKebabCase(str: string): string {
+  private async prepFolder(path: string) {
+    await rm(path, { recursive: true, force: true });
+    fs.mkdirSync(path);
+  }
+}
+
+class FileUtils {
+  static validateDir(dir: string): boolean {
+    const sourceInfo = fs.lstatSync(dir);
+    if (!sourceInfo || !sourceInfo.isDirectory()) {
+      throw new Error(`D ${dir} must be a folder`);
+    }
+
+    return true;
+  }
+
+  static async getTSXTiles(dir: string): Promise<string[]> {
+    return await fg(`${dir}/**/*.tsx`);
+  }
+
+  static getTSXName(file: string): string {
+    return file.split('/').pop().replace('.tsx', '');
+  }
+
+  static toKebabCase(str: string): string {
     return str
       // insert a hyphen before any uppercase letter (except at the start)
       .replace(/([a-z0-9])([A-Z])/g, '$1)$2')
       // convert the whole thing to lowercase
       .toLowerCase();
   }
-
-  private async clearFolder(path: string) {
-    await rm(path, { recursive: true, force: true });
-    fs.mkdirSync(path);
-  }
-
-  private async copyFolderContents(src: string, dest: string) {
-    await cp(src, dest, { recursive: true });
-  }
-}
+};

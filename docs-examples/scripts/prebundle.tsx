@@ -1,6 +1,9 @@
 import ReactSrv from 'react-srv';
 import Document from "../../docs-src/Document";
 
-const srv = new ReactSrv({ Document, srcFolder: './src' });
+const srv = new ReactSrv({ 
+  Document, 
+  srcDir: './src', 
+});
 
-srv.prebuild();
+srv.prebundle();

@@ -1,12 +1,10 @@
 {
   "name": "react-srv",
-  "version": "0.0.37",
+  "version": "0.0.39",
   "description": "Lightweight JSX renderer for Node",
   "scripts": {
     "build": "tsc",
-    "prepublishOnly": "npm run build",
-    "build:docs": "tsx scripts/build.docs.tsx",
-    "build2": "tsx scripts/build2.ts"
+    "prerender:docs": "tsx scripts/prerender.docs.tsx"
   },
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
