@@ -6,7 +6,7 @@ export default function Index() {
       <div className="hero align-center">
         <h1>{PRODUCT_NAME}</h1>
         <p>
-          {PRODUCT_NAME} is a small project that allows you to very quickly serve React pages from an existing route.
+          {PRODUCT_NAME} is a small project that allows you to quickly serve React pages from an existing route.
         </p>
         <p>
           <a href="https://github.com/gobi-tools/react-srv" target="_blank">

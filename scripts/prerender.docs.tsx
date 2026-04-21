@@ -1,10 +1,10 @@
 import ReactSrv from '../src';
-import Document from "../docs/Document";
+import Document from "../docs-src/Document";
 
 const srv = new ReactSrv({ 
   Document,
-  srcPath: './docs',
-  outPath: './public',
+  srcPath: './docs-src',
+  outPath: './docs',
 });
 
 srv.prerender();
