@@ -165,11 +165,12 @@ export default class ReactSrv {
     return `<!DOCTYPE html>\n${renderToString(page)}`;
   }
 
-  async prerender() {
-    const { srcPath: source, outPath: dest } = this.config;
+  async prerender(params: { hydrate: boolean } = { hydrate: true }) {
+    if (params.hydrate) {
+      await this.prebundle();
+    }
 
-    // await FileUtils.recreateFolder(dest);
-    // console.log(`✅ Cleared ${dest} folder.`);
+    const { srcPath: source, outPath: dest } = this.config;
 
     const files = await FileUtils.getTSXTiles(source);
     for (const file of files) {
@@ -201,9 +202,10 @@ export default class ReactSrv {
           <div id={rootId}>
             {React.createElement(Page)}
           </div>
+          {params.hydrate && <script type="module" src={`./${this.config.outDir}/${outName}.js`}></script>}
         </this.config.Document>
       );
-      const html = renderToStaticMarkup(document);
+      const html = params.hydrate ? renderToString(document) : renderToStaticMarkup(document);
 
       // 4️⃣ Wrap in <!DOCTYPE html> and save to disk
       const fullHtml = "<!DOCTYPE html>" + html;
