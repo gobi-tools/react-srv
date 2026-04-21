@@ -32,8 +32,8 @@ export function DefaultDocument({ children }) {
 const DefaultReactSrvConfig: TReactSrvConfig = {
   reactVersion: '19.2.0',
   reactLocation: 'https://esm.sh',
-  srcPath: '.',
-  outPath: './dist',
+  srcPath: './src',
+  outPath: './public',
   outDir: 'react-srv',
   isProd: false,
   Document: DefaultDocument
@@ -168,8 +168,8 @@ export default class ReactSrv {
   async prerender() {
     const { srcPath: source, outPath: dest } = this.config;
 
-    await FileUtils.recreateFolder(dest);
-    console.log(`✅ Cleared ${dest} folder.`);
+    // await FileUtils.recreateFolder(dest);
+    // console.log(`✅ Cleared ${dest} folder.`);
 
     const files = await FileUtils.getTSXTiles(source);
     for (const file of files) {
@@ -236,7 +236,8 @@ export default class ReactSrv {
 
   private getBundleFilePath(page: string): string {
     const folder = this.getBundleFolderPath();
-    return path.join(folder, `${page}.js`);
+    const fp = FileUtils.toKebabCase(`${page}.js`);
+    return path.join(folder, fp);
   }
 }
 
