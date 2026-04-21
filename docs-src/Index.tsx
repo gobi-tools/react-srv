@@ -205,6 +205,11 @@ export default function Page() {
         <h2>Static websites</h2>
       </section>
 
+      {/* production ready */}
+      <section>
+        <h2>Production</h2>
+      </section>
+
       <blockquote className="success">
         <p className="group">
           <svg
