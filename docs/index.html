@@ -1,8 +1,8 @@
-<!DOCTYPE html><html lang="en"><head><meta charSet="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><link rel="preload" as="image" href="GitHub_Invertocat_White.svg"/><title></title><meta name="description" content="React Srv Official Page"/><meta name="author" content="Gabriel Coman"/><meta name="color-scheme" content="light dark"/><link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/gobi-tools/css-theme@refs/heads/main/dist/theme.scholar.min.css"/></head><body><div id="root"><header><div class="hero align-center"><h1>React Srv</h1><p>React Srv is a small project that allows you to quickly serve React pages from an existing route.</p><p><a href="https://github.com/gobi-tools/react-srv" target="_blank"><button><img src="GitHub_Invertocat_White.svg" alt="GitHub Logo"/><span>Source</span></button></a></p><br/></div></header><main><section><p>All you need to do is define a React component in a .tsx file:</p><figure><pre><code>export default function Page() {
+<!DOCTYPE html><html lang="en"><head><meta charSet="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><link rel="preload" as="image" href="GitHub_Invertocat_White.svg"/><title></title><meta name="description" content="React Srv Official Page"/><meta name="author" content="Gabriel Coman"/><meta name="color-scheme" content="light dark"/><link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/gobi-tools/css-theme@refs/heads/main/dist/theme.scholar.min.css"/></head><body><div id="root"><header><div class="hero align-center"><h1>React Srv</h1><p>React Srv<!-- --> is a small project that allows you to quickly serve React pages from an existing route.</p><p><a href="https://github.com/gobi-tools/react-srv" target="_blank"><button><img src="GitHub_Invertocat_White.svg" alt="GitHub Logo"/><span>Source</span></button></a></p><br/></div></header><main><section><p>All you need to do is define a React component in a .tsx file:</p><figure><pre><code>export default function Page() {
   return &lt;&gt;
     &lt;h1&gt;Hello, world!&lt;/h1&gt;
   &lt;/&gt;
-}</code></pre><figcaption>page.tsx</figcaption></figure><p>And React Srv will render it as static HTML you can send down the wire:</p><figure><pre><code>const app = express();
+}</code></pre><figcaption>page.tsx</figcaption></figure><p>And <!-- -->React Srv<!-- --> will render it as static HTML you can send down the wire:</p><figure><pre><code>const app = express();
 const react = new ReactSrv({});
 
 app.get(&#x27;/&#x27;, (_, res) =&gt; {
@@ -20,7 +20,7 @@ npm i @types/react-dom@19.2.0 --save-dev</code></pre><figcaption>install depende
     &quot;jsx&quot;: &quot;react-jsx&quot;,
     &quot;jsxImportSource&quot;: &quot;react&quot;
   }
-}</code></pre><figcaption>tsconfig.json</figcaption></figcaption></section><section><h2>Documents</h2><p>React Srv will wrap all components in a default HTML document. You may create a custom one ...</p><figure><pre><code>export default function Document({ children }) {
+}</code></pre><figcaption>tsconfig.json</figcaption></figcaption></section><section><h2>Documents</h2><p>React Srv<!-- --> will wrap all components in a default HTML document. You may create a custom one ...</p><figure><pre><code>export default function Document({ children }) {
   return &lt;html lang=&quot;en&quot;&gt;
     &lt;head&gt;
       &lt;title&gt;My document&lt;/title&gt;
@@ -65,4 +65,4 @@ export default function Page() {
       &lt;Button/&gt;
     &lt;/&gt;
   }
-}</code></pre><figcaption>Page.tsx</figcaption></figure></section><section><h2>Zustand</h2></section><section><h2>Cache</h2></section><section><h2>Static websites</h2></section><section><h2>Production</h2></section><blockquote class="success"><p class="group"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-info-icon lucide-info"><circle cx="12" cy="12" r="10"></circle><path d="M12 16v-4"></path><path d="M12 8h.01"></path></svg><b>Info</b></p><p>You can see a working example <a href="https://github.com/gobi-tools/react-srv/tree/main/docs-examples" target="_blank">here</a>.</p></blockquote></main></div></body></html>
+}</code></pre><figcaption>Page.tsx</figcaption></figure></section><hr/><section><div class="row"><div><div class="card"><p><b>Ready for production</b></p><p>Look at best practices when deploying <!-- -->React Srv<!-- --> to production.</p><p><a href="">Learn more</a></p></div></div><div><div class="card"><p><b>Static websites</b></p><p>React Srv<!-- --> can also output static markup, with or without hydration.</p><p><a href="">Learn more</a></p></div></div><div><div class="card"><p><b>Advanced state</b></p><p>You can use libraries like <a href="">Zustand</a> to keep track of global state.</p><p><a href="">Learn more</a></p></div></div></div></section></main></div><script type="module" src="./react-srv/index.js"></script></body></html>

@@ -189,50 +189,55 @@ export default function Page() {
           <figcaption>Page.tsx</figcaption>
         </figure>
       </section>
+      
+      <hr/>
 
-      {/* zustand */}
       <section>
-        <h2>Zustand</h2>
+        <div className="row">
+          <div>
+            <div className="card">
+              <p>
+                <b>Ready for production</b>
+              </p>
+              <p>
+                Look at best practices when 
+                deploying {PRODUCT_NAME} to production.
+              </p>
+              <p>
+                <a href="">Learn more</a>
+              </p>
+            </div>
+          </div>
+          <div>
+            <div className="card">
+              <p>
+                <b>Static websites</b>
+              </p>
+              <p>
+                {PRODUCT_NAME} can also output static markup, with 
+                or without hydration.
+              </p>
+              <p>
+                <a href="">Learn more</a>
+              </p>
+            </div>
+          </div>
+          <div>
+            <div className="card">
+              <p>
+                <b>Advanced state</b>
+              </p>
+              <p>
+                You can use libraries like <a href="">Zustand</a> to keep 
+                track of global state.
+              </p>
+              <p>
+                <a href="">Learn more</a>
+              </p>
+            </div>
+          </div>
+        </div>
       </section>
-
-      {/* serving cached react */}
-      <section>
-        <h2>Cache</h2>
-      </section>
-
-      {/* static websites */}
-      <section>
-        <h2>Static websites</h2>
-      </section>
-
-      {/* production ready */}
-      <section>
-        <h2>Production</h2>
-      </section>
-
-      <blockquote className="success">
-        <p className="group">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="20"
-            height="20"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            className="lucide lucide-info-icon lucide-info">
-            <circle cx="12" cy="12" r="10" />
-            <path d="M12 16v-4" />
-            <path d="M12 8h.01" />
-          </svg>
-          <b>Info</b>
-        </p>
-        <p>
-          You can see a working example <a href={EXAMPLE_GIT_URL} target="_blank">here</a>.
-        </p>
-      </blockquote>
     </main>
   </>
 }
