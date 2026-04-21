@@ -8,6 +8,7 @@
   "main": "index.js",
   "scripts": {
     "build": "tsc",
+    "prebuild": "tsx scripts/prebuild.tsx",
     "dev": "tsx src/index",
     "start": "node dist/index.js"
   },
@@ -15,7 +16,7 @@
     "express": "^5.2.1",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
-    "react-srv": "file:../dist/"
+    "react-srv": "file:../react-srv-0.0.36.tgz"
   },
   "devDependencies": {
     "@types/express": "^5.0.6",

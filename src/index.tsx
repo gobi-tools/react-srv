@@ -6,11 +6,13 @@ import React from "react";
 import { renderToString, renderToStaticMarkup } from "react-dom/server";
 import serialize from "serialize-javascript";
 import { fileURLToPath } from "url";
+import fg from "fast-glob";
 
 type TReactSrvConfig = {
   reactVersion?: string;
   reactLocation?: string;
-  folder?: string;
+  srcFolder?: string;
+  outDir?: string,
   Document?: React.FC<any>,
 };
 
@@ -28,11 +30,12 @@ export function DefaultDocument({ children }) {
 const DefaultReactSrvConfig: TReactSrvConfig = {
   reactVersion: '19.2.0',
   reactLocation: 'https://esm.sh',
-  folder: '.',
+  srcFolder: '.',
+  outDir: './dist/react-srv',
   Document: DefaultDocument
 };
 
-export default class ReactSrv2 {
+export default class ReactSrv {
   private readonly config: TReactSrvConfig;
 
   constructor(readonly userConfig: TReactSrvConfig) {
@@ -42,11 +45,23 @@ export default class ReactSrv2 {
     };
   }
 
+  async prebuild() {
+    await this.clearFolder(this.config.outDir);
+    const files = await fg(`${this.config.srcFolder}/**/*.tsx`);
+    for (const file of files) {
+      const pageName = file.split('/').pop().replace('.tsx', '');
+      const rootId = 'root';
+      const code = this.buildDevHydrationBundle({ pageName, rootId });
+      fs.writeFileSync(`${this.config.outDir}/${pageName}.js`, code, 'utf8');
+      console.log('Wrote', `${pageName}.js`);
+    }
+  }
+
   private buildDevHydrationBundle(params: { pageName: string; rootId: string }): string {
     const { pageName, rootId } = params;
 
     const fileName = `${pageName}.tsx`;
-    const entryPath = this.findFileRecursive(this.config.folder, fileName);
+    const entryPath = this.findFileRecursive(this.config.srcFolder, fileName);
     const entryDir = path.dirname(entryPath);
     const entryBase = path.basename(entryPath);
 
@@ -97,11 +112,13 @@ export default class ReactSrv2 {
   }
 
   private readBuiltHydrationBundle(params: { pageName: string; rootId: string }): string {
-    return '';
+    const bundlePath = path.join(this.config.outDir, `${params.pageName}.js`);
+    let code = fs.readFileSync(bundlePath, "utf8");
+    return code;
   }
 
   private isProduction(): boolean {
-    return false;
+    return true;
   }
 
   private getHydrationCode(params: { pageName: string; rootId: string }): string {
@@ -135,8 +152,8 @@ export default class ReactSrv2 {
         <div id={rootId}>
           <Component {...props} />
         </div>
-        <script dangerouslySetInnerHTML={{ __html: `globalThis.__INITIAL_PROPS__ = ${safeProps};` }}/>
-        <script type="module" dangerouslySetInnerHTML={{ __html: hydrationCode }}/>
+        <script dangerouslySetInnerHTML={{ __html: `globalThis.__INITIAL_PROPS__ = ${safeProps};` }} />
+        <script type="module" dangerouslySetInnerHTML={{ __html: hydrationCode }} />
       </this.config.Document>
     );
 
