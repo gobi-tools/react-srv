@@ -57,7 +57,7 @@ export default class ReactSrv {
       const rootId = 'root';
       const code = this.bundle({ pageName, rootId });
       fs.writeFileSync(`${this.config.outDir}/react-srv/${pageName}.js`, code, 'utf8');
-      console.log('Wrote', `${pageName}.js`);
+      console.log('Wrote', `${this.config.outDir}/react-srv/${pageName}.js`);
     }
   }
 
@@ -116,7 +116,7 @@ export default class ReactSrv {
   }
 
   private readBundle(params: { pageName: string; rootId: string }): string {
-    const bundlePath = path.join(this.config.outDir, `${params.pageName}.js`);
+    const bundlePath = path.join(this.config.outDir, `react-srv/${params.pageName}.js`);
     let code = fs.readFileSync(bundlePath, "utf8");
     return code;
   }
