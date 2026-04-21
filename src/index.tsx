@@ -45,15 +45,11 @@ export default class ReactSrv2 {
   private inlineHydrationBundle(params: { pageName: string; rootId: string }): string {
     const { pageName, rootId } = params;
 
-    // const fileName = `${pageName}.tsx`;
-    // const entryPath = this.findFileRecursive(this.config.folder, fileName);
-    // const entryPath = this.resolvePageEntry(fileName);
-    const entryPath = this.resolvePageEntry(pageName);
+    const fileName = `${pageName}.tsx`;
+    const entryPath = this.findFileRecursive(this.config.folder, fileName);
     const entryDir = path.dirname(entryPath);
     const entryBase = path.basename(entryPath);
 
-    console.log('LOG HERE 1', entryPath, entryBase);
-    
     const result = esbuild.buildSync({
       stdin: {
         contents: `
@@ -100,7 +96,7 @@ export default class ReactSrv2 {
     return code;
   }
 
-  render(Component: React.FC<any>, props: any): string {
+  render(Component: React.FC<any>, props: any = {}): string {
     const rootId = "root";
     const safeProps = serialize(props, { isJSON: true });
 
@@ -195,20 +191,6 @@ export default class ReactSrv2 {
 
     await this.copyFolderContents(pub, dest);
     console.log(`✅ Copied public asset folder ${pub}`);
-  }
-
-  private resolvePageEntry(pageName: string): string {
-    const candidates =
-      process.env.NODE_ENV === "production"
-        ? [`${pageName}.js`, `${pageName}.mjs`, `${pageName}.tsx`, `${pageName}.jsx`]
-        : [`${pageName}.tsx`, `${pageName}.jsx`, `${pageName}.js`, `${pageName}.mjs`];
-
-    for (const candidate of candidates) {
-      const found = this.findFileRecursive(this.config.folder, candidate);
-      if (found) return found;
-    }
-
-    throw new Error(`react-srv: Could not find page file for ${pageName}`);
   }
 
   private findFileRecursive(dir: string, fileName: string): string | null {
