@@ -11,7 +11,7 @@ export const TSX_URL = 'https://github.com/privatenumber/tsx';
 
 export const NGINX_URL = 'https://nginx.org/';
 
-export const EXAMPLE_GIT_URL = 'https://github.com/gobi-tools/react-srv/tree/main/docs-examples';
+export const PRODUCTION_DEMO_URL = 'https://github.com/gobi-tools/react-srv/tree/main/docs-examples';
 
 export const PAGE_HOME_URL = './index.html';
 export const PAGE_PRODUCTION_URL = './production.html';

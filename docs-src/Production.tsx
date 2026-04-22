@@ -1,4 +1,4 @@
-import { NGINX_URL, PAGE_HOME_URL, PRODUCT_NAME, REACT_HYDRATION_URL, REACT_RENDER_URL, TSX_URL } from "./constants";
+import { NGINX_URL, PAGE_HOME_URL, PRODUCT_NAME, PRODUCTION_DEMO_URL, REACT_HYDRATION_URL, REACT_RENDER_URL, TSX_URL } from "./constants";
 
 export default function Production() {
   return <>
@@ -160,12 +160,12 @@ react.prebundle()`}</code></pre>
       <section>
         <h2>Performance</h2>
         <p>
-          In development mode we've seen that every time the <code>render</code> method gets called, 
+          In development mode we've seen that every time the <code>render</code> method gets called,
           we generate both HTML and a hydration script and we send it over to the client browser.
         </p>
         <p>
-          This is still pretty reasonable. The content that weighs the most is the React library itself, which 
-          needs to be present on every page for hydration and interactivity to work. But that's only loaded 
+          This is still pretty reasonable. The content that weighs the most is the React library itself, which
+          needs to be present on every page for hydration and interactivity to work. But that's only loaded
           once and then cached locally by the browser.
         </p>
         <p>
@@ -175,16 +175,40 @@ react.prebundle()`}</code></pre>
           First, now on every request we'll send over <i>just</i> the HTML, with a link to the hydration script.
         </p>
         <p>
-          Secondly, the hydration script needs to be loaded once, towards the end of the rendering loop. 
-          It too can be cached (e.g. by using <a href={NGINX_URL} target="_blank">nginx</a> as a reverse proxy) 
+          Secondly, the hydration script needs to be loaded once, towards the end of the rendering loop.
+          It too can be cached (e.g. by using <a href={NGINX_URL} target="_blank">nginx</a> as a reverse proxy)
         </p>
         <p>
           Finally, React itself, just like in development mode, will be available async and cached by the browser.
         </p>
         <p>
-          In this way, in production we can squeeze as much performance as we can out of rendering React. 
+          In this way, in production we can squeeze as much performance as we can out of rendering React.
         </p>
       </section>
+
+      <hr/>
+
+      <blockquote className="card success">
+        <p className="group">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round">
+            <path d="M9.671 4.136a2.34 2.34 0 0 1 4.659 0 2.34 2.34 0 0 0 3.319 1.915 2.34 2.34 0 0 1 2.33 4.033 2.34 2.34 0 0 0 0 3.831 2.34 2.34 0 0 1-2.33 4.033 2.34 2.34 0 0 0-3.319 1.915 2.34 2.34 0 0 1-4.659 0 2.34 2.34 0 0 0-3.32-1.915 2.34 2.34 0 0 1-2.33-4.033 2.34 2.34 0 0 0 0-3.831A2.34 2.34 0 0 1 6.35 6.051a2.34 2.34 0 0 0 3.319-1.915" />
+            <circle cx="12" cy="12" r="3" />
+          </svg>
+          <b>Demo</b>
+        </p>
+        <p>
+          Check out a production ready demo <a href={PRODUCTION_DEMO_URL} target="_blank">here</a>.
+        </p>
+      </blockquote>
     </main>
   </>
 }

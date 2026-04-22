@@ -1,4 +1,4 @@
-import { PAGE_PRODUCTION_URL, PRODUCT_NAME, REACT_COMPONENTS_URL, REACT_HOOKS_URL, REACT_PROPS_URL, REACT_URL } from "./constants";
+import { PAGE_PRODUCTION_URL, PRODUCT_NAME, PRODUCTION_DEMO_URL, REACT_COMPONENTS_URL, REACT_HOOKS_URL, REACT_PROPS_URL, REACT_URL } from "./constants";
 
 export default function Index() {
   return <>
@@ -166,7 +166,7 @@ export default function Page() {
       <section>
         <h2>Hooks</h2>
         <p>
-          For interactivity you can use all types of <a href={REACT_HOOKS_URL} target="_blank">React hooks</a>, like <code>useState</code> or <code>useEffect</code>. 
+          For interactivity you can use all types of <a href={REACT_HOOKS_URL} target="_blank">React hooks</a>, like <code>useState</code> or <code>useEffect</code>.
         </p>
         <figure>
           <pre><code>{`function Button () {
@@ -189,8 +189,30 @@ export default function Page() {
           <figcaption>Page.tsx</figcaption>
         </figure>
       </section>
-      
-      <hr/>
+
+      <hr />
+
+      <blockquote className="card success">
+        <p className="group">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round">
+            <path d="M9.671 4.136a2.34 2.34 0 0 1 4.659 0 2.34 2.34 0 0 0 3.319 1.915 2.34 2.34 0 0 1 2.33 4.033 2.34 2.34 0 0 0 0 3.831 2.34 2.34 0 0 1-2.33 4.033 2.34 2.34 0 0 0-3.319 1.915 2.34 2.34 0 0 1-4.659 0 2.34 2.34 0 0 0-3.32-1.915 2.34 2.34 0 0 1-2.33-4.033 2.34 2.34 0 0 0 0-3.831A2.34 2.34 0 0 1 6.35 6.051a2.34 2.34 0 0 0 3.319-1.915" />
+            <circle cx="12" cy="12" r="3" />
+          </svg>
+          <b>Demo</b>
+        </p>
+        <p>
+          Check out a quick demo <a href={PRODUCTION_DEMO_URL} target="_blank">here</a>.
+        </p>
+      </blockquote>
 
       <section>
         <div className="row">
@@ -200,7 +222,7 @@ export default function Page() {
                 <b>Ready for production</b>
               </p>
               <p>
-                Look at best practices when 
+                Look at best practices when
                 deploying {PRODUCT_NAME} to production.
               </p>
               <p>
@@ -214,7 +236,7 @@ export default function Page() {
                 <b>Static websites</b>
               </p>
               <p>
-                {PRODUCT_NAME} can also output static markup, with 
+                {PRODUCT_NAME} can also output static markup, with
                 or without hydration.
               </p>
               <p>
@@ -228,7 +250,7 @@ export default function Page() {
                 <b>Advanced state</b>
               </p>
               <p>
-                You can use libraries like <a href="">Zustand</a> to keep 
+                You can use libraries like <a href="">Zustand</a> to keep
                 track of global state.
               </p>
               <p>

@@ -8,6 +8,7 @@ var REACT_HYDRATION_URL = "https://react.dev/reference/react-dom/client/hydrateR
 var REACT_RENDER_URL = "https://react.dev/reference/react-dom/server/renderToString";
 var TSX_URL = "https://github.com/privatenumber/tsx";
 var NGINX_URL = "https://nginx.org/";
+var PRODUCTION_DEMO_URL = "https://github.com/gobi-tools/react-srv/tree/main/docs-examples";
 var PAGE_HOME_URL = "./index.html";
 
 // docs-src/Production.tsx
@@ -229,6 +230,35 @@ react.prebundle()` }) }),
         ] }),
         /* @__PURE__ */ jsx("p", { children: "Finally, React itself, just like in development mode, will be available async and cached by the browser." }),
         /* @__PURE__ */ jsx("p", { children: "In this way, in production we can squeeze as much performance as we can out of rendering React." })
+      ] }),
+      /* @__PURE__ */ jsx("hr", {}),
+      /* @__PURE__ */ jsxs("blockquote", { className: "card success", children: [
+        /* @__PURE__ */ jsxs("p", { className: "group", children: [
+          /* @__PURE__ */ jsxs(
+            "svg",
+            {
+              xmlns: "http://www.w3.org/2000/svg",
+              width: "20",
+              height: "20",
+              viewBox: "0 0 24 24",
+              fill: "none",
+              stroke: "currentColor",
+              strokeWidth: "2",
+              strokeLinecap: "round",
+              strokeLinejoin: "round",
+              children: [
+                /* @__PURE__ */ jsx("path", { d: "M9.671 4.136a2.34 2.34 0 0 1 4.659 0 2.34 2.34 0 0 0 3.319 1.915 2.34 2.34 0 0 1 2.33 4.033 2.34 2.34 0 0 0 0 3.831 2.34 2.34 0 0 1-2.33 4.033 2.34 2.34 0 0 0-3.319 1.915 2.34 2.34 0 0 1-4.659 0 2.34 2.34 0 0 0-3.32-1.915 2.34 2.34 0 0 1-2.33-4.033 2.34 2.34 0 0 0 0-3.831A2.34 2.34 0 0 1 6.35 6.051a2.34 2.34 0 0 0 3.319-1.915" }),
+                /* @__PURE__ */ jsx("circle", { cx: "12", cy: "12", r: "3" })
+              ]
+            }
+          ),
+          /* @__PURE__ */ jsx("b", { children: "Demo" })
+        ] }),
+        /* @__PURE__ */ jsxs("p", { children: [
+          "Check out a production ready demo ",
+          /* @__PURE__ */ jsx("a", { href: PRODUCTION_DEMO_URL, target: "_blank", children: "here" }),
+          "."
+        ] })
       ] })
     ] })
   ] });
