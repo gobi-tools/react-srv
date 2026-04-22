@@ -48,13 +48,13 @@ export default class ReactSrv {
       ...userConfig,
     };
     FileUtils.validateDir(this.config.srcPath);
-    FileUtils.validateDir(this.config.outPath);
   }
 
   async prebundle() {
+    await this.prepOutDir();
     const bundleFolder = this.getBundleFolderPath();
     await FileUtils.recreateFolder(bundleFolder);
-    
+
     const files = await FileUtils.getTSXTiles(this.config.srcPath);
     for (const file of files) {
       const pageName = FileUtils.getTSXName(file);
@@ -144,7 +144,7 @@ export default class ReactSrv {
         </div>
         <script defer dangerouslySetInnerHTML={{ __html: `globalThis.__INITIAL_PROPS__ = ${safeProps};` }} />
         {isProd === true && <script defer type="module" src={this.getRelativeBundleFilePath(pageName)}></script>}
-        {!isProd && <script type="module" dangerouslySetInnerHTML={{ __html: this.bundle({ pageName, rootId }) }} />}
+        {!isProd && <script defer type="module" dangerouslySetInnerHTML={{ __html: this.bundle({ pageName, rootId }) }} />}
       </this.config.Document>
     );
 
@@ -152,6 +152,7 @@ export default class ReactSrv {
   }
 
   async prerender(params: { hydrate: boolean } = { hydrate: true }) {
+    await this.prepOutDir();
     if (params.hydrate) {
       await this.prebundle();
     }
@@ -218,6 +219,13 @@ export default class ReactSrv {
     return null;
   }
 
+  private async prepOutDir() {
+    const isExist = FileUtils.dirExists(this.config.outPath);
+    if (!isExist) {
+      await FileUtils.recreateFolder(this.config.outPath);
+    }
+  }
+
   private getBundleFolderPath(): string {
     return path.join(this.config.outPath, this.config.outDir);
   }
@@ -237,12 +245,16 @@ export default class ReactSrv {
 
 class FileUtils {
   static validateDir(dir: string): boolean {
-    const sourceInfo = fs.lstatSync(dir);
-    if (!sourceInfo || !sourceInfo.isDirectory()) {
+    if (!this.dirExists(dir)) {
       throw new Error(`D ${dir} must be a folder`);
     }
 
     return true;
+  }
+
+  static dirExists(dir: string): boolean {
+    const info = fs.lstatSync(dir);
+    return !!info && info.isDirectory();
   }
 
   static async getTSXTiles(dir: string): Promise<string[]> {

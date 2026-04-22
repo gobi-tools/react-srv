@@ -210,7 +210,7 @@ export default function Page() {
           <b>Demo</b>
         </p>
         <p>
-          Check out a quick demo <a href={PRODUCTION_DEMO_URL} target="_blank">here</a>.
+          Check out a simple demo <a href={PRODUCTION_DEMO_URL} target="_blank">here</a>.
         </p>
       </blockquote>
 
