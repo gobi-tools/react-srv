@@ -8,7 +8,7 @@ var REACT_HYDRATION_URL = "https://react.dev/reference/react-dom/client/hydrateR
 var REACT_RENDER_URL = "https://react.dev/reference/react-dom/server/renderToString";
 var TSX_URL = "https://github.com/privatenumber/tsx";
 var NGINX_URL = "https://nginx.org/";
-var PRODUCTION_DEMO_URL = "https://github.com/gobi-tools/react-srv/tree/main/docs-examples";
+var DEMO_PROD_URL = "https://github.com/gobi-tools/react-srv/tree/main/demos/prod";
 var PAGE_HOME_URL = "./index.html";
 
 // docs-src/Production.tsx
@@ -256,7 +256,7 @@ react.prebundle()` }) }),
         ] }),
         /* @__PURE__ */ jsxs("p", { children: [
           "Check out a production ready demo ",
-          /* @__PURE__ */ jsx("a", { href: PRODUCTION_DEMO_URL, target: "_blank", children: "here" }),
+          /* @__PURE__ */ jsx("a", { href: DEMO_PROD_URL, target: "_blank", children: "here" }),
           "."
         ] })
       ] })

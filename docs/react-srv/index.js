@@ -8,7 +8,7 @@ var REACT_URL = "https://react.dev/";
 var REACT_COMPONENTS_URL = "https://react.dev/learn#components";
 var REACT_PROPS_URL = "https://react.dev/learn/passing-props-to-a-component";
 var REACT_HOOKS_URL = "https://react.dev/reference/react/hooks";
-var PRODUCTION_DEMO_URL = "https://github.com/gobi-tools/react-srv/tree/main/docs-examples";
+var DEMO_SIMPLE_URL = "https://github.com/gobi-tools/react-srv/tree/main/demos/simple";
 var PAGE_PRODUCTION_URL = "./production.html";
 
 // docs-src/Index.tsx
@@ -227,8 +227,8 @@ export default function Page() {
           /* @__PURE__ */ jsx("b", { children: "Demo" })
         ] }),
         /* @__PURE__ */ jsxs("p", { children: [
-          "Check out a quick demo ",
-          /* @__PURE__ */ jsx("a", { href: PRODUCTION_DEMO_URL, target: "_blank", children: "here" }),
+          "Check out a simple demo ",
+          /* @__PURE__ */ jsx("a", { href: DEMO_SIMPLE_URL, target: "_blank", children: "here" }),
           "."
         ] })
       ] }),

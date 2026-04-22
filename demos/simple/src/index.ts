@@ -1,9 +1,12 @@
 import express from 'express';
 import Page from './Page';
-import react from './react-srv';
+import ReactSrv from 'react-srv';
+import Document from './Document';
 
 const app = express()
 const port = 3000
+
+const react = new ReactSrv({ Document });
 
 app.get('/', (req, res) => {
   const name = req.query['name'];

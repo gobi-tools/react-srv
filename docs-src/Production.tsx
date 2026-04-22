@@ -1,4 +1,4 @@
-import { NGINX_URL, PAGE_HOME_URL, PRODUCT_NAME, PRODUCTION_DEMO_URL, REACT_HYDRATION_URL, REACT_RENDER_URL, TSX_URL } from "./constants";
+import { DEMO_PROD_URL, NGINX_URL, PAGE_HOME_URL, PRODUCT_NAME, REACT_HYDRATION_URL, REACT_RENDER_URL, TSX_URL } from "./constants";
 
 export default function Production() {
   return <>
@@ -206,7 +206,7 @@ react.prebundle()`}</code></pre>
           <b>Demo</b>
         </p>
         <p>
-          Check out a production ready demo <a href={PRODUCTION_DEMO_URL} target="_blank">here</a>.
+          Check out a production ready demo <a href={DEMO_PROD_URL} target="_blank">here</a>.
         </p>
       </blockquote>
     </main>

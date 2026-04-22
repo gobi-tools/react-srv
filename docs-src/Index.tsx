@@ -1,4 +1,4 @@
-import { PAGE_PRODUCTION_URL, PRODUCT_NAME, PRODUCTION_DEMO_URL, REACT_COMPONENTS_URL, REACT_HOOKS_URL, REACT_PROPS_URL, REACT_URL } from "./constants";
+import { DEMO_SIMPLE_URL, PAGE_PRODUCTION_URL, PRODUCT_NAME, REACT_COMPONENTS_URL, REACT_HOOKS_URL, REACT_PROPS_URL, REACT_URL } from "./constants";
 
 export default function Index() {
   return <>
@@ -210,7 +210,7 @@ export default function Page() {
           <b>Demo</b>
         </p>
         <p>
-          Check out a simple demo <a href={PRODUCTION_DEMO_URL} target="_blank">here</a>.
+          Check out a simple demo <a href={DEMO_SIMPLE_URL} target="_blank">here</a>.
         </p>
       </blockquote>
 
