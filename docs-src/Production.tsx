@@ -27,11 +27,11 @@ export default function Production() {
         </figure>
         <p>
           ... there's a number of things {PRODUCT_NAME} does inside the <code>render</code> method:
-          <ol>
-            <li>First, it <a href={REACT_RENDER_URL} target="_blank">creates static markup</a> (that includes initial props)</li>
-            <li>Then, it creates a <a href={REACT_HYDRATION_URL} target="_blank">hydration</a> script (for subsequent interactivity)</li>
-          </ol>
         </p>
+        <ol>
+          <li>First, it <a href={REACT_RENDER_URL} target="_blank">creates static markup</a> (that includes initial props)</li>
+          <li>Then, it creates a <a href={REACT_HYDRATION_URL} target="_blank">hydration</a> script (for subsequent interactivity)</li>
+        </ol>
         <p>
           Therefore, at each request, the final payload consists of both HTML and Javascript:
         </p>
@@ -186,7 +186,7 @@ react.prebundle()`}</code></pre>
         </p>
       </section>
 
-      <hr/>
+      <hr />
 
       <blockquote className="card success">
         <p className="group">

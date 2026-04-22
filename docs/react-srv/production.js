@@ -32,18 +32,18 @@ function Production() {
           PRODUCT_NAME,
           " does inside the ",
           /* @__PURE__ */ jsx("code", { children: "render" }),
-          " method:",
-          /* @__PURE__ */ jsxs("ol", { children: [
-            /* @__PURE__ */ jsxs("li", { children: [
-              "First, it ",
-              /* @__PURE__ */ jsx("a", { href: REACT_RENDER_URL, target: "_blank", children: "creates static markup" }),
-              " (that includes initial props)"
-            ] }),
-            /* @__PURE__ */ jsxs("li", { children: [
-              "Then, it creates a ",
-              /* @__PURE__ */ jsx("a", { href: REACT_HYDRATION_URL, target: "_blank", children: "hydration" }),
-              " script (for subsequent interactivity)"
-            ] })
+          " method:"
+        ] }),
+        /* @__PURE__ */ jsxs("ol", { children: [
+          /* @__PURE__ */ jsxs("li", { children: [
+            "First, it ",
+            /* @__PURE__ */ jsx("a", { href: REACT_RENDER_URL, target: "_blank", children: "creates static markup" }),
+            " (that includes initial props)"
+          ] }),
+          /* @__PURE__ */ jsxs("li", { children: [
+            "Then, it creates a ",
+            /* @__PURE__ */ jsx("a", { href: REACT_HYDRATION_URL, target: "_blank", children: "hydration" }),
+            " script (for subsequent interactivity)"
           ] })
         ] }),
         /* @__PURE__ */ jsx("p", { children: "Therefore, at each request, the final payload consists of both HTML and Javascript:" }),
