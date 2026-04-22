@@ -1,6 +1,6 @@
 import express from 'express';
 import Page from './Page';
-import { react } from './react-srv';
+import react from './react-srv';
 
 const app = express()
 const port = 3000

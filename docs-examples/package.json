@@ -8,8 +8,8 @@
   "main": "index.js",
   "scripts": {
     "build": "tsc",
-    "prebundle": "tsx scripts/prebundle.tsx",
-    "prerender": "tsx scripts/prerender.tsx",
+    "prebundle": "tsx scripts/prebundle.ts",
+    "prerender": "tsx scripts/prerender.ts",
     "dev": "tsx src/index",
     "start": "NODE_ENV=production node dist/index.js"
   },

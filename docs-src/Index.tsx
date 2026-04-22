@@ -1,4 +1,4 @@
-import { EXAMPLE_GIT_URL, PRODUCT_NAME, REACT_COMPONENTS_URL, REACT_HOOKS_URL, REACT_PROPS_URL, REACT_URL } from "./constants";
+import { PAGE_PRODUCTION_URL, PRODUCT_NAME, REACT_COMPONENTS_URL, REACT_HOOKS_URL, REACT_PROPS_URL, REACT_URL } from "./constants";
 
 export default function Index() {
   return <>
@@ -23,7 +23,7 @@ export default function Index() {
       {/* simplest demo */}
       <section>
         <p>
-          All you need to do is define a React component in a .tsx file:
+          All you need to do is define a React component and save it in a <code>.tsx</code> file of the same name:
         </p>
         <figure>
           <pre><code>{`export default function Page() {
@@ -31,7 +31,7 @@ export default function Index() {
     <h1>Hello, world!</h1>
   </>
 }`}</code></pre>
-          <figcaption>page.tsx</figcaption>
+          <figcaption>Page.tsx</figcaption>
         </figure>
         <p>
           And {PRODUCT_NAME} will render it as static HTML you can send down the wire:
@@ -204,7 +204,7 @@ export default function Page() {
                 deploying {PRODUCT_NAME} to production.
               </p>
               <p>
-                <a href="">Learn more</a>
+                <a href={PAGE_PRODUCTION_URL}>Learn more</a>
               </p>
             </div>
           </div>

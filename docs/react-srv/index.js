@@ -8,6 +8,7 @@ var REACT_URL = "https://react.dev/";
 var REACT_COMPONENTS_URL = "https://react.dev/learn#components";
 var REACT_PROPS_URL = "https://react.dev/learn/passing-props-to-a-component";
 var REACT_HOOKS_URL = "https://react.dev/reference/react/hooks";
+var PAGE_PRODUCTION_URL = "./production.html";
 
 // docs-src/Index.tsx
 import { Fragment, jsx, jsxs } from "https://esm.sh/react@19.2.0/jsx-runtime";
@@ -27,14 +28,18 @@ function Index() {
     ] }) }),
     /* @__PURE__ */ jsxs("main", { children: [
       /* @__PURE__ */ jsxs("section", { children: [
-        /* @__PURE__ */ jsx("p", { children: "All you need to do is define a React component in a .tsx file:" }),
+        /* @__PURE__ */ jsxs("p", { children: [
+          "All you need to do is define a React component and save it in a ",
+          /* @__PURE__ */ jsx("code", { children: ".tsx" }),
+          " file of the same name:"
+        ] }),
         /* @__PURE__ */ jsxs("figure", { children: [
           /* @__PURE__ */ jsx("pre", { children: /* @__PURE__ */ jsx("code", { children: `export default function Page() {
   return <>
     <h1>Hello, world!</h1>
   </>
 }` }) }),
-          /* @__PURE__ */ jsx("figcaption", { children: "page.tsx" })
+          /* @__PURE__ */ jsx("figcaption", { children: "Page.tsx" })
         ] }),
         /* @__PURE__ */ jsxs("p", { children: [
           "And ",
@@ -206,7 +211,7 @@ export default function Page() {
             PRODUCT_NAME,
             " to production."
           ] }),
-          /* @__PURE__ */ jsx("p", { children: /* @__PURE__ */ jsx("a", { href: "", children: "Learn more" }) })
+          /* @__PURE__ */ jsx("p", { children: /* @__PURE__ */ jsx("a", { href: PAGE_PRODUCTION_URL, children: "Learn more" }) })
         ] }) }),
         /* @__PURE__ */ jsx("div", { children: /* @__PURE__ */ jsxs("div", { className: "card", children: [
           /* @__PURE__ */ jsx("p", { children: /* @__PURE__ */ jsx("b", { children: "Static websites" }) }),
