@@ -135,7 +135,7 @@ react.prebundle()` }) }),
         ] })
       ] }),
       /* @__PURE__ */ jsxs("section", { children: [
-        /* @__PURE__ */ jsx("h2", { children: "Setup environment" }),
+        /* @__PURE__ */ jsx("h2", { children: "Select environment" }),
         /* @__PURE__ */ jsxs("p", { children: [
           "One final step is to let ",
           PRODUCT_NAME,
@@ -191,7 +191,17 @@ react.prebundle()` }) }),
           /* @__PURE__ */ jsx("p", { children: "This also avoids having to create duplicate instances (one for the script, one for the server) and keeping them in sync." })
         ] })
       ] }),
-      /* @__PURE__ */ jsx("section", { children: /* @__PURE__ */ jsx("h2", { children: "Caching" }) })
+      /* @__PURE__ */ jsxs("section", { children: [
+        /* @__PURE__ */ jsx("h2", { children: "Caching" }),
+        /* @__PURE__ */ jsx("p", { children: "Every time your endpoint gets hit the client browser receives the generated HTML and Javascript. The size of the response depends on the amount of actual content in the source page, with smaller pages loading faster than bigger ones." }),
+        /* @__PURE__ */ jsx("p", { children: "Apart from that, each page needs the React library loaded so hydration, interaction, re-rendering, etc can happen, just like in a traditional SPA. This would normally add quite a lot more Kb to each request." }),
+        /* @__PURE__ */ jsx("p", { children: "Fortunately the library is loaded separately, meaning it's loaded only once, at the first request and then cached by the browser." }),
+        /* @__PURE__ */ jsxs("p", { children: [
+          "Similarly, the final bundled JS hydration code (in ",
+          /* @__PURE__ */ jsx("code", { children: "./public/react-srv" }),
+          ", for example) can be cached as well (you'll need to check your webserver's docs to see how that works)."
+        ] })
+      ] })
     ] })
   ] });
 }

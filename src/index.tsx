@@ -1,5 +1,5 @@
 import * as esbuild from "esbuild";
-import fs from "fs";
+import fs, { truncate } from "fs";
 import { rm } from "fs/promises";
 import path from "path";
 import React from "react";

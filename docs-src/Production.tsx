@@ -102,7 +102,7 @@ react.prebundle()`}</code></pre>
       </section>
 
       <section>
-        <h2>Setup environment</h2>
+        <h2>Select environment</h2>
         <p>
           One final step is to let {PRODUCT_NAME} know when you're running in a test environment and when in a production environment.
         </p>
@@ -146,30 +146,25 @@ react.prebundle()`}</code></pre>
         </details>
       </section>
 
-      {/* <section>
-        <h2>Duplication</h2>
-        <p>
-          In <code>prebundle.ts</code> we've referenced the <code>react</code> instance created in <code>server.ts</code>.
-          This setup works but can be improved by creating a separate <code>react-srv.ts</code> (or any other name) file in which
-          we export the instance by default:
-        </p>
-        <figure>
-          <pre><code>{`export default new ReactSrv({
-  Document,
-  srcPath: './input',
-  outPath: './dist',
-  outDir: 'hydration',
-  isProd: process.env.NODE_ENV === 'production',
-});`}</code></pre>
-          <figcaption>react-srv.ts</figcaption>
-        </figure>
-        <p>
-          This also avoids having to create duplicate instances (one for the script, one for the server) and keeping them in sync.
-        </p>
-      </section> */}
-
       <section>
         <h2>Caching</h2>
+        <p>
+          Every time your endpoint gets hit, the client browser receives the generated HTML and Javascript. 
+          The size of the response depends on the amount of actual content in the source page, with smaller 
+          pages loading faster than bigger ones. 
+        </p>
+        <p>
+          Apart from that, each page needs the React library loaded so hydration, interaction, re-rendering, etc can 
+          happen, just like in a traditional SPA. This would normally add quite a lot more Kb to each request. 
+        </p>
+        <p>
+          Fortunately the library is loaded separately, meaning it's loaded only once, at the first request and then 
+          cached by the browser.
+        </p>
+        <p>
+          Similarly, the final bundled JS hydration code (in <code>./public/react-srv</code>, for example) can be cached as well 
+          (you'll need to check your webserver's docs to see how that works). 
+        </p>
       </section>
     </main>
   </>
