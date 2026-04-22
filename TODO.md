@@ -1,5 +1,7 @@
 Todos
 =====
 
-- [ ] in production, directly reference the hydration scripts from `public/react-srv` in both static & dynamic rendering
 - [ ] implement proper minification
+- [ ] implement option to serve data w/o hydration, just HTML, for both static & dynamic rendering
+- [ ] add cache buster to prod build
+- [ ] look into adding "nonce" field

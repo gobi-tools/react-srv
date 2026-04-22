@@ -9,6 +9,8 @@ export const REACT_RENDER_URL = 'https://react.dev/reference/react-dom/server/re
 
 export const TSX_URL = 'https://github.com/privatenumber/tsx';
 
+export const NGINX_URL = 'https://nginx.org/';
+
 export const EXAMPLE_GIT_URL = 'https://github.com/gobi-tools/react-srv/tree/main/docs-examples';
 
 export const PAGE_HOME_URL = './index.html';

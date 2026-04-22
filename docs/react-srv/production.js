@@ -7,6 +7,7 @@ var PRODUCT_NAME = "React Srv";
 var REACT_HYDRATION_URL = "https://react.dev/reference/react-dom/client/hydrateRoot";
 var REACT_RENDER_URL = "https://react.dev/reference/react-dom/server/renderToString";
 var TSX_URL = "https://github.com/privatenumber/tsx";
+var NGINX_URL = "https://nginx.org/";
 var PAGE_HOME_URL = "./index.html";
 
 // docs-src/Production.tsx
@@ -83,7 +84,7 @@ function Production() {
       ] }),
       /* @__PURE__ */ jsxs("section", { children: [
         /* @__PURE__ */ jsx("h2", { children: "Prebundling" }),
-        /* @__PURE__ */ jsx("p", { children: "For small project or for developmement, reading from disk might be good enough. It does require the source always be present, however, and it does mean the same code will be compiled over and over again, at each request." }),
+        /* @__PURE__ */ jsx("p", { children: "For small project or for development, reading from disk might be good enough. It does require the source always be present, however, and it does mean the same code will be compiled over and over again, at each request." }),
         /* @__PURE__ */ jsxs("p", { children: [
           "For production builds, it's always best to ",
           /* @__PURE__ */ jsx("b", { children: "prebundle" }),
@@ -132,6 +133,18 @@ react.prebundle()` }) }),
   outDir: 'hydration',
 });` }) }),
           /* @__PURE__ */ jsx("figure", { children: "server.ts" })
+        ] }),
+        /* @__PURE__ */ jsxs("details", { className: "card", children: [
+          /* @__PURE__ */ jsx("summary", { children: "Notes on accessibility" }),
+          /* @__PURE__ */ jsxs("p", { children: [
+            "The output path, whether the ",
+            /* @__PURE__ */ jsx("code", { children: "./public" }),
+            " folder or any other folder, must be publicly asscessible, otherwise the generated HTML won't be able to load the hydration script."
+          ] }),
+          /* @__PURE__ */ jsxs("figure", { children: [
+            /* @__PURE__ */ jsx("pre", { children: /* @__PURE__ */ jsx("code", { children: `app.use(express.static('public'));` }) }),
+            /* @__PURE__ */ jsx("figcaption", { children: "server.ts" })
+          ] })
         ] })
       ] }),
       /* @__PURE__ */ jsxs("section", { children: [
@@ -192,15 +205,30 @@ react.prebundle()` }) }),
         ] })
       ] }),
       /* @__PURE__ */ jsxs("section", { children: [
-        /* @__PURE__ */ jsx("h2", { children: "Caching" }),
-        /* @__PURE__ */ jsx("p", { children: "Every time your endpoint gets hit the client browser receives the generated HTML and Javascript. The size of the response depends on the amount of actual content in the source page, with smaller pages loading faster than bigger ones." }),
-        /* @__PURE__ */ jsx("p", { children: "Apart from that, each page needs the React library loaded so hydration, interaction, re-rendering, etc can happen, just like in a traditional SPA. This would normally add quite a lot more Kb to each request." }),
-        /* @__PURE__ */ jsx("p", { children: "Fortunately the library is loaded separately, meaning it's loaded only once, at the first request and then cached by the browser." }),
+        /* @__PURE__ */ jsx("h2", { children: "Performance" }),
         /* @__PURE__ */ jsxs("p", { children: [
-          "Similarly, the final bundled JS hydration code (in ",
-          /* @__PURE__ */ jsx("code", { children: "./public/react-srv" }),
-          ", for example) can be cached as well (you'll need to check your webserver's docs to see how that works)."
-        ] })
+          "In development mode we've seen that every time the ",
+          /* @__PURE__ */ jsx("code", { children: "render" }),
+          " method gets called, we generate both HTML and a hydration script and we send it over to the client browser."
+        ] }),
+        /* @__PURE__ */ jsx("p", { children: "This is still pretty reasonable. The content that weighs the most is the React library itself, which needs to be present on every page for hydration and interactivity to work. But that's only loaded once and then cached locally by the browser." }),
+        /* @__PURE__ */ jsxs("p", { children: [
+          "By applying the tecniques above to prepare ",
+          PRODUCT_NAME,
+          " for production, we can gain extra performance."
+        ] }),
+        /* @__PURE__ */ jsxs("p", { children: [
+          "First, now on every request we'll send over ",
+          /* @__PURE__ */ jsx("i", { children: "just" }),
+          " the HTML, with a link to the hydration script."
+        ] }),
+        /* @__PURE__ */ jsxs("p", { children: [
+          "Secondly, the hydration script needs to be loaded once, towards the end of the rendering loop. It too can be cached (e.g. by using ",
+          /* @__PURE__ */ jsx("a", { href: NGINX_URL, target: "_blank", children: "nginx" }),
+          " as a reverse proxy)"
+        ] }),
+        /* @__PURE__ */ jsx("p", { children: "Finally, React itself, just like in development mode, will be available async and cached by the browser." }),
+        /* @__PURE__ */ jsx("p", { children: "In this way, in production we can squeeze as much performance as we can out of rendering React." })
       ] })
     ] })
   ] });

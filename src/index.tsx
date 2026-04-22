@@ -120,20 +120,6 @@ export default class ReactSrv {
     return code;
   }
 
-  private readBundle(params: { pageName: string; rootId: string }): string {
-    const bundlePath = this.getBundleFilePath(params.pageName);
-    let code = fs.readFileSync(bundlePath, 'utf8');
-    return code;
-  }
-
-  private getHydrationCode(params: { pageName: string; rootId: string }): string {
-    if (this.config.isProd === true) {
-      return this.readBundle(params);
-    }
-
-    return this.bundle(params);
-  }
-
   private resolvePageName(Component: React.FC<any>): string {
     const pageName = Component.name;
     if (!pageName) {
@@ -149,16 +135,16 @@ export default class ReactSrv {
     const rootId = "root";
     const safeProps = serialize(props, { isJSON: true });
     const pageName = this.resolvePageName(Component);
-
-    const hydrationCode = this.getHydrationCode({ pageName, rootId });
+    const isProd = this.config.isProd === true;
 
     const page = (
       <this.config.Document {...props}>
         <div id={rootId}>
           <Component {...props} />
         </div>
-        <script dangerouslySetInnerHTML={{ __html: `globalThis.__INITIAL_PROPS__ = ${safeProps};` }} />
-        <script type="module" dangerouslySetInnerHTML={{ __html: hydrationCode }} />
+        <script defer dangerouslySetInnerHTML={{ __html: `globalThis.__INITIAL_PROPS__ = ${safeProps};` }} />
+        {isProd === true && <script defer type="module" src={this.getRelativeBundleFilePath(pageName)}></script>}
+        {!isProd && <script type="module" dangerouslySetInnerHTML={{ __html: this.bundle({ pageName, rootId }) }} />}
       </this.config.Document>
     );
 
@@ -202,7 +188,7 @@ export default class ReactSrv {
           <div id={rootId}>
             {React.createElement(Page)}
           </div>
-          {params.hydrate && <script type="module" src={`./${this.config.outDir}/${outName}.js`}></script>}
+          {params.hydrate && <script defer type="module" src={this.getRelativeBundleFilePath(pageName)}></script>}
         </this.config.Document>
       );
       const html = params.hydrate ? renderToString(document) : renderToStaticMarkup(document);
@@ -240,6 +226,12 @@ export default class ReactSrv {
     const folder = this.getBundleFolderPath();
     const fp = FileUtils.toKebabCase(`${page}.js`);
     return path.join(folder, fp);
+  }
+
+  private getRelativeBundleFilePath(page: string): string {
+    const folder = this.config.outDir;
+    const fp = FileUtils.toKebabCase(`${page}.js`);
+    return `./${folder}/${fp}`;
   }
 }
 

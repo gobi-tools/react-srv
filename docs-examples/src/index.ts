@@ -3,6 +3,7 @@ import Page from './Page';
 import react from './react-srv';
 
 const app = express()
+app.use(express.static('public'));
 const port = 3000
 
 app.get('/', (req, res) => {

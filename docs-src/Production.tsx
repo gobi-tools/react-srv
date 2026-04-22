@@ -1,4 +1,4 @@
-import { PAGE_HOME_URL, PRODUCT_NAME, REACT_HYDRATION_URL, REACT_RENDER_URL, TSX_URL } from "./constants";
+import { NGINX_URL, PAGE_HOME_URL, PRODUCT_NAME, REACT_HYDRATION_URL, REACT_RENDER_URL, TSX_URL } from "./constants";
 
 export default function Production() {
   return <>
@@ -66,7 +66,7 @@ export default function Production() {
       <section>
         <h2>Prebundling</h2>
         <p>
-          For small project or for developmement, reading from disk might be good enough. It does require the source always be
+          For small project or for development, reading from disk might be good enough. It does require the source always be
           present, however, and it does mean the same code will be compiled over and over again, at each request.
         </p>
         <p>
@@ -99,6 +99,17 @@ react.prebundle()`}</code></pre>
 });`}</code></pre>
           <figure>server.ts</figure>
         </figcaption>
+        <details className="card">
+          <summary>Notes on accessibility</summary>
+          <p>
+            The output path, whether the <code>./public</code> folder or any other folder, must be publicly asscessible, otherwise
+            the generated HTML won't be able to load the hydration script.
+          </p>
+          <figure>
+            <pre><code>{`app.use(express.static('public'));`}</code></pre>
+            <figcaption>server.ts</figcaption>
+          </figure>
+        </details>
       </section>
 
       <section>
@@ -147,23 +158,31 @@ react.prebundle()`}</code></pre>
       </section>
 
       <section>
-        <h2>Caching</h2>
+        <h2>Performance</h2>
         <p>
-          Every time your endpoint gets hit, the client browser receives the generated HTML and Javascript. 
-          The size of the response depends on the amount of actual content in the source page, with smaller 
-          pages loading faster than bigger ones. 
+          In development mode we've seen that every time the <code>render</code> method gets called, 
+          we generate both HTML and a hydration script and we send it over to the client browser.
         </p>
         <p>
-          Apart from that, each page needs the React library loaded so hydration, interaction, re-rendering, etc can 
-          happen, just like in a traditional SPA. This would normally add quite a lot more Kb to each request. 
+          This is still pretty reasonable. The content that weighs the most is the React library itself, which 
+          needs to be present on every page for hydration and interactivity to work. But that's only loaded 
+          once and then cached locally by the browser.
         </p>
         <p>
-          Fortunately the library is loaded separately, meaning it's loaded only once, at the first request and then 
-          cached by the browser.
+          By applying the tecniques above to prepare {PRODUCT_NAME} for production, we can gain extra performance.
         </p>
         <p>
-          Similarly, the final bundled JS hydration code (in <code>./public/react-srv</code>, for example) can be cached as well 
-          (you'll need to check your webserver's docs to see how that works). 
+          First, now on every request we'll send over <i>just</i> the HTML, with a link to the hydration script.
+        </p>
+        <p>
+          Secondly, the hydration script needs to be loaded once, towards the end of the rendering loop. 
+          It too can be cached (e.g. by using <a href={NGINX_URL} target="_blank">nginx</a> as a reverse proxy) 
+        </p>
+        <p>
+          Finally, React itself, just like in development mode, will be available async and cached by the browser.
+        </p>
+        <p>
+          In this way, in production we can squeeze as much performance as we can out of rendering React. 
         </p>
       </section>
     </main>
