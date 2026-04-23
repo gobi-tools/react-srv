@@ -10,6 +10,8 @@ var REACT_PROPS_URL = "https://react.dev/learn/passing-props-to-a-component";
 var REACT_HOOKS_URL = "https://react.dev/reference/react/hooks";
 var DEMO_SIMPLE_URL = "https://github.com/gobi-tools/react-srv/tree/main/demos/simple";
 var PAGE_PRODUCTION_URL = "./production.html";
+var PAGE_STATIC_URL = "./static.html";
+var SSG_URL = "https://en.wikipedia.org/wiki/Static_site_generator";
 
 // docs-src/Index.tsx
 import { Fragment, jsx, jsxs } from "https://esm.sh/react@19.2.0/jsx-runtime";
@@ -243,12 +245,14 @@ export default function Page() {
           /* @__PURE__ */ jsx("p", { children: /* @__PURE__ */ jsx("a", { href: PAGE_PRODUCTION_URL, children: "Learn more" }) })
         ] }) }),
         /* @__PURE__ */ jsx("div", { children: /* @__PURE__ */ jsxs("div", { className: "card", children: [
-          /* @__PURE__ */ jsx("p", { children: /* @__PURE__ */ jsx("b", { children: "Static websites" }) }),
+          /* @__PURE__ */ jsx("p", { children: /* @__PURE__ */ jsx("b", { children: "SSG" }) }),
           /* @__PURE__ */ jsxs("p", { children: [
             PRODUCT_NAME,
-            " can also output static markup, with or without hydration."
+            " can directly output HTML for ",
+            /* @__PURE__ */ jsx("a", { href: SSG_URL, target: "_blank", children: "static site generation (SSG)" }),
+            "."
           ] }),
-          /* @__PURE__ */ jsx("p", { children: /* @__PURE__ */ jsx("a", { href: "", children: "Learn more" }) })
+          /* @__PURE__ */ jsx("p", { children: /* @__PURE__ */ jsx("a", { href: PAGE_STATIC_URL, children: "Learn more" }) })
         ] }) }),
         /* @__PURE__ */ jsx("div", { children: /* @__PURE__ */ jsxs("div", { className: "card", children: [
           /* @__PURE__ */ jsx("p", { children: /* @__PURE__ */ jsx("b", { children: "Advanced state" }) }),

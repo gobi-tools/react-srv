@@ -1,4 +1,4 @@
-import { DEMO_SIMPLE_URL, PAGE_PRODUCTION_URL, PRODUCT_NAME, REACT_COMPONENTS_URL, REACT_HOOKS_URL, REACT_PROPS_URL, REACT_URL } from "./constants";
+import { DEMO_SIMPLE_URL, PAGE_PRODUCTION_URL, PAGE_STATIC_URL, PRODUCT_NAME, REACT_COMPONENTS_URL, REACT_HOOKS_URL, REACT_PROPS_URL, REACT_URL, SSG_URL } from "./constants";
 
 export default function Index() {
   return <>
@@ -233,14 +233,13 @@ export default function Page() {
           <div>
             <div className="card">
               <p>
-                <b>Static websites</b>
+                <b>SSG</b>
               </p>
               <p>
-                {PRODUCT_NAME} can also output static markup, with
-                or without hydration.
+                {PRODUCT_NAME} can directly output HTML for <a href={SSG_URL} target="_blank">static site generation (SSG)</a>.
               </p>
               <p>
-                <a href="">Learn more</a>
+                <a href={PAGE_STATIC_URL}>Learn more</a>
               </p>
             </div>
           </div>
