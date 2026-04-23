@@ -47,7 +47,27 @@ react.prerender()`}</code></pre>
       </section>
 
       <section>
-        <h2>Remove hydration</h2>
+        <h2>Disable hydration</h2>
+        <p>
+          Prerendering, by default, generates both HTML and hydration JS. In this way statically generated 
+          websites can maintain most of the interactivity provided by React. 
+        </p>
+        <p>
+          If you don't want interactivity, you can disable hydration altogether:
+        </p>
+        <figure>
+          <pre><code>{`const react = new ReactSrv({ 
+  Document, 
+  srcPath: './src',
+  outPath: './public',
+  hydrate: false,
+});
+react.prerender()`}</code></pre>
+          <figcaption>prerender.ts</figcaption>
+        </figure>
+        <p>
+          In this way, only HTML files will be generated. A trully static website!
+        </p>
       </section>
 
       <hr />

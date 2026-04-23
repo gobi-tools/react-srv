@@ -85,7 +85,7 @@ function Production() {
       ] }),
       /* @__PURE__ */ jsxs("section", { children: [
         /* @__PURE__ */ jsx("h2", { children: "Prebundling" }),
-        /* @__PURE__ */ jsx("p", { children: "For small project or for development, reading from disk might be good enough. It does require the source always be present, however, and it does mean the same code will be compiled over and over again, at each request." }),
+        /* @__PURE__ */ jsx("p", { children: "For a small project or for development, reading from disk might be good enough. It does require the source always be present, however, and it does mean the same code will be compiled over and over again, at each request." }),
         /* @__PURE__ */ jsxs("p", { children: [
           "For production builds, it's always best to ",
           /* @__PURE__ */ jsx("b", { children: "prebundle" }),
@@ -106,42 +106,31 @@ react.prebundle()` }) }),
           /* @__PURE__ */ jsx("a", { href: TSX_URL, target: "_blank", children: "tsx" }),
           " (",
           /* @__PURE__ */ jsx("code", { children: "tsx prebundle.ts" }),
-          ") or add it to your own build pipeline."
-        ] }),
-        /* @__PURE__ */ jsxs("p", { children: [
-          "When successfull, it will write the compiled ",
+          ") or add it to your own build pipeline. When successfull, it will write the compiled ",
           /* @__PURE__ */ jsx("code", { children: ".js" }),
           " files in ",
           /* @__PURE__ */ jsx("code", { children: "./public/react-srv" }),
-          ". Note it will create or overwrite the ",
-          /* @__PURE__ */ jsx("code", { children: "react-srv" }),
-          " folder, but it needs an existing ",
-          /* @__PURE__ */ jsx("code", { children: "public" }),
-          " folder to exist."
+          "."
         ] }),
         /* @__PURE__ */ jsxs("p", { children: [
-          "You can control the output folder path and name with the ",
+          "You can control the output path and name with the ",
           /* @__PURE__ */ jsx("code", { children: "outPath" }),
           " and ",
           /* @__PURE__ */ jsx("code", { children: "outDir" }),
-          " config value:"
+          " config values:"
         ] }),
         /* @__PURE__ */ jsxs("figcaption", { children: [
           /* @__PURE__ */ jsx("pre", { children: /* @__PURE__ */ jsx("code", { children: `const react = new ReactSrv({
   Document,
   srcPath: './input',
-  outPath: './dist',
-  outDir: 'hydration',
+  outPath: './dist',    // ./public
+  outDir: 'hydration',  // ./react-srv
 });` }) }),
           /* @__PURE__ */ jsx("figure", { children: "server.ts" })
         ] }),
         /* @__PURE__ */ jsxs("details", { className: "card", children: [
-          /* @__PURE__ */ jsx("summary", { children: "Notes on accessibility" }),
-          /* @__PURE__ */ jsxs("p", { children: [
-            "The output path, whether the ",
-            /* @__PURE__ */ jsx("code", { children: "./public" }),
-            " folder or any other folder, must be publicly asscessible, otherwise the generated HTML won't be able to load the hydration script."
-          ] }),
+          /* @__PURE__ */ jsx("summary", { children: "Notes on the output folder" }),
+          /* @__PURE__ */ jsx("p", { children: "The output folder must be statically served or accessible via the internet, otherwise the hydration scripts won't be able to load." }),
           /* @__PURE__ */ jsxs("figure", { children: [
             /* @__PURE__ */ jsx("pre", { children: /* @__PURE__ */ jsx("code", { children: `app.use(express.static('public'));` }) }),
             /* @__PURE__ */ jsx("figcaption", { children: "server.ts" })
@@ -153,12 +142,9 @@ react.prebundle()` }) }),
         /* @__PURE__ */ jsxs("p", { children: [
           "One final step is to let ",
           PRODUCT_NAME,
-          " know when you're running in a test environment and when in a production environment."
-        ] }),
-        /* @__PURE__ */ jsxs("p", { children: [
-          "You can use the ",
+          " know when you're running in a test environment and when in a production one. You can use the ",
           /* @__PURE__ */ jsx("code", { children: "isProd" }),
-          " config value to specify what environment to run in. The underlying logic is up to you."
+          " config value. The underlying logic is up to you:"
         ] }),
         /* @__PURE__ */ jsxs("figure", { children: [
           /* @__PURE__ */ jsx("pre", { children: /* @__PURE__ */ jsx("code", { children: `const react = new ReactSrv({
@@ -175,7 +161,7 @@ react.prebundle()` }) }),
           PRODUCT_NAME,
           " will compile ",
           /* @__PURE__ */ jsx("code", { children: ".tsx" }),
-          " files on the go in test mode and server pre-compiled ",
+          " files on the go in test mode and serve pre-compiled ",
           /* @__PURE__ */ jsx("code", { children: ".js" }),
           " files from the bundle output folder in production model."
         ] }),
@@ -202,7 +188,7 @@ react.prebundle()` }) }),
 });` }) }),
             /* @__PURE__ */ jsx("figcaption", { children: "react-srv.ts" })
           ] }),
-          /* @__PURE__ */ jsx("p", { children: "This also avoids having to create duplicate instances (one for the script, one for the server) and keeping them in sync." })
+          /* @__PURE__ */ jsx("p", { children: "This also avoids having to create duplicate instances (one for the script, one for the server) and to keep them in sync." })
         ] })
       ] }),
       /* @__PURE__ */ jsxs("section", { children: [

@@ -14,8 +14,9 @@ type TReactSrvConfig = {
   srcPath?: string;
   outPath?: string,
   outDir?: string,
-  Document?: React.FC<any>,
+  hydrate?: boolean;
   isProd?: boolean,
+  Document?: React.FC<any>,
 };
 
 export function DefaultDocument({ children }) {
@@ -35,6 +36,7 @@ const DefaultReactSrvConfig: TReactSrvConfig = {
   srcPath: './src',
   outPath: './public',
   outDir: 'react-srv',
+  hydrate: true,
   isProd: false,
   Document: DefaultDocument
 };
@@ -51,6 +53,11 @@ export default class ReactSrv {
   }
 
   async prebundle() {
+    if (!this.config.hydrate) {
+      console.log(`Skipping pre-bundiling hydration scripts synce hydrate === ${this.config.hydrate}`);
+      return;
+    }
+
     await this.prepOutDir();
     const bundleFolder = this.getBundleFolderPath();
     await FileUtils.recreateFolder(bundleFolder);
@@ -135,25 +142,29 @@ export default class ReactSrv {
     const rootId = "root";
     const safeProps = serialize(props, { isJSON: true });
     const pageName = this.resolvePageName(Component);
+    const hydrate = this.config.hydrate === true;
     const isProd = this.config.isProd === true;
 
-    const page = (
+    const document = (
       <this.config.Document {...props}>
         <div id={rootId}>
           <Component {...props} />
         </div>
         <script defer dangerouslySetInnerHTML={{ __html: `globalThis.__INITIAL_PROPS__ = ${safeProps};` }} />
-        {isProd === true && <script defer type="module" src={this.getRelativeBundleFilePath(pageName)}></script>}
-        {!isProd && <script defer type="module" dangerouslySetInnerHTML={{ __html: this.bundle({ pageName, rootId }) }} />}
+        {(isProd && hydrate) && <script defer type="module" src={this.getRelativeBundleFilePath(pageName)}></script>}
+        {(!isProd && hydrate) && <script defer type="module" dangerouslySetInnerHTML={{ __html: this.bundle({ pageName, rootId }) }} />}
       </this.config.Document>
     );
 
-    return `<!DOCTYPE html>\n${renderToString(page)}`;
+    const html = hydrate ? renderToString(document) : renderToStaticMarkup(document);
+
+    return `<!DOCTYPE html>\n${html}`;
   }
 
-  async prerender(params: { hydrate: boolean } = { hydrate: true }) {
+  async prerender() {
+    const hydrate = this.config.hydrate === true;
     await this.prepOutDir();
-    if (params.hydrate) {
+    if (hydrate) {
       await this.prebundle();
     }
 
@@ -189,15 +200,13 @@ export default class ReactSrv {
           <div id={rootId}>
             {React.createElement(Page)}
           </div>
-          {params.hydrate && <script defer type="module" src={this.getRelativeBundleFilePath(pageName)}></script>}
+          {hydrate && <script defer type="module" src={this.getRelativeBundleFilePath(pageName)}></script>}
         </this.config.Document>
       );
-      const html = params.hydrate ? renderToString(document) : renderToStaticMarkup(document);
+      const html = hydrate ? renderToString(document) : renderToStaticMarkup(document);
+      const fullHtml = `<!DOCTYPE html>\n${html}`;
 
-      // 4️⃣ Wrap in <!DOCTYPE html> and save to disk
-      const fullHtml = "<!DOCTYPE html>" + html;
       fs.writeFileSync(`${dest}/${outName}.html`, fullHtml);
-
       console.log(`✅ Built ${dest}/${outName}.html`);
     }
   }
@@ -253,8 +262,16 @@ class FileUtils {
   }
 
   static dirExists(dir: string): boolean {
-    const info = fs.lstatSync(dir);
-    return !!info && info.isDirectory();
+    try {
+      const info = fs.lstatSync(dir);
+      return !!info && info.isDirectory();
+    } catch (e) {
+      if (e.code === 'ENOENT') {
+        console.log('Folder does not exist');
+      } else {
+        throw e; // Other unexpected errors
+      }
+    }
   }
 
   static async getTSXTiles(dir: string): Promise<string[]> {

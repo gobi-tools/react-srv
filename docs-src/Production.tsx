@@ -66,7 +66,7 @@ export default function Production() {
       <section>
         <h2>Prebundling</h2>
         <p>
-          For small project or for development, reading from disk might be good enough. It does require the source always be
+          For a small project or for development, reading from disk might be good enough. It does require the source always be
           present, however, and it does mean the same code will be compiled over and over again, at each request.
         </p>
         <p>
@@ -82,28 +82,25 @@ react.prebundle()`}</code></pre>
         </figure>
         <p>
           Than you can execute via <a href={TSX_URL} target="_blank">tsx</a> (<code>tsx prebundle.ts</code>) or add it to your own build pipeline.
+          When successfull, it will write the compiled <code>.js</code> files in <code>./public/react-srv</code>. 
         </p>
         <p>
-          When successfull, it will write the compiled <code>.js</code> files in <code>./public/react-srv</code>. Note it will
-          create or overwrite the <code>react-srv</code> folder, but it needs an existing <code>public</code> folder to exist.
-        </p>
-        <p>
-          You can control the output folder path and name with the <code>outPath</code> and <code>outDir</code> config value:
+          You can control the output path and name with the <code>outPath</code> and <code>outDir</code> config values:
         </p>
         <figcaption>
           <pre><code>{`const react = new ReactSrv({
   Document,
   srcPath: './input',
-  outPath: './dist',
-  outDir: 'hydration',
+  outPath: './dist',    // ./public
+  outDir: 'hydration',  // ./react-srv
 });`}</code></pre>
           <figure>server.ts</figure>
         </figcaption>
         <details className="card">
-          <summary>Notes on accessibility</summary>
+          <summary>Notes on the output folder</summary>
           <p>
-            The output path, whether the <code>./public</code> folder or any other folder, must be publicly asscessible, otherwise
-            the generated HTML won't be able to load the hydration script.
+            The output folder must be statically served or accessible via the internet, otherwise
+            the hydration scripts won't be able to load.
           </p>
           <figure>
             <pre><code>{`app.use(express.static('public'));`}</code></pre>
@@ -115,10 +112,8 @@ react.prebundle()`}</code></pre>
       <section>
         <h2>Select environment</h2>
         <p>
-          One final step is to let {PRODUCT_NAME} know when you're running in a test environment and when in a production environment.
-        </p>
-        <p>
-          You can use the <code>isProd</code> config value to specify what environment to run in. The underlying logic is up to you.
+          One final step is to let {PRODUCT_NAME} know when you're running in a test environment and when in a production one.
+          You can use the <code>isProd</code> config value. The underlying logic is up to you:
         </p>
         <figure>
           <pre><code>{`const react = new ReactSrv({
@@ -131,7 +126,7 @@ react.prebundle()`}</code></pre>
           <figcaption>server.ts</figcaption>
         </figure>
         <p>
-          When setup like this, {PRODUCT_NAME} will compile <code>.tsx</code> files on the go in test mode and server pre-compiled <code>.js</code> files
+          When setup like this, {PRODUCT_NAME} will compile <code>.tsx</code> files on the go in test mode and serve pre-compiled <code>.js</code> files
           from the bundle output folder in production model.
         </p>
         <details className="card">
@@ -152,7 +147,7 @@ react.prebundle()`}</code></pre>
             <figcaption>react-srv.ts</figcaption>
           </figure>
           <p>
-            This also avoids having to create duplicate instances (one for the script, one for the server) and keeping them in sync.
+            This also avoids having to create duplicate instances (one for the script, one for the server) and to keep them in sync.
           </p>
         </details>
       </section>

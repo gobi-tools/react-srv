@@ -25,8 +25,7 @@ function Index() {
       /* @__PURE__ */ jsx2("p", { children: /* @__PURE__ */ jsx2("button", { onClick: () => setClicks(clicks + 1), children: "Click me!" }) }),
       /* @__PURE__ */ jsxs2("p", { children: [
         "Number of clicks: ",
-        clicks,
-        "."
+        clicks
       ] })
     ] })
   ] });

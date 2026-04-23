@@ -63,7 +63,22 @@ react.prerender()` }) }),
           " to have a full, statically generated, website."
         ] })
       ] }),
-      /* @__PURE__ */ jsx("section", { children: /* @__PURE__ */ jsx("h2", { children: "Remove hydration" }) }),
+      /* @__PURE__ */ jsxs("section", { children: [
+        /* @__PURE__ */ jsx("h2", { children: "Disable hydration" }),
+        /* @__PURE__ */ jsx("p", { children: "Prerendering, by default, generates both HTML and hydration JS. In this way statically generated websites can maintain most of the interactivity provided by React." }),
+        /* @__PURE__ */ jsx("p", { children: "If you don't want interactivity, you can disable hydration altogether:" }),
+        /* @__PURE__ */ jsxs("figure", { children: [
+          /* @__PURE__ */ jsx("pre", { children: /* @__PURE__ */ jsx("code", { children: `const react = new ReactSrv({ 
+  Document, 
+  srcPath: './src',
+  outPath: './public',
+  hydrate: false,
+});
+react.prerender()` }) }),
+          /* @__PURE__ */ jsx("figcaption", { children: "prerender.ts" })
+        ] }),
+        /* @__PURE__ */ jsx("p", { children: "In this way, only HTML files will be generated. A trully static website!" })
+      ] }),
       /* @__PURE__ */ jsx("hr", {}),
       /* @__PURE__ */ jsxs("blockquote", { className: "card success", children: [
         /* @__PURE__ */ jsxs("p", { className: "group", children: [
