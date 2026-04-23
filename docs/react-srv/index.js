@@ -11,6 +11,7 @@ var REACT_HOOKS_URL = "https://react.dev/reference/react/hooks";
 var DEMO_SIMPLE_URL = "https://github.com/gobi-tools/react-srv/tree/main/demos/simple";
 var PAGE_PRODUCTION_URL = "./production.html";
 var PAGE_STATIC_URL = "./static.html";
+var PAGE_STATE_URL = "./state.html";
 var SSG_URL = "https://en.wikipedia.org/wiki/Static_site_generator";
 
 // docs-src/Index.tsx
@@ -261,7 +262,7 @@ export default function Page() {
             /* @__PURE__ */ jsx("a", { href: "", children: "Zustand" }),
             " to keep track of global state."
           ] }),
-          /* @__PURE__ */ jsx("p", { children: /* @__PURE__ */ jsx("a", { href: "", children: "Learn more" }) })
+          /* @__PURE__ */ jsx("p", { children: /* @__PURE__ */ jsx("a", { href: PAGE_STATE_URL, children: "Learn more" }) })
         ] }) })
       ] }) })
     ] })

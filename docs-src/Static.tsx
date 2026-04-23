@@ -1,17 +1,9 @@
-import { DEMO_STATIC_URL, PAGE_HOME_URL, PAGE_PRODUCTION_URL, PRODUCT_NAME, SSG_URL } from "./constants";
+import Header from "./components/Header";
+import { DEMO_STATIC_URL, PAGE_PRODUCTION_URL, PRODUCT_NAME, SSG_URL } from "./constants";
 
 export default function Static() {
   return <>
-    <header>
-      <nav>
-        <ul>
-          <li>
-            <a href={PAGE_HOME_URL}>Home</a>
-          </li>
-        </ul>
-      </nav>
-
-    </header>
+    <Header/>
     <main>
       <section>
         <h2>Static site generation (SSG)</h2>
@@ -49,8 +41,8 @@ react.prerender()`}</code></pre>
       <section>
         <h2>Disable hydration</h2>
         <p>
-          Prerendering, by default, generates both HTML and hydration JS. In this way statically generated 
-          websites can maintain most of the interactivity provided by React. 
+          Prerendering, by default, generates both HTML and hydration JS. In this way statically generated
+          websites can maintain most of the interactivity provided by React.
         </p>
         <p>
           If you don't want interactivity, you can disable hydration altogether:

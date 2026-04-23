@@ -1,8 +1,8 @@
-// docs-src/react-srv-hydrate-Document.tsx
+// docs-src/documents/react-srv-hydrate-Document.tsx
 import React from "https://esm.sh/react@19.2.0";
 import { hydrateRoot } from "https://esm.sh/react-dom@19.2.0/client";
 
-// docs-src/Document.tsx
+// docs-src/documents/Document.tsx
 import { jsx, jsxs } from "https://esm.sh/react@19.2.0/jsx-runtime";
 function Document({ title, children }) {
   return /* @__PURE__ */ jsxs("html", { lang: "en", children: [
@@ -19,7 +19,7 @@ function Document({ title, children }) {
   ] });
 }
 
-// docs-src/react-srv-hydrate-Document.tsx
+// docs-src/documents/react-srv-hydrate-Document.tsx
 var root = document.getElementById("root");
 if (!root) {
   throw new Error("react-srv: Could not find hydration root.");

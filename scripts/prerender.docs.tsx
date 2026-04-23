@@ -1,5 +1,5 @@
 import ReactSrv from '../src';
-import Document from "../docs-src/Document";
+import Document from "../docs-src/documents/Document";
 
 const srv = new ReactSrv({ 
   Document,

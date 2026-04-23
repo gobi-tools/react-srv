@@ -1,17 +1,9 @@
+import Header from "./components/Header";
 import { DEMO_PROD_URL, NGINX_URL, PAGE_HOME_URL, PRODUCT_NAME, REACT_HYDRATION_URL, REACT_RENDER_URL, TSX_URL } from "./constants";
 
 export default function Production() {
   return <>
-    <header>
-      <nav>
-        <ul>
-          <li>
-            <a href={PAGE_HOME_URL}>Home</a>
-          </li>
-        </ul>
-      </nav>
-
-    </header>
+    <Header />
     <main>
       <section>
         <h2>Anatomy of a request</h2>
@@ -82,7 +74,7 @@ react.prebundle()`}</code></pre>
         </figure>
         <p>
           Than you can execute via <a href={TSX_URL} target="_blank">tsx</a> (<code>tsx prebundle.ts</code>) or add it to your own build pipeline.
-          When successfull, it will write the compiled <code>.js</code> files in <code>./public/react-srv</code>. 
+          When successfull, it will write the compiled <code>.js</code> files in <code>./public/react-srv</code>.
         </p>
         <p>
           You can control the output path and name with the <code>outPath</code> and <code>outDir</code> config values:

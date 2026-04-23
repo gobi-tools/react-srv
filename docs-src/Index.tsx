@@ -1,4 +1,4 @@
-import { DEMO_SIMPLE_URL, PAGE_PRODUCTION_URL, PAGE_STATIC_URL, PRODUCT_NAME, REACT_COMPONENTS_URL, REACT_HOOKS_URL, REACT_PROPS_URL, REACT_URL, SSG_URL } from "./constants";
+import { DEMO_SIMPLE_URL, PAGE_PRODUCTION_URL, PAGE_STATE_URL, PAGE_STATIC_URL, PRODUCT_NAME, REACT_COMPONENTS_URL, REACT_HOOKS_URL, REACT_PROPS_URL, REACT_URL, SSG_URL } from "./constants";
 
 export default function Index() {
   return <>
@@ -253,7 +253,7 @@ export default function Page() {
                 track of global state.
               </p>
               <p>
-                <a href="">Learn more</a>
+                <a href={PAGE_STATE_URL}>Learn more</a>
               </p>
             </div>
           </div>

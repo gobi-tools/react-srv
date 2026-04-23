@@ -18,5 +18,6 @@ export const DEMO_STATIC_URL = 'https://github.com/gobi-tools/react-srv/tree/mai
 export const PAGE_HOME_URL = './index.html';
 export const PAGE_PRODUCTION_URL = './production.html';
 export const PAGE_STATIC_URL = './static.html';
+export const PAGE_STATE_URL = './state.html';
 
 export const SSG_URL = 'https://en.wikipedia.org/wiki/Static_site_generator';
