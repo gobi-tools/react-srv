@@ -1,4 +1,5 @@
-import { DEMO_SIMPLE_URL, PAGE_PRODUCTION_URL, PAGE_STATE_URL, PAGE_STATIC_URL, PRODUCT_NAME, REACT_COMPONENTS_URL, REACT_HOOKS_URL, REACT_PROPS_URL, REACT_URL, SSG_URL } from "./constants";
+import CGLogo from "./components/GHLogo";
+import { DEMO_SIMPLE_URL, PAGE_PRODUCTION_URL, PAGE_STATIC_URL, PRODUCT_NAME, REACT_COMPONENTS_URL, REACT_HOOKS_URL, REACT_PROPS_URL, REACT_URL, SSG_URL, SSR_URL } from "./constants";
 
 export default function Index() {
   return <>
@@ -11,7 +12,8 @@ export default function Index() {
         <p>
           <a href="https://github.com/gobi-tools/react-srv" target="_blank">
             <button>
-              <img src="GitHub_Invertocat_White.svg" alt="GitHub Logo" />
+              <CGLogo/>
+              {/* <img src="GitHub_Invertocat_White.svg" alt="GitHub Logo" /> */}
               <span>Source</span>
             </button>
           </a>
@@ -118,7 +120,7 @@ const react = new ReactSrv({ Document });`}</code></pre>
         <h2>Components</h2>
         <p>
           Just like in <a href={REACT_COMPONENTS_URL} target="_blanl">any React app</a>,
-          you can split a big page into multiple components.
+          you can split a large page into multiple components.
         </p>
         <figure>
           <pre><code>{`function Greeting() { 
@@ -219,11 +221,10 @@ export default function Page() {
           <div>
             <div className="card">
               <p>
-                <b>Ready for production</b>
+                <b>Production</b>
               </p>
               <p>
-                Look at best practices when
-                deploying {PRODUCT_NAME} to production.
+                Look at best practices for <a href={SSR_URL} target="_blank">server side rendering (SSR)</a> in production.
               </p>
               <p>
                 <a href={PAGE_PRODUCTION_URL}>Learn more</a>
@@ -240,20 +241,6 @@ export default function Page() {
               </p>
               <p>
                 <a href={PAGE_STATIC_URL}>Learn more</a>
-              </p>
-            </div>
-          </div>
-          <div>
-            <div className="card">
-              <p>
-                <b>Advanced state</b>
-              </p>
-              <p>
-                You can use libraries like <a href="">Zustand</a> to keep
-                track of global state.
-              </p>
-              <p>
-                <a href={PAGE_STATE_URL}>Learn more</a>
               </p>
             </div>
           </div>
