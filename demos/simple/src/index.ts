@@ -8,8 +8,8 @@ const port = 3000
 
 const react = new ReactSrv({ Document });
 
-app.get('/', (req, res) => {
-  const name = req.query['name'];
+app.get('/', (_, res) => {
+  const name = 'World';
   const html = react.render(Page, { name })
   return res.status(200).send(html);
 })

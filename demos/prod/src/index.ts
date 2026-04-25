@@ -7,7 +7,7 @@ app.use(express.static('public'));
 const port = 3000
 
 app.get('/', (req, res) => {
-  const name = req.query['name'];
+  const name = req.query['name'] ?? 'World';
   const html = react.render(Page, { name })
   return res.status(200).send(html);
 })
