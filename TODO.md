@@ -1,7 +1,8 @@
 Todos
 =====
 
-- [ ] plain JS integration
+- [x] plain JS integration
+- [ ] add docs for JS integration
 - [ ] test working with various React & React DOM versions
 - [ ] implement proper minification
 - [x] implement option to serve data w/o hydration, just HTML, for both static & dynamic rendering
