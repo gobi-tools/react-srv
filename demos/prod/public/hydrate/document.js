@@ -1,4 +1,4 @@
-// src/react-srv-hydrate-Document.tsx
+// src/react-srv-hydrate-Document.jsx
 import React from "https://esm.sh/react@19.2.0";
 import { hydrateRoot } from "https://esm.sh/react-dom@19.2.0/client";
 
@@ -15,7 +15,7 @@ function Document({ children }) {
   ] });
 }
 
-// src/react-srv-hydrate-Document.tsx
+// src/react-srv-hydrate-Document.jsx
 var root = document.getElementById("root");
 if (!root) {
   throw new Error("react-srv: Could not find hydration root.");

@@ -1,5 +1,5 @@
 import * as esbuild from "esbuild";
-import fs, { truncate } from "fs";
+import fs from "fs";
 import { rm } from "fs/promises";
 import path from "path";
 import React from "react";
@@ -62,9 +62,9 @@ export default class ReactSrv {
     const bundleFolder = this.getBundleFolderPath();
     await FileUtils.recreateFolder(bundleFolder);
 
-    const files = await FileUtils.getTSXTiles(this.config.srcPath);
+    const files = await FileUtils.getReactFiles(this.config.srcPath);
     for (const file of files) {
-      const pageName = FileUtils.getTSXName(file);
+      const pageName = FileUtils.getReactName(file);
       const rootId = 'root';
       const code = this.bundle({ pageName, rootId });
       const bundlePath = this.getBundleFilePath(pageName);
@@ -76,8 +76,11 @@ export default class ReactSrv {
   private bundle(params: { pageName: string; rootId: string }): string {
     const { pageName, rootId } = params;
 
-    const fileName = `${pageName}.tsx`;
-    const entryPath = this.findFileRecursive(this.config.srcPath, fileName);
+    const tsxName = `${pageName}.tsx`;
+    const tsxPath = this.findFileRecursive(this.config.srcPath, tsxName);
+    const jsxName = `${pageName}.tsx`;
+    const jsxPath = this.findFileRecursive(this.config.srcPath, jsxName);
+    const entryPath = tsxPath ?? jsxPath;
     const entryDir = path.dirname(entryPath);
     const entryBase = path.basename(entryPath);
 
@@ -103,8 +106,8 @@ export default class ReactSrv {
         }
       `,
         resolveDir: entryDir,
-        sourcefile: `react-srv-hydrate-${pageName}.tsx`,
-        loader: "tsx",
+        sourcefile: `react-srv-hydrate-${pageName}.jsx`,
+        loader: "jsx",
       },
       bundle: true,
       format: "esm",
@@ -170,9 +173,9 @@ export default class ReactSrv {
 
     const { srcPath: source, outPath: dest } = this.config;
 
-    const files = await FileUtils.getTSXTiles(source);
+    const files = await FileUtils.getReactFiles(source);
     for (const file of files) {
-      const pageName = FileUtils.getTSXName(file);
+      const pageName = FileUtils.getReactName(file);
       const outName = FileUtils.toKebabCase(pageName);
 
       const result = esbuild.buildSync({
@@ -274,12 +277,12 @@ class FileUtils {
     }
   }
 
-  static async getTSXTiles(dir: string): Promise<string[]> {
-    return await fg(`${dir}/**/*.tsx`);
+  static async getReactFiles(dir: string): Promise<string[]> {
+    return await fg(`${dir}/**/*.{tsx,jsx}`);
   }
 
-  static getTSXName(file: string): string {
-    return file.split('/').pop().replace('.tsx', '');
+  static getReactName(file: string): string {
+    return file.split('/').pop().replace('.tsx', '').replace('.jsx', '');
   }
 
   static toKebabCase(str: string): string {
