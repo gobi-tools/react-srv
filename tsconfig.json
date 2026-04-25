@@ -9,13 +9,14 @@
     "jsxImportSource": "react",
     "strict": false,
     "skipLibCheck": true,
-    "types": ["node"],
-    "rootDir": "src",
-    "outDir": "dist",
+    "types": [
+      "node"
+    ],
+    // "rootDir": "src",
+    // "outDir": "dist",
     "verbatimModuleSyntax": false,
     "noImplicitAny": false,
     "declaration": true,
     "declarationMap": true,
-  },
-  "include": ["src", "src/index.tsx"]
+  }
 }
