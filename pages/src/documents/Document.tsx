@@ -1,5 +1,5 @@
 /* only needed here ... */
-import React from "react";
+// import React from "react";
 
 export default function Document({ title, children }) {
   return (
@@ -14,6 +14,7 @@ export default function Document({ title, children }) {
         <meta name="color-scheme" content="light dark" />
 
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/gobi-tools/css-theme@refs/heads/main/dist/theme.scholar.min.css" />
+        <link rel="stylesheet" href="/css/custom.css" />
       </head>
       <body>
         {children}
