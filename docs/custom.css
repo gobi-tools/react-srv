@@ -1,0 +1,15 @@
+@font-face {
+  font-family: "FontWithASyntaxHighlighter";
+  src: url("./FontWithASyntaxHighlighter-Regular-Dark.woff2") format("woff2");
+}
+
+@media (prefers-color-scheme: light) {
+  @font-face {
+    font-family: "FontWithASyntaxHighlighter";
+    src: url("./FontWithASyntaxHighlighter-Regular-Light.woff2") format("woff2");
+  }
+}
+
+code {
+  font-family: "FontWithASyntaxHighlighter", monospace;
+}
