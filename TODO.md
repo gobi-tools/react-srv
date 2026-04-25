@@ -6,3 +6,5 @@ Todos
 - [ ] add cache buster to prod build
 - [ ] look into adding "nonce" field
 - [ ] plain JS integration
+- [ ] export a "prebundle" bin command
+- [ ] export a "prerender" bin command

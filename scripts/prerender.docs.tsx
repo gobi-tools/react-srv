@@ -1,9 +1,9 @@
 import ReactSrv from '../src';
-import Document from "../docs-src/documents/Document";
+import Document from "../pages/documents/Document";
 
 const srv = new ReactSrv({ 
   Document,
-  srcPath: './docs-src',
+  srcPath: './pages',
   outPath: './docs',
   hydrate: false,
 });
