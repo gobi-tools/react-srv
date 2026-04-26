@@ -5,7 +5,7 @@ const srv = new ReactSrv({
   Document,
   srcPath: './src',
   outPath: '../docs',
-  hydrate: false,
+  // hydrate: false,
 });
 
 srv.prerender();

@@ -1,5 +1,5 @@
 import Header from "./components/Header";
-import { DEMO_PROD_URL, NGINX_URL, PRODUCT_NAME, REACT_HYDRATION_URL, REACT_RENDER_URL, TSX_URL } from "./constants";
+import { DEMO_PROD_URL, NGINX_URL, PRODUCT_NAME, REACT_HYDRATION_URL, REACT_RENDER_URL } from "./constants";
 
 export default function Production() {
   return <>
@@ -17,7 +17,7 @@ export default function Production() {
   const name = req.query['name'];
   return res.status(200).send(react.render(Page, { name }));
 });`}</code></pre>
-          <figcaption>server.ts</figcaption>
+          {/* <figcaption>server.ts</figcaption> */}
         </figure>
         <p>
           ... there's a number of things {PRODUCT_NAME} does inside the <code>render</code> method:
@@ -36,13 +36,13 @@ export default function Production() {
   <script>... set initial props ...</script>
   <script type="module">... hydration script ... </script>
 </html>`}</code></pre>
-          <figcaption>react.render(Page)</figcaption>
+          {/* <figcaption>react.render(Page)</figcaption> */}
         </figure>
         <p>
           The static markup is created at runtime from the component - <code>{`<Page/>`}</code> - itself.
         </p>
         <p>
-          The hydration script is also created at runtime by reading the file - <code>{`Page.tsx`}</code> - from disk.
+          The hydration script is also created at runtime by reading the file - <code>{`Page.tsx`}</code> or <code>{`Page.jsx`}</code> - from disk.
         </p>
         <p>
           In order to know where to find the file, {PRODUCT_NAME} needs to know where to look. By defualt it looks in the <code>/src</code> folder.
@@ -53,7 +53,7 @@ export default function Production() {
   Document,
   srcPath: './input',
 });`}</code></pre>
-          <figcaption>server.ts</figcaption>
+          {/* <figcaption>server.ts</figcaption> */}
         </figure>
       </section>
 
@@ -67,15 +67,15 @@ export default function Production() {
           For production builds, it's always best to <b>prebundle</b> all the hydration scripts.
         </p>
         <p>
-          You can do so by creating a <code>prebundle.ts</code> script:
+          You can do so by creating a <code>prebundle.ts</code> or <code>prbundle.js</code> script:
         </p>
         <figure>
-          <pre><code>{`import { react } from '../src/server.ts';
+          <pre><code>{`// import the "react" instance 
 react.prebundle()`}</code></pre>
-          <figcaption>prebundle.ts</figcaption>
+          {/* <figcaption>prebundle.ts</figcaption> */}
         </figure>
         <p>
-          Than you can execute via <a href={TSX_URL} target="_blank">tsx</a> (<code>tsx prebundle.ts</code>) or add it to your own build pipeline.
+          Than you can execute directly or add it to your own build pipeline.
           When successfull, it will write the compiled <code>.js</code> files in <code>./public/react-srv</code>.
         </p>
         <p>
@@ -88,7 +88,7 @@ react.prebundle()`}</code></pre>
   outPath: './dist',    // ./public
   outDir: 'hydration',  // ./react-srv
 });`}</code></pre>
-          <figcaption>server.ts</figcaption>
+          {/* <figcaption>server.ts</figcaption> */}
         </figure>
         <details className="card">
           <summary>Notes on the output folder</summary>
@@ -98,7 +98,7 @@ react.prebundle()`}</code></pre>
           </p>
           <figure>
             <pre><code>{`app.use(express.static('public'));`}</code></pre>
-            <figcaption>server.ts</figcaption>
+            {/* <figcaption>server.ts</figcaption> */}
           </figure>
         </details>
       </section>
@@ -117,18 +117,18 @@ react.prebundle()`}</code></pre>
   outDir: 'hydration',
   isProd: process.env.NODE_ENV === 'production',
 });`}</code></pre>
-          <figcaption>server.ts</figcaption>
+          {/* <figcaption>server.ts</figcaption> */}
         </figure>
         <p>
-          When setup like this, {PRODUCT_NAME} will compile <code>.tsx</code> files on the go in test mode and serve pre-compiled <code>.js</code> files
+          When setup like this, {PRODUCT_NAME} will compile <code>.tsx</code> and <code>.jsx</code> files on the go in test mode and serve pre-compiled <code>.js</code> files
           from the bundle output folder in production model.
         </p>
         <details className="card">
           <summary>Small optimisation</summary>
           <p>
-            In <code>prebundle.ts</code> we've referenced the <code>react</code> instance created in <code>server.ts</code>.
-            This setup works but can be improved by creating a separate <code>react-srv.ts</code> (or any other name) file in which
-            we export the instance by default:
+            It's worthwhile to create the <code>ReactSrv</code> instance in one file and import it in 
+            your route definitions file or your prebundling script so as to avoid duplicating instances
+            that are harder to keep in sync.
           </p>
           <figure>
             <pre><code>{`export default new ReactSrv({
@@ -138,11 +138,8 @@ react.prebundle()`}</code></pre>
   outDir: 'hydration',
   isProd: process.env.NODE_ENV === 'production',
 });`}</code></pre>
-            <figcaption>react-srv.ts</figcaption>
+            {/* <figcaption>react-srv.ts</figcaption> */}
           </figure>
-          <p>
-            This also avoids having to create duplicate instances (one for the script, one for the server) and to keep them in sync.
-          </p>
         </details>
       </section>
 

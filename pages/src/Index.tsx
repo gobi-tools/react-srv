@@ -1,7 +1,7 @@
 import CGLogo from "./components/GHLogo";
-import Header from "./components/Header";
+import SetupSection from "./components/SetupSection";
 import { DEMO_SIMPLE_URL, PAGE_PRODUCTION_URL, PAGE_STATIC_URL, PRODUCT_NAME, REACT_COMPONENTS_URL, REACT_HOOKS_URL, REACT_PROPS_URL, REACT_URL, SSG_URL, SSR_URL } from "./constants";
-
+ 
 export default function Index() {
   return <>
     <header>
@@ -22,10 +22,9 @@ export default function Index() {
       </div>
     </header>
     <main>
-      {/* simplest demo */}
       <section>
         <p>
-          All you need to do is define a React component and save it in a <code>.tsx</code> file of the same name:
+          All you need to do is define a React component and save it in a <code>.tsx</code> or <code>.jsx</code> file of the same name:
         </p>
         <figure>
           <pre><code>{`export default function Page() {
@@ -33,7 +32,6 @@ export default function Index() {
     <h1>Hello, world!</h1>
   </>
 }`}</code></pre>
-          <figcaption>Page.tsx</figcaption>
         </figure>
         <p>
           And {PRODUCT_NAME} will render it as static HTML you can send down the wire:
@@ -46,40 +44,10 @@ app.get('/', (_, res) => {
   return res.status(200).send(react.render(Page));
 });
 `}</code></pre>
-          <figcaption>server.ts</figcaption>
         </figure>
       </section>
 
-      {/* install */}
-      <section>
-        <h2>Setup</h2>
-        <p>
-          First, install the latest versions of the <code>react-srv</code> library and <a href={REACT_URL} target="_blank">React</a>:
-        </p>
-        <figure>
-          <pre><code>{`npm i react-srv
-
-# install react & react-dom
-npm i react@19.2.0
-npm i react-dom@19.2.0
-npm i @types/react@19.2.0 --save-dev
-npm i @types/react-dom@19.2.0 --save-dev`}</code></pre>
-          <figcaption>install dependencies</figcaption>
-        </figure>
-        <p>
-          Then add the following entries to your <code>.tsconfig</code>
-        </p>
-        <figcaption>
-          <pre><code>{`{
-  "compilerOptions: {
-    ...
-    "jsx": "react-jsx",
-    "jsxImportSource": "react"
-  }
-}`}</code></pre>
-          <figcaption>tsconfig.json</figcaption>
-        </figcaption>
-      </section>
+      <SetupSection/>
 
       {/* documents */}
       <section>
@@ -99,16 +67,14 @@ npm i @types/react-dom@19.2.0 --save-dev`}</code></pre>
     </body>
   </html>
 }`}</code></pre>
-          <figcaption>Document.tsx</figcaption>
+          {/* <figcaption>Document definition</figcaption> */}
         </figure>
         <p>
           ... which you can reference when creating the <code>ReactSrv</code> instance:
         </p>
         <figure>
-          <pre><code>{`import Document from "./Document";
-
-const react = new ReactSrv({ Document });`}</code></pre>
-          <figcaption>server.ts</figcaption>
+          <pre><code>{`const react = new ReactSrv({ Document });`}</code></pre>
+          {/* <figcaption>server.ts</figcaption> */}
         </figure>
         <p>
           In this way you  can even have different documents for different routes, if you wish.
@@ -133,7 +99,7 @@ export default function Page() {
     <Greeting/>
   </>
 }`}</code></pre>
-          <figcaption>Page.tsx</figcaption>
+          {/* <figcaption>Page.tsx</figcaption> */}
         </figure>
       </section>
 
@@ -150,7 +116,7 @@ export default function Page() {
     <Greeting/>
   </>
 }`}</code></pre>
-          <figcaption>Page.tsx</figcaption>
+          {/* <figcaption>Page.tsx</figcaption> */}
         </figure>
         <p>
           ... and pass them to the rendering function.
@@ -160,7 +126,7 @@ export default function Page() {
   const name = req.query['name'];
   return res.status(200).send(react.render(Page, { name }));
 });`}</code></pre>
-          <figcaption>server.ts</figcaption>
+          {/* <figcaption>server.ts</figcaption> */}
         </figure>
       </section>
 
@@ -188,7 +154,7 @@ export default function Page() {
     </>
   }
 }`}</code></pre>
-          <figcaption>Page.tsx</figcaption>
+          {/* <figcaption>Page.tsx</figcaption> */}
         </figure>
       </section>
 

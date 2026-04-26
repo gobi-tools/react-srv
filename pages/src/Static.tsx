@@ -13,11 +13,11 @@ export default function Static() {
           {PRODUCT_NAME} can be used for direct static site generation (<a href={SSG_URL} target="_blank">SSG</a>).
           If you've read the section on <a href={PAGE_PRODUCTION_URL}>getting to production</a>, then you're already ninety percent there.
         </p>
-        <p>What you'll need is to create a new file. You can call it <code>prerender.ts</code></p>.
+        <p>
+          What you'll need is to create a new file. You can call it <code>prerender.ts</code> or <code>prerender.js</code>.
+        </p>
         <figure>
-          <pre><code>{`import ReactSrv from 'react-srv';
-import Document from './Document'; // if you want a custom document
-
+          <pre><code>{`
 const react = new ReactSrv({ 
   Document, 
   srcPath: './src',
@@ -25,18 +25,18 @@ const react = new ReactSrv({
   outDir: 'hydrate',
 });
 react.prerender()`}</code></pre>
-          <figcaption>prerender.ts</figcaption>
+          {/* <figcaption>prerender.ts</figcaption> */}
         </figure>
         <p>
           We setup the <code>react</code> instance in a familiar way:
         </p>
         <ul>
           <li>Set a custom HTML Document (or use the default one)</li>
-          <li>Tell the library where the source <code>.tsx</code> pages are</li>
+          <li>Tell the library where the source <code>.tsx</code> or <code>.jsx</code> pages are</li>
           <li>And where to output the resulting HTML and JS files</li>
         </ul>
         <p>
-          And that's it! All you need to do is run <code>tsx prerender.ts</code> to have a full, statically generated, website.
+          And that's it! All you need to do is execute the file to have a full, statically generated, website.
         </p>
       </section>
 
@@ -57,7 +57,7 @@ react.prerender()`}</code></pre>
   hydrate: false,
 });
 react.prerender()`}</code></pre>
-          <figcaption>prerender.ts</figcaption>
+          {/* <figcaption>prerender.ts</figcaption> */}
         </figure>
         <p>
           In this way, only HTML files will be generated. A trully static website!

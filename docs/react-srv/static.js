@@ -1,0 +1,150 @@
+// src/react-srv-hydrate-Static.jsx
+import React from "https://esm.sh/react@19.2.0";
+import { hydrateRoot } from "https://esm.sh/react-dom@19.2.0/client";
+
+// src/constants.ts
+var PRODUCT_NAME = "React Srv";
+var DEMO_STATIC_URL = "https://github.com/gobi-tools/react-srv/tree/main/demos/static";
+var PAGE_HOME_URL = "./index.html";
+var PAGE_PRODUCTION_URL = "./production.html";
+var SSG_URL = "https://en.wikipedia.org/wiki/Static_site_generator";
+
+// src/components/HomeIco.tsx
+import { jsx, jsxs } from "https://esm.sh/react@19.2.0/jsx-runtime";
+function HomeIco() {
+  return /* @__PURE__ */ jsxs(
+    "svg",
+    {
+      xmlns: "http://www.w3.org/2000/svg",
+      width: "24",
+      height: "24",
+      viewBox: "0 0 24 24",
+      fill: "none",
+      stroke: "currentColor",
+      strokeWidth: "2",
+      strokeLinecap: "round",
+      strokeLinejoin: "round",
+      children: [
+        /* @__PURE__ */ jsx("path", { d: "M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8" }),
+        /* @__PURE__ */ jsx("path", { d: "M3 10a2 2 0 0 1 .709-1.528l7-6a2 2 0 0 1 2.582 0l7 6A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" })
+      ]
+    }
+  );
+}
+
+// src/components/Header.tsx
+import { jsx as jsx2, jsxs as jsxs2 } from "https://esm.sh/react@19.2.0/jsx-runtime";
+function Header() {
+  return /* @__PURE__ */ jsx2("nav", { children: /* @__PURE__ */ jsx2("ul", { children: /* @__PURE__ */ jsx2("li", { children: /* @__PURE__ */ jsxs2("a", { href: PAGE_HOME_URL, children: [
+    /* @__PURE__ */ jsx2(HomeIco, {}),
+    /* @__PURE__ */ jsx2("span", { children: "Home" })
+  ] }) }) }) });
+}
+
+// src/Static.tsx
+import { Fragment, jsx as jsx3, jsxs as jsxs3 } from "https://esm.sh/react@19.2.0/jsx-runtime";
+function Static() {
+  return /* @__PURE__ */ jsxs3(Fragment, { children: [
+    /* @__PURE__ */ jsx3("header", { children: /* @__PURE__ */ jsx3(Header, {}) }),
+    /* @__PURE__ */ jsxs3("main", { children: [
+      /* @__PURE__ */ jsxs3("section", { children: [
+        /* @__PURE__ */ jsx3("h2", { children: "Static site generation (SSG)" }),
+        /* @__PURE__ */ jsxs3("p", { children: [
+          PRODUCT_NAME,
+          " can be used for direct static site generation (",
+          /* @__PURE__ */ jsx3("a", { href: SSG_URL, target: "_blank", children: "SSG" }),
+          "). If you've read the section on ",
+          /* @__PURE__ */ jsx3("a", { href: PAGE_PRODUCTION_URL, children: "getting to production" }),
+          ", then you're already ninety percent there."
+        ] }),
+        /* @__PURE__ */ jsxs3("p", { children: [
+          "What you'll need is to create a new file. You can call it ",
+          /* @__PURE__ */ jsx3("code", { children: "prerender.ts" }),
+          " or ",
+          /* @__PURE__ */ jsx3("code", { children: "prerender.js" }),
+          "."
+        ] }),
+        /* @__PURE__ */ jsx3("figure", { children: /* @__PURE__ */ jsx3("pre", { children: /* @__PURE__ */ jsx3("code", { children: `
+const react = new ReactSrv({ 
+  Document, 
+  srcPath: './src',
+  outPath: './public',
+  outDir: 'hydrate',
+});
+react.prerender()` }) }) }),
+        /* @__PURE__ */ jsxs3("p", { children: [
+          "We setup the ",
+          /* @__PURE__ */ jsx3("code", { children: "react" }),
+          " instance in a familiar way:"
+        ] }),
+        /* @__PURE__ */ jsxs3("ul", { children: [
+          /* @__PURE__ */ jsx3("li", { children: "Set a custom HTML Document (or use the default one)" }),
+          /* @__PURE__ */ jsxs3("li", { children: [
+            "Tell the library where the source ",
+            /* @__PURE__ */ jsx3("code", { children: ".tsx" }),
+            " or ",
+            /* @__PURE__ */ jsx3("code", { children: ".jsx" }),
+            " pages are"
+          ] }),
+          /* @__PURE__ */ jsx3("li", { children: "And where to output the resulting HTML and JS files" })
+        ] }),
+        /* @__PURE__ */ jsx3("p", { children: "And that's it! All you need to do is execute the file to have a full, statically generated, website." })
+      ] }),
+      /* @__PURE__ */ jsxs3("section", { children: [
+        /* @__PURE__ */ jsx3("h2", { children: "Disable hydration" }),
+        /* @__PURE__ */ jsx3("p", { children: "Prerendering, by default, generates both HTML and hydration JS. In this way statically generated websites can maintain most of the interactivity provided by React." }),
+        /* @__PURE__ */ jsx3("p", { children: "If you don't want interactivity, you can disable hydration altogether:" }),
+        /* @__PURE__ */ jsx3("figure", { children: /* @__PURE__ */ jsx3("pre", { children: /* @__PURE__ */ jsx3("code", { children: `const react = new ReactSrv({ 
+  Document, 
+  srcPath: './src',
+  outPath: './public',
+  hydrate: false,
+});
+react.prerender()` }) }) }),
+        /* @__PURE__ */ jsx3("p", { children: "In this way, only HTML files will be generated. A trully static website!" })
+      ] }),
+      /* @__PURE__ */ jsx3("hr", {}),
+      /* @__PURE__ */ jsxs3("blockquote", { className: "card success", children: [
+        /* @__PURE__ */ jsxs3("p", { className: "group", children: [
+          /* @__PURE__ */ jsxs3(
+            "svg",
+            {
+              xmlns: "http://www.w3.org/2000/svg",
+              width: "20",
+              height: "20",
+              viewBox: "0 0 24 24",
+              fill: "none",
+              stroke: "currentColor",
+              strokeWidth: "2",
+              strokeLinecap: "round",
+              strokeLinejoin: "round",
+              children: [
+                /* @__PURE__ */ jsx3("path", { d: "M9.671 4.136a2.34 2.34 0 0 1 4.659 0 2.34 2.34 0 0 0 3.319 1.915 2.34 2.34 0 0 1 2.33 4.033 2.34 2.34 0 0 0 0 3.831 2.34 2.34 0 0 1-2.33 4.033 2.34 2.34 0 0 0-3.319 1.915 2.34 2.34 0 0 1-4.659 0 2.34 2.34 0 0 0-3.32-1.915 2.34 2.34 0 0 1-2.33-4.033 2.34 2.34 0 0 0 0-3.831A2.34 2.34 0 0 1 6.35 6.051a2.34 2.34 0 0 0 3.319-1.915" }),
+                /* @__PURE__ */ jsx3("circle", { cx: "12", cy: "12", r: "3" })
+              ]
+            }
+          ),
+          /* @__PURE__ */ jsx3("b", { children: "Demo" })
+        ] }),
+        /* @__PURE__ */ jsxs3("p", { children: [
+          "Check out a statically generated site ",
+          /* @__PURE__ */ jsx3("a", { href: DEMO_STATIC_URL, target: "_blank", children: "here" }),
+          "."
+        ] })
+      ] })
+    ] })
+  ] });
+}
+
+// src/react-srv-hydrate-Static.jsx
+var root = document.getElementById("root");
+if (!root) {
+  throw new Error("react-srv: Could not find hydration root.");
+}
+if (!globalThis.__REACT_SRV_HYDRATED__) {
+  globalThis.__REACT_SRV_HYDRATED__ = true;
+  hydrateRoot(
+    root,
+    React.createElement(Static, globalThis.__INITIAL_PROPS__ || {})
+  );
+}

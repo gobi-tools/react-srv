@@ -1,0 +1,23 @@
+{
+  "name": "ssr-hydrate-demo",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "type": "commonjs",
+  "scripts": {
+    "start": "node src/server.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^5.1.0",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "react-srv": "file:../../lib/react-srv-0.0.47.tgz"
+  },
+  "devDependencies": {
+    "@babel/preset-react": "^7.28.5",
+    "@babel/register": "^7.28.3"
+  }
+}

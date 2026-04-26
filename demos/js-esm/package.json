@@ -1,0 +1,25 @@
+{
+  "name": "ssr-hydrate-demo",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "type": "module",
+  "scripts": {
+    "prebundle": "tsx scripts/prebundle.js",
+    "build": "npm run prebundle && cp -r src/ dist/",
+    "dev": "tsx src/server.js",
+    "start": "NODE_ENV=production tsx dist/server.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^5.1.0",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "react-srv": "file:../../lib/react-srv-0.0.47.tgz"
+  },
+  "devDependencies": {
+    "tsx": "^4.21.0"
+  }
+}
