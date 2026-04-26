@@ -1,13 +1,5 @@
-// Use CommonJS + @babel/register to allow requiring .jsx files on the server.
-require('@babel/register')({ extensions: ['.js', '.jsx'] });
-
 const express = require('express');
-const ReactSrv = require('react-srv').default;
-
-const react = new ReactSrv({
-  outPath: './public',
-  srcPath: './src',
-});
+const react = require('./react-srv.js');
 
 const Page = require('./pages/Page.jsx').default;
 
@@ -16,7 +8,8 @@ const app = express();
 app.use(express.static('public'));
 
 app.get('/', (req, res) => {
-  const html = react.render(Page);
+  const name = req.query['name'] ?? 'World';
+  const html = react.render(Page, { name })
   return res.status(200).send(html);
 });
 

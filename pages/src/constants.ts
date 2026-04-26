@@ -8,12 +8,13 @@ export const REACT_HYDRATION_URL = 'https://react.dev/reference/react-dom/client
 export const REACT_RENDER_URL = 'https://react.dev/reference/react-dom/server/renderToString';
 
 export const TSX_URL = 'https://github.com/privatenumber/tsx';
+export const BABEL_URL = 'https://babeljs.io/';
 
 export const NGINX_URL = 'https://nginx.org/';
 
 export const DEMO_TS_URL = 'https://github.com/gobi-tools/react-srv/tree/main/demos/ts';
-export const DEMO_JS_ESM_URL = 'https://github.com/gobi-tools/react-srv/tree/main/demos/esm';
-export const DEMO_JS_CJS_URL = 'https://github.com/gobi-tools/react-srv/tree/main/demos/cjs';
+export const DEMO_JS_ESM_URL = 'https://github.com/gobi-tools/react-srv/tree/main/demos/js-esm';
+export const DEMO_JS_CJS_URL = 'https://github.com/gobi-tools/react-srv/tree/main/demos/js-cjs';
 export const DEMO_STATIC_URL = 'https://github.com/gobi-tools/react-srv/tree/main/pages';
 export const DEMO_PROD_URL = 'https://github.com/gobi-tools/react-srv/tree/main/demos';
 

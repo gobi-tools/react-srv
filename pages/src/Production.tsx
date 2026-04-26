@@ -18,7 +18,6 @@ export default function Production() {
   const name = req.query['name'];
   return res.status(200).send(react.render(Page, { name }));
 });`}</code></pre>
-          {/* <figcaption>server.ts</figcaption> */}
         </figure>
         <p>
           ... there's a number of things {PRODUCT_NAME} does inside the <code>render</code> method:
@@ -37,7 +36,6 @@ export default function Production() {
   <script>... set initial props ...</script>
   <script type="module">... hydration script ... </script>
 </html>`}</code></pre>
-          {/* <figcaption>react.render(Page)</figcaption> */}
         </figure>
         <p>
           The static markup is created at runtime from the component - <code>{`<Page/>`}</code> - itself.
@@ -54,7 +52,6 @@ export default function Production() {
   Document,
   srcPath: './input',
 });`}</code></pre>
-          {/* <figcaption>server.ts</figcaption> */}
         </figure>
       </section>
 
@@ -73,7 +70,6 @@ export default function Production() {
         <figure>
           <pre><code>{`// import the "react" instance 
 react.prebundle()`}</code></pre>
-          {/* <figcaption>prebundle.ts</figcaption> */}
         </figure>
         <p>
           Than you can execute directly or add it to your own build pipeline.
@@ -89,7 +85,6 @@ react.prebundle()`}</code></pre>
   outPath: './dist',    // ./public
   outDir: 'hydration',  // ./react-srv
 });`}</code></pre>
-          {/* <figcaption>server.ts</figcaption> */}
         </figure>
         <details className="card">
           <summary>Notes on the output folder</summary>
@@ -99,7 +94,6 @@ react.prebundle()`}</code></pre>
           </p>
           <figure>
             <pre><code>{`app.use(express.static('public'));`}</code></pre>
-            {/* <figcaption>server.ts</figcaption> */}
           </figure>
         </details>
       </section>
@@ -118,7 +112,6 @@ react.prebundle()`}</code></pre>
   outDir: 'hydration',
   isProd: process.env.NODE_ENV === 'production',
 });`}</code></pre>
-          {/* <figcaption>server.ts</figcaption> */}
         </figure>
         <p>
           When setup like this, {PRODUCT_NAME} will compile <code>.tsx</code> and <code>.jsx</code> files on the go in test mode and serve pre-compiled <code>.js</code> files
@@ -139,7 +132,6 @@ react.prebundle()`}</code></pre>
   outDir: 'hydration',
   isProd: process.env.NODE_ENV === 'production',
 });`}</code></pre>
-            {/* <figcaption>react-srv.ts</figcaption> */}
           </figure>
         </details>
       </section>

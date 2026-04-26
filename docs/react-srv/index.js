@@ -17,8 +17,12 @@ var REACT_URL = "https://react.dev/";
 var REACT_COMPONENTS_URL = "https://react.dev/learn#components";
 var REACT_PROPS_URL = "https://react.dev/learn/passing-props-to-a-component";
 var REACT_HOOKS_URL = "https://react.dev/reference/react/hooks";
+var TSX_URL = "https://github.com/privatenumber/tsx";
+var BABEL_URL = "https://babeljs.io/";
 var DEMO_TS_URL = "https://github.com/gobi-tools/react-srv/tree/main/demos/ts";
-var DEMO_JS_ESM_URL = "https://github.com/gobi-tools/react-srv/tree/main/demos/esm";
+var DEMO_JS_ESM_URL = "https://github.com/gobi-tools/react-srv/tree/main/demos/js-esm";
+var DEMO_JS_CJS_URL = "https://github.com/gobi-tools/react-srv/tree/main/demos/js-cjs";
+var PAGE_HOME_URL = "./index.html";
 var PAGE_PRODUCTION_URL = "./production.html";
 var PAGE_STATIC_URL = "./static.html";
 var SSR_URL = "https://developer.mozilla.org/en-US/docs/Glossary/SSR";
@@ -55,11 +59,11 @@ import { Fragment, jsx as jsx3, jsxs as jsxs3 } from "https://esm.sh/react@19.2.
 function TypescriptSetup() {
   return /* @__PURE__ */ jsxs3(Fragment, { children: [
     /* @__PURE__ */ jsxs3("p", { children: [
-      "First, install the latest versions of the ",
-      /* @__PURE__ */ jsx3("code", { children: "react-srv" }),
-      " library and ",
+      "First, install the latest versions of ",
+      /* @__PURE__ */ jsx3("a", { href: PAGE_HOME_URL, children: "react-srv" }),
+      " and ",
       /* @__PURE__ */ jsx3("a", { href: REACT_URL, target: "_blank", children: "React" }),
-      ":"
+      "."
     ] }),
     /* @__PURE__ */ jsx3("figure", { children: /* @__PURE__ */ jsx3("pre", { children: /* @__PURE__ */ jsx3("code", { children: `npm i react-srv
     
@@ -71,8 +75,9 @@ npm i react-dom@19.2.0
 npm i @types/react@19.2.0 --save-dev
 npm i @types/react-dom@19.2.0 --save-dev` }) }) }),
     /* @__PURE__ */ jsxs3("p", { children: [
-      "Then add the following entries to your ",
-      /* @__PURE__ */ jsx3("code", { children: ".tsconfig" })
+      "Then, to make sure React is defined correctly at runtime, add the following entries to your ",
+      /* @__PURE__ */ jsx3("code", { children: "tsconfig.json" }),
+      " file."
     ] }),
     /* @__PURE__ */ jsx3("figure", { children: /* @__PURE__ */ jsx3("pre", { children: /* @__PURE__ */ jsx3("code", { children: `{
   "compilerOptions: {
@@ -97,11 +102,13 @@ npm i @types/react-dom@19.2.0 --save-dev` }) }) }),
 function JSESMSetup() {
   return /* @__PURE__ */ jsxs3(Fragment, { children: [
     /* @__PURE__ */ jsxs3("p", { children: [
-      "First, install the latest versions of the ",
-      /* @__PURE__ */ jsx3("code", { children: "react-srv" }),
-      " library and ",
+      "First, install the latest versions of ",
+      /* @__PURE__ */ jsx3("a", { href: PAGE_HOME_URL, children: "react-srv" }),
+      ", ",
       /* @__PURE__ */ jsx3("a", { href: REACT_URL, target: "_blank", children: "React" }),
-      ":"
+      " and ",
+      /* @__PURE__ */ jsx3("a", { href: TSX_URL, target: "_blank", children: "tsx" }),
+      "."
     ] }),
     /* @__PURE__ */ jsx3("figure", { children: /* @__PURE__ */ jsx3("pre", { children: /* @__PURE__ */ jsx3("code", { children: `npm i react-srv
     
@@ -112,14 +119,14 @@ npm i react-dom@19.2.0
 # install tsx as a dev dependency
 npm i tsx --save-dev` }) }) }),
     /* @__PURE__ */ jsxs3("p", { children: [
-      "To make sure React is provided at runtime correctly, you'll need to add a ",
+      "Then, to make sure React is defined correctly at runtime, you'll need to add a ",
       /* @__PURE__ */ jsx3("code", { children: "tsconfig.json" }),
-      " file"
+      " file."
     ] }),
     /* @__PURE__ */ jsx3("figure", { children: /* @__PURE__ */ jsx3("pre", { children: /* @__PURE__ */ jsx3("code", { children: `{
   "compilerOptions": {
     "jsx": "react-jsx",
-    "jsxImportSource": "react",
+    "jsxImportSource": "react", // optional
     "allowJs": true
   }
 }` }) }) }),
@@ -144,6 +151,62 @@ npm i tsx --save-dev` }) }) }),
     ] })
   ] });
 }
+function JSCJSSetup() {
+  return /* @__PURE__ */ jsxs3(Fragment, { children: [
+    /* @__PURE__ */ jsxs3("p", { children: [
+      "First, install the latest versions of ",
+      /* @__PURE__ */ jsx3("a", { href: PAGE_HOME_URL, children: "react-srv" }),
+      ", ",
+      /* @__PURE__ */ jsx3("a", { href: REACT_URL, target: "_blank", children: "React" }),
+      " and ",
+      /* @__PURE__ */ jsx3("a", { href: BABEL_URL, target: "_blank", children: "babel" }),
+      "."
+    ] }),
+    /* @__PURE__ */ jsx3("figure", { children: /* @__PURE__ */ jsx3("pre", { children: /* @__PURE__ */ jsx3("code", { children: `npm i react-srv
+    
+# install react & react-dom
+npm i react@19.2.0
+npm i react-dom@19.2.0
+
+# install a few babel dependencies
+npm i @babel/preset-react --save-dev
+npm i @babel/register --save-dev` }) }) }),
+    /* @__PURE__ */ jsxs3("p", { children: [
+      "Then, add a ",
+      /* @__PURE__ */ jsx3("code", { children: ".babelrc" }),
+      " file where we'll setup the react preset so the server recognises JSX syntax."
+    ] }),
+    /* @__PURE__ */ jsx3("figure", { children: /* @__PURE__ */ jsx3("pre", { children: /* @__PURE__ */ jsx3("code", { children: `{
+  "presets": ["@babel/preset-react"]
+}
+` }) }) }),
+    /* @__PURE__ */ jsxs3("p", { children: [
+      "Then, in the same file where you setup ",
+      /* @__PURE__ */ jsx3("code", { children: "ReactSrv" }),
+      ", make sure you add the following line."
+    ] }),
+    /* @__PURE__ */ jsx3("figure", { children: /* @__PURE__ */ jsx3("pre", { children: /* @__PURE__ */ jsx3("code", { children: `require('@babel/register')({ extensions: ['.js', '.jsx'] });` }) }) }),
+    /* @__PURE__ */ jsxs3("p", { children: [
+      "This will allow other files to ",
+      /* @__PURE__ */ jsx3("code", { children: "require" }),
+      " files with the ",
+      /* @__PURE__ */ jsx3("code", { children: ".jsx" }),
+      " extension:"
+    ] }),
+    /* @__PURE__ */ jsx3("figure", { children: /* @__PURE__ */ jsx3("pre", { children: /* @__PURE__ */ jsx3("code", { children: `const Page = require('./pages/Page.jsx').default;` }) }) }),
+    /* @__PURE__ */ jsxs3("blockquote", { className: "card success", children: [
+      /* @__PURE__ */ jsxs3("p", { className: "group", children: [
+        /* @__PURE__ */ jsx3(SettingsIcon, {}),
+        /* @__PURE__ */ jsx3("b", { children: "Demo" })
+      ] }),
+      /* @__PURE__ */ jsxs3("p", { children: [
+        "Check out a fully setup CommonJS Javascript project ",
+        /* @__PURE__ */ jsx3("a", { href: DEMO_JS_CJS_URL, target: "_blank", children: "here" }),
+        "."
+      ] })
+    ] })
+  ] });
+}
 function SetupSection() {
   const [environment, selectEnvironment] = useState("ts");
   return /* @__PURE__ */ jsxs3("section", { children: [
@@ -156,7 +219,8 @@ function SetupSection() {
     ] }) }),
     /* @__PURE__ */ jsx3("br", {}),
     environment === "ts" && /* @__PURE__ */ jsx3(TypescriptSetup, {}),
-    environment === "js-esm" && /* @__PURE__ */ jsx3(JSESMSetup, {})
+    environment === "js-esm" && /* @__PURE__ */ jsx3(JSESMSetup, {}),
+    environment === "js-cjs" && /* @__PURE__ */ jsx3(JSCJSSetup, {})
   ] });
 }
 

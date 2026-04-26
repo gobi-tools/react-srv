@@ -26,7 +26,6 @@ const react = new ReactSrv({
   outDir: 'hydrate',
 });
 react.prerender()`}</code></pre>
-          {/* <figcaption>prerender.ts</figcaption> */}
         </figure>
         <p>
           We setup the <code>react</code> instance in a familiar way:
@@ -58,7 +57,6 @@ react.prerender()`}</code></pre>
   hydrate: false,
 });
 react.prerender()`}</code></pre>
-          {/* <figcaption>prerender.ts</figcaption> */}
         </figure>
         <p>
           In this way, only HTML files will be generated. A trully static website!

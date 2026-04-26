@@ -1,4 +1,4 @@
-import { DEMO_JS_ESM_URL, DEMO_TS_URL, REACT_URL } from "../constants";
+import { BABEL_URL, DEMO_JS_CJS_URL, DEMO_JS_ESM_URL, DEMO_TS_URL, PAGE_HOME_URL, REACT_URL, TSX_URL } from "../constants";
 import { useState } from "react";
 import SettingsIcon from "./SettingsIcon";
 
@@ -7,7 +7,7 @@ type TEnvironment = 'ts' | 'js-esm' | 'js-cjs';
 function TypescriptSetup() {
   return <>
     <p>
-      First, install the latest versions of the <code>react-srv</code> library and <a href={REACT_URL} target="_blank">React</a>:
+      First, install the latest versions of <a href={PAGE_HOME_URL}>react-srv</a> and <a href={REACT_URL} target="_blank">React</a>.
     </p>
     <figure>
       <pre><code>{`npm i react-srv
@@ -21,7 +21,7 @@ npm i @types/react@19.2.0 --save-dev
 npm i @types/react-dom@19.2.0 --save-dev`}</code></pre>
     </figure>
     <p>
-      Then add the following entries to your <code>.tsconfig</code>
+      Then, to make sure React is defined correctly at runtime, add the following entries to your <code>tsconfig.json</code> file.
     </p>
     <figure>
       <pre><code>{`{
@@ -47,7 +47,7 @@ npm i @types/react-dom@19.2.0 --save-dev`}</code></pre>
 function JSESMSetup() {
   return <>
     <p>
-      First, install the latest versions of the <code>react-srv</code> library and <a href={REACT_URL} target="_blank">React</a>:
+      First, install the latest versions of <a href={PAGE_HOME_URL}>react-srv</a>, <a href={REACT_URL} target="_blank">React</a> and <a href={TSX_URL} target="_blank">tsx</a>.
     </p>
     <figure>
       <pre><code>{`npm i react-srv
@@ -60,7 +60,7 @@ npm i react-dom@19.2.0
 npm i tsx --save-dev`}</code></pre>
     </figure>
     <p>
-      To make sure React is provided at runtime correctly, you'll need to add a <code>tsconfig.json</code> file
+      Then, to make sure React is defined correctly at runtime, you'll need to add a <code>tsconfig.json</code> file.
     </p>
     <figure>
       <pre><code>{`{
@@ -84,6 +84,55 @@ npm i tsx --save-dev`}</code></pre>
       </p>
       <p>
         Check out a fully setup ESM Javascript project <a href={DEMO_JS_ESM_URL} target="_blank">here</a>.
+      </p>
+    </blockquote>
+  </>
+}
+
+function JSCJSSetup() {
+  return <>
+    <p>
+      First, install the latest versions of <a href={PAGE_HOME_URL}>react-srv</a>, <a href={REACT_URL} target="_blank">React</a> and <a href={BABEL_URL} target="_blank">babel</a>.
+    </p>
+    <figure>
+      <pre><code>{`npm i react-srv
+    
+# install react & react-dom
+npm i react@19.2.0
+npm i react-dom@19.2.0
+
+# install a few babel dependencies
+npm i @babel/preset-react --save-dev
+npm i @babel/register --save-dev`}</code></pre>
+    </figure>
+    <p>
+      Then, add a <code>.babelrc</code> file where we'll setup the react preset so the server recognises JSX syntax.
+    </p>
+    <figure>
+      <pre><code>{`{
+  "presets": ["@babel/preset-react"]
+}
+`}</code></pre>
+    </figure>
+    <p>
+      Then, in the same file where you setup <code>ReactSrv</code>, make sure you add the following line.
+    </p>
+    <figure>
+      <pre><code>{`require('@babel/register')({ extensions: ['.js', '.jsx'] });`}</code></pre>
+    </figure>
+    <p>
+      This will allow other files to <code>require</code> files with the <code>.jsx</code> extension:
+    </p>
+    <figure>
+      <pre><code>{`const Page = require('./pages/Page.jsx').default;`}</code></pre>
+    </figure>
+    <blockquote className="card success">
+      <p className="group">
+        <SettingsIcon />
+        <b>Demo</b>
+      </p>
+      <p>
+        Check out a fully setup CommonJS Javascript project <a href={DEMO_JS_CJS_URL} target="_blank">here</a>.
       </p>
     </blockquote>
   </>
@@ -114,6 +163,7 @@ export default function SetupSection() {
       <br />
       {environment === 'ts' && <TypescriptSetup />}
       {environment === 'js-esm' && <JSESMSetup />}
+      {environment === 'js-cjs' && <JSCJSSetup />}
     </section>
   )
 }

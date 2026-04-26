@@ -5,7 +5,10 @@
   "main": "server.js",
   "type": "commonjs",
   "scripts": {
-    "start": "node src/server.js"
+    "prebundle": "node scripts/prebundle.js",
+    "build": "npm run prebundle && cp -r src/ dist/",
+    "dev": "node src/server.js",
+    "start": "NODE_ENV=production node dist/server.js"
   },
   "keywords": [],
   "author": "",
