@@ -24,7 +24,7 @@ export default function Index() {
     <main>
       <section>
         <p>
-          All you need to do is define a React component and save it in a <code>.tsx</code> or <code>.jsx</code> file of the same name:
+          All you need to do is define a React component as a default export of a <code>.tsx</code> or <code>.jsx</code> file of the same name:
         </p>
         <figure>
           <pre><code>{`export default function Page() {

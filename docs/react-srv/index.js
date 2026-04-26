@@ -240,7 +240,7 @@ function Index() {
     /* @__PURE__ */ jsxs4("main", { children: [
       /* @__PURE__ */ jsxs4("section", { children: [
         /* @__PURE__ */ jsxs4("p", { children: [
-          "All you need to do is define a React component and save it in a ",
+          "All you need to do is define a React component as a default export of a ",
           /* @__PURE__ */ jsx4("code", { children: ".tsx" }),
           " or ",
           /* @__PURE__ */ jsx4("code", { children: ".jsx" }),
