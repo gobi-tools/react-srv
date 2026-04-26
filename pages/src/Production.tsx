@@ -44,7 +44,7 @@ export default function Production() {
           The hydration script is also created at runtime by reading the file - <code>{`Page.tsx`}</code> or <code>{`Page.jsx`}</code> - from disk.
         </p>
         <p>
-          In order to know where to find the file, {PRODUCT_NAME} needs to know where to look. By defualt it looks in the <code>/src</code> folder.
+          In order to know where to find the file, {PRODUCT_NAME} needs to know where to look. By default it looks in the <code>/src</code> folder.
           This can be changed by specifying the <code>srcPath</code> parameter when initialising the shared object.
         </p>
         <figure>

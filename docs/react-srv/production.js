@@ -119,7 +119,7 @@ function Production() {
         /* @__PURE__ */ jsxs4("p", { children: [
           "In order to know where to find the file, ",
           PRODUCT_NAME,
-          " needs to know where to look. By defualt it looks in the ",
+          " needs to know where to look. By default it looks in the ",
           /* @__PURE__ */ jsx4("code", { children: "/src" }),
           " folder. This can be changed by specifying the ",
           /* @__PURE__ */ jsx4("code", { children: "srcPath" }),
