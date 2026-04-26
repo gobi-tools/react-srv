@@ -1,6 +1,6 @@
-import CGLogo from "./components/GHLogo";
+import GitHubIcon from "./components/GitHubIcon";
 import SetupSection from "./components/SetupSection";
-import { DEMO_SIMPLE_URL, PAGE_PRODUCTION_URL, PAGE_STATIC_URL, PRODUCT_NAME, REACT_COMPONENTS_URL, REACT_HOOKS_URL, REACT_PROPS_URL, REACT_URL, SSG_URL, SSR_URL } from "./constants";
+import { DEMO_SIMPLE_URL, PAGE_PRODUCTION_URL, PAGE_STATIC_URL, PRODUCT_NAME, REACT_COMPONENTS_URL, REACT_HOOKS_URL, REACT_PROPS_URL, SSG_URL, SSR_URL } from "./constants";
  
 export default function Index() {
   return <>
@@ -13,7 +13,7 @@ export default function Index() {
         <p>
           <a href="https://github.com/gobi-tools/react-srv" target="_blank">
             <button>
-              <CGLogo />
+              <GitHubIcon />
               <span>Source</span>
             </button>
           </a>
@@ -47,8 +47,6 @@ app.get('/', (_, res) => {
         </figure>
       </section>
 
-      <SetupSection/>
-
       {/* documents */}
       <section>
         <h2>Documents</h2>
@@ -67,14 +65,12 @@ app.get('/', (_, res) => {
     </body>
   </html>
 }`}</code></pre>
-          {/* <figcaption>Document definition</figcaption> */}
         </figure>
         <p>
           ... which you can reference when creating the <code>ReactSrv</code> instance:
         </p>
         <figure>
           <pre><code>{`const react = new ReactSrv({ Document });`}</code></pre>
-          {/* <figcaption>server.ts</figcaption> */}
         </figure>
         <p>
           In this way you  can even have different documents for different routes, if you wish.
@@ -99,7 +95,6 @@ export default function Page() {
     <Greeting/>
   </>
 }`}</code></pre>
-          {/* <figcaption>Page.tsx</figcaption> */}
         </figure>
       </section>
 
@@ -116,7 +111,6 @@ export default function Page() {
     <Greeting/>
   </>
 }`}</code></pre>
-          {/* <figcaption>Page.tsx</figcaption> */}
         </figure>
         <p>
           ... and pass them to the rendering function.
@@ -126,7 +120,6 @@ export default function Page() {
   const name = req.query['name'];
   return res.status(200).send(react.render(Page, { name }));
 });`}</code></pre>
-          {/* <figcaption>server.ts</figcaption> */}
         </figure>
       </section>
 
@@ -154,33 +147,12 @@ export default function Page() {
     </>
   }
 }`}</code></pre>
-          {/* <figcaption>Page.tsx</figcaption> */}
         </figure>
       </section>
-
+      
+      <SetupSection/>
+      
       <hr />
-
-      <blockquote className="card success">
-        <p className="group">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="20"
-            height="20"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round">
-            <path d="M9.671 4.136a2.34 2.34 0 0 1 4.659 0 2.34 2.34 0 0 0 3.319 1.915 2.34 2.34 0 0 1 2.33 4.033 2.34 2.34 0 0 0 0 3.831 2.34 2.34 0 0 1-2.33 4.033 2.34 2.34 0 0 0-3.319 1.915 2.34 2.34 0 0 1-4.659 0 2.34 2.34 0 0 0-3.32-1.915 2.34 2.34 0 0 1-2.33-4.033 2.34 2.34 0 0 0 0-3.831A2.34 2.34 0 0 1 6.35 6.051a2.34 2.34 0 0 0 3.319-1.915" />
-            <circle cx="12" cy="12" r="3" />
-          </svg>
-          <b>Demo</b>
-        </p>
-        <p>
-          Check out a simple demo <a href={DEMO_SIMPLE_URL} target="_blank">here</a>.
-        </p>
-      </blockquote>
 
       <section>
         <div className="row">

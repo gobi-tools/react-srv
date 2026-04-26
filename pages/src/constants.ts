@@ -11,6 +11,10 @@ export const TSX_URL = 'https://github.com/privatenumber/tsx';
 
 export const NGINX_URL = 'https://nginx.org/';
 
+export const DEMO_TS_URL = 'https://github.com/gobi-tools/react-srv/tree/main/demos/ts';
+export const DEMO_JS_ESM_URL = 'https://github.com/gobi-tools/react-srv/tree/main/demos/esm';
+export const DEMO_JS_CJS_URL = 'https://github.com/gobi-tools/react-srv/tree/main/demos/cjs';
+
 export const DEMO_SIMPLE_URL = 'https://github.com/gobi-tools/react-srv/tree/main/demos/simple';
 export const DEMO_PROD_URL = 'https://github.com/gobi-tools/react-srv/tree/main/demos/prod';
 export const DEMO_STATIC_URL = 'https://github.com/gobi-tools/react-srv/tree/main/demos/static';

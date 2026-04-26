@@ -1,9 +1,9 @@
 // src/pages/react-srv-hydrate-Page.jsx
-import React2 from "https://esm.sh/react@19.2.0";
+import React from "https://esm.sh/react@19.2.0";
 import { hydrateRoot } from "https://esm.sh/react-dom@19.2.0/client";
 
 // src/pages/Page.jsx
-import React, { useState } from "https://esm.sh/react@19.2.0";
+import { useState } from "https://esm.sh/react@19.2.0";
 import { Fragment, jsx, jsxs } from "https://esm.sh/react@19.2.0/jsx-runtime";
 function Greeting() {
   return /* @__PURE__ */ jsx("p", { children: "Today is a fine day!" });
@@ -36,6 +36,6 @@ if (!globalThis.__REACT_SRV_HYDRATED__) {
   globalThis.__REACT_SRV_HYDRATED__ = true;
   hydrateRoot(
     root,
-    React2.createElement(Page, globalThis.__INITIAL_PROPS__ || {})
+    React.createElement(Page, globalThis.__INITIAL_PROPS__ || {})
   );
 }

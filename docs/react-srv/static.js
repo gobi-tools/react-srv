@@ -9,9 +9,9 @@ var PAGE_HOME_URL = "./index.html";
 var PAGE_PRODUCTION_URL = "./production.html";
 var SSG_URL = "https://en.wikipedia.org/wiki/Static_site_generator";
 
-// src/components/HomeIco.tsx
+// src/components/HomeIcon.tsx
 import { jsx, jsxs } from "https://esm.sh/react@19.2.0/jsx-runtime";
-function HomeIco() {
+function HomeIcon() {
   return /* @__PURE__ */ jsxs(
     "svg",
     {
@@ -36,7 +36,7 @@ function HomeIco() {
 import { jsx as jsx2, jsxs as jsxs2 } from "https://esm.sh/react@19.2.0/jsx-runtime";
 function Header() {
   return /* @__PURE__ */ jsx2("nav", { children: /* @__PURE__ */ jsx2("ul", { children: /* @__PURE__ */ jsx2("li", { children: /* @__PURE__ */ jsxs2("a", { href: PAGE_HOME_URL, children: [
-    /* @__PURE__ */ jsx2(HomeIco, {}),
+    /* @__PURE__ */ jsx2(HomeIcon, {}),
     /* @__PURE__ */ jsx2("span", { children: "Home" })
   ] }) }) }) });
 }

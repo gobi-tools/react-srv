@@ -1,6 +1,3 @@
-/* only needed here ... */
-// import React from "react";
-
 export default function Document({ title, children }) {
   return (
     <html lang="en">

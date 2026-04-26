@@ -1,9 +1,8 @@
 // src/documents/react-srv-hydrate-Document.jsx
-import React2 from "https://esm.sh/react@19.2.0";
+import React from "https://esm.sh/react@19.2.0";
 import { hydrateRoot } from "https://esm.sh/react-dom@19.2.0/client";
 
 // src/documents/Document.jsx
-import React from "https://esm.sh/react@19.2.0";
 import { jsx, jsxs } from "https://esm.sh/react@19.2.0/jsx-runtime";
 function Document({ children }) {
   return /* @__PURE__ */ jsxs("html", { children: [
@@ -25,6 +24,6 @@ if (!globalThis.__REACT_SRV_HYDRATED__) {
   globalThis.__REACT_SRV_HYDRATED__ = true;
   hydrateRoot(
     root,
-    React2.createElement(Document, globalThis.__INITIAL_PROPS__ || {})
+    React.createElement(Document, globalThis.__INITIAL_PROPS__ || {})
   );
 }

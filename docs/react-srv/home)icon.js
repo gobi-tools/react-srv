@@ -1,10 +1,10 @@
-// src/components/react-srv-hydrate-HomeIco.jsx
+// src/components/react-srv-hydrate-HomeIcon.jsx
 import React from "https://esm.sh/react@19.2.0";
 import { hydrateRoot } from "https://esm.sh/react-dom@19.2.0/client";
 
-// src/components/HomeIco.tsx
+// src/components/HomeIcon.tsx
 import { jsx, jsxs } from "https://esm.sh/react@19.2.0/jsx-runtime";
-function HomeIco() {
+function HomeIcon() {
   return /* @__PURE__ */ jsxs(
     "svg",
     {
@@ -25,7 +25,7 @@ function HomeIco() {
   );
 }
 
-// src/components/react-srv-hydrate-HomeIco.jsx
+// src/components/react-srv-hydrate-HomeIcon.jsx
 var root = document.getElementById("root");
 if (!root) {
   throw new Error("react-srv: Could not find hydration root.");
@@ -34,6 +34,6 @@ if (!globalThis.__REACT_SRV_HYDRATED__) {
   globalThis.__REACT_SRV_HYDRATED__ = true;
   hydrateRoot(
     root,
-    React.createElement(HomeIco, globalThis.__INITIAL_PROPS__ || {})
+    React.createElement(HomeIcon, globalThis.__INITIAL_PROPS__ || {})
   );
 }

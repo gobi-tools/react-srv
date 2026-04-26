@@ -4,12 +4,12 @@
   "description": "",
   "license": "ISC",
   "author": "",
-  "main": "index.js",
+  "main": "server.js",
   "scripts": {
     "prebundle": "tsx scripts/prebundle.ts",
     "build": "tsc && npm run prebundle",
-    "dev": "tsx src/index.ts",
-    "start": "NODE_ENV=production node dist/index.js"
+    "dev": "tsx src/server.ts",
+    "start": "NODE_ENV=production node dist/server.js"
   },
   "dependencies": {
     "express": "^5.2.1",

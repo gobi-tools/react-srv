@@ -9,19 +9,7 @@ const react = new ReactSrv({});
 app.get(&#x27;/&#x27;, (_, res) =&gt; {
   return res.status(200).send(react.render(Page));
 });
-</code></pre></figure></section><section><h2>Setup</h2><p>Setup is slightly different based on the platform you&#x27;re running:</p><nav><ol><li aria-selected="true"><a>Typescript</a></li><li aria-selected="false"><a>Javascript (ESM)</a></li><li aria-selected="false"><a>Javascript (CJS)</a></li></ol></nav><br/><p>First, install the latest versions of the <code>react-srv</code> library and <a href="https://react.dev/" target="_blank">React</a>:</p><figure><pre><code>npm i react-srv
-    
-# install react &amp; react-dom
-npm i react@19.2.0
-npm i react-dom@19.2.0
-npm i @types/react@19.2.0 --save-dev
-npm i @types/react-dom@19.2.0 --save-dev</code></pre></figure><p>Then add the following entries to your <code>.tsconfig</code></p><figure><pre><code>{
-  &quot;compilerOptions: {
-    ...
-    &quot;jsx&quot;: &quot;react-jsx&quot;,
-    &quot;jsxImportSource&quot;: &quot;react&quot;
-  }
-}</code></pre></figure></section><section><h2>Documents</h2><p>React Srv<!-- --> will wrap all components in a default HTML document. You may create a custom one ...</p><figure><pre><code>export default function Document({ children }) {
+</code></pre></figure></section><section><h2>Documents</h2><p>React Srv<!-- --> will wrap all components in a default HTML document. You may create a custom one ...</p><figure><pre><code>export default function Document({ children }) {
   return &lt;html lang=&quot;en&quot;&gt;
     &lt;head&gt;
       &lt;title&gt;My document&lt;/title&gt;
@@ -64,4 +52,18 @@ export default function Page() {
       &lt;Button/&gt;
     &lt;/&gt;
   }
-}</code></pre></figure></section><hr/><blockquote class="card success"><p class="group"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.671 4.136a2.34 2.34 0 0 1 4.659 0 2.34 2.34 0 0 0 3.319 1.915 2.34 2.34 0 0 1 2.33 4.033 2.34 2.34 0 0 0 0 3.831 2.34 2.34 0 0 1-2.33 4.033 2.34 2.34 0 0 0-3.319 1.915 2.34 2.34 0 0 1-4.659 0 2.34 2.34 0 0 0-3.32-1.915 2.34 2.34 0 0 1-2.33-4.033 2.34 2.34 0 0 0 0-3.831A2.34 2.34 0 0 1 6.35 6.051a2.34 2.34 0 0 0 3.319-1.915"></path><circle cx="12" cy="12" r="3"></circle></svg><b>Demo</b></p><p>Check out a simple demo <a href="https://github.com/gobi-tools/react-srv/tree/main/demos/simple" target="_blank">here</a>.</p></blockquote><section><div class="row"><div><div class="card"><p><b>Production</b></p><p>Look at best practices for <a href="https://developer.mozilla.org/en-US/docs/Glossary/SSR" target="_blank">server side rendering (SSR)</a> in production.</p><p><a href="./production.html">Learn more</a></p></div></div><div><div class="card"><p><b>SSG</b></p><p>React Srv<!-- --> can directly output HTML for <a href="https://en.wikipedia.org/wiki/Static_site_generator" target="_blank">static site generation (SSG)</a>.</p><p><a href="./static.html">Learn more</a></p></div></div></div></section></main></div><script defer="" type="module" src="./react-srv/index.js"></script></body></html>
+}</code></pre></figure></section><section><h2>Setup</h2><p>Setup is slightly different based on the platform you&#x27;re running:</p><nav><ol><li aria-selected="true"><a>Typescript</a></li><li aria-selected="false"><a>Javascript (ESM)</a></li><li aria-selected="false"><a>Javascript (CJS)</a></li></ol></nav><br/><p>First, install the latest versions of the <code>react-srv</code> library and <a href="https://react.dev/" target="_blank">React</a>:</p><figure><pre><code>npm i react-srv
+    
+# install react &amp; react-dom
+npm i react@19.2.0
+npm i react-dom@19.2.0
+
+# optionally install the associated types
+npm i @types/react@19.2.0 --save-dev
+npm i @types/react-dom@19.2.0 --save-dev</code></pre></figure><p>Then add the following entries to your <code>.tsconfig</code></p><figure><pre><code>{
+  &quot;compilerOptions: {
+    ...
+    &quot;jsx&quot;: &quot;react-jsx&quot;,
+    &quot;jsxImportSource&quot;: &quot;react&quot;
+  }
+}</code></pre></figure><blockquote class="card success"><p class="group"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.671 4.136a2.34 2.34 0 0 1 4.659 0 2.34 2.34 0 0 0 3.319 1.915 2.34 2.34 0 0 1 2.33 4.033 2.34 2.34 0 0 0 0 3.831 2.34 2.34 0 0 1-2.33 4.033 2.34 2.34 0 0 0-3.319 1.915 2.34 2.34 0 0 1-4.659 0 2.34 2.34 0 0 0-3.32-1.915 2.34 2.34 0 0 1-2.33-4.033 2.34 2.34 0 0 0 0-3.831A2.34 2.34 0 0 1 6.35 6.051a2.34 2.34 0 0 0 3.319-1.915"></path><circle cx="12" cy="12" r="3"></circle></svg><b>Demo</b></p><p>Check out a fully setup TypeScript project <a href="https://github.com/gobi-tools/react-srv/tree/main/demos/ts" target="_blank">here</a>.</p></blockquote></section><hr/><section><div class="row"><div><div class="card"><p><b>Production</b></p><p>Look at best practices for <a href="https://developer.mozilla.org/en-US/docs/Glossary/SSR" target="_blank">server side rendering (SSR)</a> in production.</p><p><a href="./production.html">Learn more</a></p></div></div><div><div class="card"><p><b>SSG</b></p><p>React Srv<!-- --> can directly output HTML for <a href="https://en.wikipedia.org/wiki/Static_site_generator" target="_blank">static site generation (SSG)</a>.</p><p><a href="./static.html">Learn more</a></p></div></div></div></section></main></div><script defer="" type="module" src="./react-srv/index.js"></script></body></html>

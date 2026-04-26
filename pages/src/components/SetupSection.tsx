@@ -1,37 +1,92 @@
-import { REACT_URL } from "../constants";
+import { DEMO_JS_ESM_URL, DEMO_TS_URL, REACT_URL } from "../constants";
 import { useState } from "react";
+import SettingsIcon from "./SettingsIcon";
 
 type TEnvironment = 'ts' | 'js-esm' | 'js-cjs';
 
 function TypescriptSetup() {
-  return (
-    <>
-      <p>
-        First, install the latest versions of the <code>react-srv</code> library and <a href={REACT_URL} target="_blank">React</a>:
-      </p>
-      <figure>
-        <pre><code>{`npm i react-srv
+  return <>
+    <p>
+      First, install the latest versions of the <code>react-srv</code> library and <a href={REACT_URL} target="_blank">React</a>:
+    </p>
+    <figure>
+      <pre><code>{`npm i react-srv
     
 # install react & react-dom
 npm i react@19.2.0
 npm i react-dom@19.2.0
+
+# optionally install the associated types
 npm i @types/react@19.2.0 --save-dev
 npm i @types/react-dom@19.2.0 --save-dev`}</code></pre>
-      </figure>
-      <p>
-        Then add the following entries to your <code>.tsconfig</code>
-      </p>
-      <figure>
-        <pre><code>{`{
+    </figure>
+    <p>
+      Then add the following entries to your <code>.tsconfig</code>
+    </p>
+    <figure>
+      <pre><code>{`{
   "compilerOptions: {
     ...
     "jsx": "react-jsx",
     "jsxImportSource": "react"
   }
 }`}</code></pre>
-      </figure>
-    </>
-  )
+    </figure>
+    <blockquote className="card success">
+      <p className="group">
+        <SettingsIcon />
+        <b>Demo</b>
+      </p>
+      <p>
+        Check out a fully setup TypeScript project <a href={DEMO_TS_URL} target="_blank">here</a>.
+      </p>
+    </blockquote>
+  </>
+}
+
+function JSESMSetup() {
+  return <>
+    <p>
+      First, install the latest versions of the <code>react-srv</code> library and <a href={REACT_URL} target="_blank">React</a>:
+    </p>
+    <figure>
+      <pre><code>{`npm i react-srv
+    
+# install react & react-dom
+npm i react@19.2.0
+npm i react-dom@19.2.0
+
+# install tsx as a dev dependency
+npm i tsx --save-dev`}</code></pre>
+    </figure>
+    <p>
+      To make sure React is provided at runtime correctly, you'll need to add a <code>tsconfig.json</code> file
+    </p>
+    <figure>
+      <pre><code>{`{
+  "compilerOptions": {
+    "jsx": "react-jsx",
+    "jsxImportSource": "react",
+    "allowJs": true
+  }
+}`}</code></pre>
+    </figure>
+    <p>
+      Finally, you'll need to run your app with <code>tsx</code> so you avoid the <code className="error">Unknown file extension ".jsx"</code> error.
+    </p>
+    <figure>
+      <pre><code>{`tsx src/server.js`}</code></pre>
+    </figure>
+    <blockquote className="card success">
+      <p className="group">
+        <SettingsIcon />
+        <b>Demo</b>
+      </p>
+      <p>
+        Check out a fully setup ESM Javascript project <a href={DEMO_JS_ESM_URL} target="_blank">here</a>.
+      </p>
+    </blockquote>
+  </>
 }
 
 export default function SetupSection() {
@@ -57,7 +112,8 @@ export default function SetupSection() {
         </ol>
       </nav>
       <br />
-      {environment === 'ts' && <TypescriptSetup/>}
+      {environment === 'ts' && <TypescriptSetup />}
+      {environment === 'js-esm' && <JSESMSetup />}
     </section>
   )
 }
