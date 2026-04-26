@@ -157,7 +157,7 @@ export default class ReactSrv {
           <Component {...props} />
         </div>
         <script defer dangerouslySetInnerHTML={{ __html: `globalThis.__INITIAL_PROPS__ = ${safeProps};` }} />
-        {(isProd && hydrate) && <script defer type="module" src={this.getRelativeBundleFilePath(pageName)}></script>}
+        {(isProd && hydrate) && <script defer type="module" src={this.getPublicBundleFilePath(pageName)}></script>}
         {(!isProd && hydrate) && <script defer type="module" dangerouslySetInnerHTML={{ __html: this.bundle({ pageName, rootId }) }} />}
       </this.config.Document>
     );
@@ -249,6 +249,12 @@ export default class ReactSrv {
     const folder = this.getBundleFolderPath();
     const fp = FileUtils.toKebabCase(`${page}.js`);
     return path.join(folder, fp);
+  }
+
+  private getPublicBundleFilePath(page: string): string {
+    const folder = this.config.outDir;
+    const fp = FileUtils.toKebabCase(`${page}.js`);
+    return `/${folder}/${fp}`;
   }
 
   private getRelativeBundleFilePath(page: string): string {
