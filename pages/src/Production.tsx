@@ -1,4 +1,5 @@
 import Header from "./components/Header";
+import SettingsIcon from "./components/SettingsIcon";
 import { DEMO_PROD_URL, NGINX_URL, PRODUCT_NAME, REACT_HYDRATION_URL, REACT_RENDER_URL } from "./constants";
 
 export default function Production() {
@@ -176,23 +177,11 @@ react.prebundle()`}</code></pre>
 
       <blockquote className="card success">
         <p className="group">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="20"
-            height="20"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round">
-            <path d="M9.671 4.136a2.34 2.34 0 0 1 4.659 0 2.34 2.34 0 0 0 3.319 1.915 2.34 2.34 0 0 1 2.33 4.033 2.34 2.34 0 0 0 0 3.831 2.34 2.34 0 0 1-2.33 4.033 2.34 2.34 0 0 0-3.319 1.915 2.34 2.34 0 0 1-4.659 0 2.34 2.34 0 0 0-3.32-1.915 2.34 2.34 0 0 1-2.33-4.033 2.34 2.34 0 0 0 0-3.831A2.34 2.34 0 0 1 6.35 6.051a2.34 2.34 0 0 0 3.319-1.915" />
-            <circle cx="12" cy="12" r="3" />
-          </svg>
-          <b>Demo</b>
+          <SettingsIcon/>
+          <b>Demos</b>
         </p>
         <p>
-          Check out a production ready demo <a href={DEMO_PROD_URL} target="_blank">here</a>.
+          Check out production ready demos for Typescript and Javascript <a href={DEMO_PROD_URL} target="_blank">here</a>.
         </p>
       </blockquote>
     </main>

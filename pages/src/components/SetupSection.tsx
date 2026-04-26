@@ -66,7 +66,7 @@ npm i tsx --save-dev`}</code></pre>
       <pre><code>{`{
   "compilerOptions": {
     "jsx": "react-jsx",
-    "jsxImportSource": "react",
+    "jsxImportSource": "react", // optional
     "allowJs": true
   }
 }`}</code></pre>

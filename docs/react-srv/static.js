@@ -4,7 +4,7 @@ import { hydrateRoot } from "https://esm.sh/react-dom@19.2.0/client";
 
 // src/constants.ts
 var PRODUCT_NAME = "React Srv";
-var DEMO_STATIC_URL = "https://github.com/gobi-tools/react-srv/tree/main/demos/static";
+var DEMO_STATIC_URL = "https://github.com/gobi-tools/react-srv/tree/main/pages";
 var PAGE_HOME_URL = "./index.html";
 var PAGE_PRODUCTION_URL = "./production.html";
 var SSG_URL = "https://en.wikipedia.org/wiki/Static_site_generator";
@@ -41,30 +41,53 @@ function Header() {
   ] }) }) }) });
 }
 
+// src/components/SettingsIcon.tsx
+import { jsx as jsx3, jsxs as jsxs3 } from "https://esm.sh/react@19.2.0/jsx-runtime";
+function SettingsIcon() {
+  return /* @__PURE__ */ jsxs3(
+    "svg",
+    {
+      xmlns: "http://www.w3.org/2000/svg",
+      width: "20",
+      height: "20",
+      viewBox: "0 0 24 24",
+      fill: "none",
+      stroke: "currentColor",
+      strokeWidth: "2",
+      strokeLinecap: "round",
+      strokeLinejoin: "round",
+      children: [
+        /* @__PURE__ */ jsx3("path", { d: "M9.671 4.136a2.34 2.34 0 0 1 4.659 0 2.34 2.34 0 0 0 3.319 1.915 2.34 2.34 0 0 1 2.33 4.033 2.34 2.34 0 0 0 0 3.831 2.34 2.34 0 0 1-2.33 4.033 2.34 2.34 0 0 0-3.319 1.915 2.34 2.34 0 0 1-4.659 0 2.34 2.34 0 0 0-3.32-1.915 2.34 2.34 0 0 1-2.33-4.033 2.34 2.34 0 0 0 0-3.831A2.34 2.34 0 0 1 6.35 6.051a2.34 2.34 0 0 0 3.319-1.915" }),
+        /* @__PURE__ */ jsx3("circle", { cx: "12", cy: "12", r: "3" })
+      ]
+    }
+  );
+}
+
 // src/Static.tsx
-import { Fragment, jsx as jsx3, jsxs as jsxs3 } from "https://esm.sh/react@19.2.0/jsx-runtime";
+import { Fragment, jsx as jsx4, jsxs as jsxs4 } from "https://esm.sh/react@19.2.0/jsx-runtime";
 function Static() {
-  return /* @__PURE__ */ jsxs3(Fragment, { children: [
-    /* @__PURE__ */ jsx3("header", { children: /* @__PURE__ */ jsx3(Header, {}) }),
-    /* @__PURE__ */ jsxs3("main", { children: [
-      /* @__PURE__ */ jsxs3("section", { children: [
-        /* @__PURE__ */ jsx3("h2", { children: "Static site generation (SSG)" }),
-        /* @__PURE__ */ jsxs3("p", { children: [
+  return /* @__PURE__ */ jsxs4(Fragment, { children: [
+    /* @__PURE__ */ jsx4("header", { children: /* @__PURE__ */ jsx4(Header, {}) }),
+    /* @__PURE__ */ jsxs4("main", { children: [
+      /* @__PURE__ */ jsxs4("section", { children: [
+        /* @__PURE__ */ jsx4("h2", { children: "Static site generation (SSG)" }),
+        /* @__PURE__ */ jsxs4("p", { children: [
           PRODUCT_NAME,
           " can be used for direct static site generation (",
-          /* @__PURE__ */ jsx3("a", { href: SSG_URL, target: "_blank", children: "SSG" }),
+          /* @__PURE__ */ jsx4("a", { href: SSG_URL, target: "_blank", children: "SSG" }),
           "). If you've read the section on ",
-          /* @__PURE__ */ jsx3("a", { href: PAGE_PRODUCTION_URL, children: "getting to production" }),
+          /* @__PURE__ */ jsx4("a", { href: PAGE_PRODUCTION_URL, children: "getting to production" }),
           ", then you're already ninety percent there."
         ] }),
-        /* @__PURE__ */ jsxs3("p", { children: [
+        /* @__PURE__ */ jsxs4("p", { children: [
           "What you'll need is to create a new file. You can call it ",
-          /* @__PURE__ */ jsx3("code", { children: "prerender.ts" }),
+          /* @__PURE__ */ jsx4("code", { children: "prerender.ts" }),
           " or ",
-          /* @__PURE__ */ jsx3("code", { children: "prerender.js" }),
+          /* @__PURE__ */ jsx4("code", { children: "prerender.js" }),
           "."
         ] }),
-        /* @__PURE__ */ jsx3("figure", { children: /* @__PURE__ */ jsx3("pre", { children: /* @__PURE__ */ jsx3("code", { children: `
+        /* @__PURE__ */ jsx4("figure", { children: /* @__PURE__ */ jsx4("pre", { children: /* @__PURE__ */ jsx4("code", { children: `
 const react = new ReactSrv({ 
   Document, 
   srcPath: './src',
@@ -72,63 +95,46 @@ const react = new ReactSrv({
   outDir: 'hydrate',
 });
 react.prerender()` }) }) }),
-        /* @__PURE__ */ jsxs3("p", { children: [
+        /* @__PURE__ */ jsxs4("p", { children: [
           "We setup the ",
-          /* @__PURE__ */ jsx3("code", { children: "react" }),
+          /* @__PURE__ */ jsx4("code", { children: "react" }),
           " instance in a familiar way:"
         ] }),
-        /* @__PURE__ */ jsxs3("ul", { children: [
-          /* @__PURE__ */ jsx3("li", { children: "Set a custom HTML Document (or use the default one)" }),
-          /* @__PURE__ */ jsxs3("li", { children: [
+        /* @__PURE__ */ jsxs4("ul", { children: [
+          /* @__PURE__ */ jsx4("li", { children: "Set a custom HTML Document (or use the default one)" }),
+          /* @__PURE__ */ jsxs4("li", { children: [
             "Tell the library where the source ",
-            /* @__PURE__ */ jsx3("code", { children: ".tsx" }),
+            /* @__PURE__ */ jsx4("code", { children: ".tsx" }),
             " or ",
-            /* @__PURE__ */ jsx3("code", { children: ".jsx" }),
+            /* @__PURE__ */ jsx4("code", { children: ".jsx" }),
             " pages are"
           ] }),
-          /* @__PURE__ */ jsx3("li", { children: "And where to output the resulting HTML and JS files" })
+          /* @__PURE__ */ jsx4("li", { children: "And where to output the resulting HTML and JS files" })
         ] }),
-        /* @__PURE__ */ jsx3("p", { children: "And that's it! All you need to do is execute the file to have a full, statically generated, website." })
+        /* @__PURE__ */ jsx4("p", { children: "And that's it! All you need to do is execute the file to have a full, statically generated, website." })
       ] }),
-      /* @__PURE__ */ jsxs3("section", { children: [
-        /* @__PURE__ */ jsx3("h2", { children: "Disable hydration" }),
-        /* @__PURE__ */ jsx3("p", { children: "Prerendering, by default, generates both HTML and hydration JS. In this way statically generated websites can maintain most of the interactivity provided by React." }),
-        /* @__PURE__ */ jsx3("p", { children: "If you don't want interactivity, you can disable hydration altogether:" }),
-        /* @__PURE__ */ jsx3("figure", { children: /* @__PURE__ */ jsx3("pre", { children: /* @__PURE__ */ jsx3("code", { children: `const react = new ReactSrv({ 
+      /* @__PURE__ */ jsxs4("section", { children: [
+        /* @__PURE__ */ jsx4("h2", { children: "Disable hydration" }),
+        /* @__PURE__ */ jsx4("p", { children: "Prerendering, by default, generates both HTML and hydration JS. In this way statically generated websites can maintain most of the interactivity provided by React." }),
+        /* @__PURE__ */ jsx4("p", { children: "If you don't want interactivity, you can disable hydration altogether:" }),
+        /* @__PURE__ */ jsx4("figure", { children: /* @__PURE__ */ jsx4("pre", { children: /* @__PURE__ */ jsx4("code", { children: `const react = new ReactSrv({ 
   Document, 
   srcPath: './src',
   outPath: './public',
   hydrate: false,
 });
 react.prerender()` }) }) }),
-        /* @__PURE__ */ jsx3("p", { children: "In this way, only HTML files will be generated. A trully static website!" })
+        /* @__PURE__ */ jsx4("p", { children: "In this way, only HTML files will be generated. A trully static website!" })
       ] }),
-      /* @__PURE__ */ jsx3("hr", {}),
-      /* @__PURE__ */ jsxs3("blockquote", { className: "card success", children: [
-        /* @__PURE__ */ jsxs3("p", { className: "group", children: [
-          /* @__PURE__ */ jsxs3(
-            "svg",
-            {
-              xmlns: "http://www.w3.org/2000/svg",
-              width: "20",
-              height: "20",
-              viewBox: "0 0 24 24",
-              fill: "none",
-              stroke: "currentColor",
-              strokeWidth: "2",
-              strokeLinecap: "round",
-              strokeLinejoin: "round",
-              children: [
-                /* @__PURE__ */ jsx3("path", { d: "M9.671 4.136a2.34 2.34 0 0 1 4.659 0 2.34 2.34 0 0 0 3.319 1.915 2.34 2.34 0 0 1 2.33 4.033 2.34 2.34 0 0 0 0 3.831 2.34 2.34 0 0 1-2.33 4.033 2.34 2.34 0 0 0-3.319 1.915 2.34 2.34 0 0 1-4.659 0 2.34 2.34 0 0 0-3.32-1.915 2.34 2.34 0 0 1-2.33-4.033 2.34 2.34 0 0 0 0-3.831A2.34 2.34 0 0 1 6.35 6.051a2.34 2.34 0 0 0 3.319-1.915" }),
-                /* @__PURE__ */ jsx3("circle", { cx: "12", cy: "12", r: "3" })
-              ]
-            }
-          ),
-          /* @__PURE__ */ jsx3("b", { children: "Demo" })
+      /* @__PURE__ */ jsx4("hr", {}),
+      /* @__PURE__ */ jsxs4("blockquote", { className: "card success", children: [
+        /* @__PURE__ */ jsxs4("p", { className: "group", children: [
+          /* @__PURE__ */ jsx4(SettingsIcon, {}),
+          /* @__PURE__ */ jsx4("b", { children: "Demo" })
         ] }),
-        /* @__PURE__ */ jsxs3("p", { children: [
-          "Check out a statically generated site ",
-          /* @__PURE__ */ jsx3("a", { href: DEMO_STATIC_URL, target: "_blank", children: "here" }),
+        /* @__PURE__ */ jsxs4("p", { children: [
+          "The source for this documentation is a statically generated site. Check it out ",
+          /* @__PURE__ */ jsx4("a", { href: DEMO_STATIC_URL, target: "_blank", children: "here" }),
           "."
         ] })
       ] })

@@ -97,11 +97,6 @@ npm i @types/react-dom@19.2.0 --save-dev` }) }) }),
 function JSESMSetup() {
   return /* @__PURE__ */ jsxs3(Fragment, { children: [
     /* @__PURE__ */ jsxs3("p", { children: [
-      "Follow this guide if your project has ",
-      /* @__PURE__ */ jsx3("code", { children: `"type": "module"` }),
-      "."
-    ] }),
-    /* @__PURE__ */ jsxs3("p", { children: [
       "First, install the latest versions of the ",
       /* @__PURE__ */ jsx3("code", { children: "react-srv" }),
       " library and ",

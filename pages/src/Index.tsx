@@ -1,6 +1,6 @@
 import GitHubIcon from "./components/GitHubIcon";
 import SetupSection from "./components/SetupSection";
-import { DEMO_SIMPLE_URL, PAGE_PRODUCTION_URL, PAGE_STATIC_URL, PRODUCT_NAME, REACT_COMPONENTS_URL, REACT_HOOKS_URL, REACT_PROPS_URL, SSG_URL, SSR_URL } from "./constants";
+import { PAGE_PRODUCTION_URL, PAGE_STATIC_URL, PRODUCT_NAME, REACT_COMPONENTS_URL, REACT_HOOKS_URL, REACT_PROPS_URL, SSG_URL, SSR_URL } from "./constants";
  
 export default function Index() {
   return <>
@@ -151,7 +151,7 @@ export default function Page() {
       </section>
       
       <SetupSection/>
-      
+
       <hr />
 
       <section>
