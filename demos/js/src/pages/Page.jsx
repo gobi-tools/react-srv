@@ -1,4 +1,3 @@
-// src/pages/Page.jsx
 import React, { useState } from 'react';
 
 export default function Page({ name = 'friend' }) {

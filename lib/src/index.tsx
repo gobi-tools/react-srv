@@ -1,11 +1,14 @@
-import * as esbuild from "esbuild";
+// note/system imports
 import fs from "fs";
 import { rm } from "fs/promises";
 import path from "path";
+import { fileURLToPath } from "url";
+// react imports
 import React from "react";
 import { renderToString, renderToStaticMarkup } from "react-dom/server";
+// 3rd party dependencies
+import * as esbuild from "esbuild";
 import serialize from "serialize-javascript";
-import { fileURLToPath } from "url";
 import fg from "fast-glob";
 
 type TReactSrvConfig = {

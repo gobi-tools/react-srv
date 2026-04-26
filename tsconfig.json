@@ -12,8 +12,6 @@
     "types": [
       "node"
     ],
-    // "rootDir": "src",
-    // "outDir": "dist",
     "verbatimModuleSyntax": false,
     "noImplicitAny": false,
     "declaration": true,

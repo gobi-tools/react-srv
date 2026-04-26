@@ -3,7 +3,9 @@ import { DEMO_STATIC_URL, PAGE_PRODUCTION_URL, PRODUCT_NAME, SSG_URL } from "./c
 
 export default function Static() {
   return <>
-    <Header/>
+    <header>
+      <Header />
+    </header>
     <main>
       <section>
         <h2>Static site generation (SSG)</h2>

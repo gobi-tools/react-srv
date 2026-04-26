@@ -3,7 +3,9 @@ import { DEMO_PROD_URL, NGINX_URL, PRODUCT_NAME, REACT_HYDRATION_URL, REACT_REND
 
 export default function Production() {
   return <>
-    <Header />
+    <header>
+      <Header />
+    </header>
     <main>
       <section>
         <h2>Anatomy of a request</h2>
@@ -79,15 +81,15 @@ react.prebundle()`}</code></pre>
         <p>
           You can control the output path and name with the <code>outPath</code> and <code>outDir</code> config values:
         </p>
-        <figcaption>
+        <figure>
           <pre><code>{`const react = new ReactSrv({
   Document,
   srcPath: './input',
   outPath: './dist',    // ./public
   outDir: 'hydration',  // ./react-srv
 });`}</code></pre>
-          <figure>server.ts</figure>
-        </figcaption>
+          <figcaption>server.ts</figcaption>
+        </figure>
         <details className="card">
           <summary>Notes on the output folder</summary>
           <p>

@@ -1,4 +1,5 @@
 import CGLogo from "./components/GHLogo";
+import Header from "./components/Header";
 import { DEMO_SIMPLE_URL, PAGE_PRODUCTION_URL, PAGE_STATIC_URL, PRODUCT_NAME, REACT_COMPONENTS_URL, REACT_HOOKS_URL, REACT_PROPS_URL, REACT_URL, SSG_URL, SSR_URL } from "./constants";
 
 export default function Index() {
@@ -7,13 +8,12 @@ export default function Index() {
       <div className="hero align-center">
         <h1>{PRODUCT_NAME}</h1>
         <p>
-          {PRODUCT_NAME} is a small project that allows you to quickly serve React pages from an existing route.
+          Add React to your server side rendered or statically generated website.
         </p>
         <p>
           <a href="https://github.com/gobi-tools/react-srv" target="_blank">
             <button>
-              <CGLogo/>
-              {/* <img src="GitHub_Invertocat_White.svg" alt="GitHub Logo" /> */}
+              <CGLogo />
               <span>Source</span>
             </button>
           </a>

@@ -17,11 +17,7 @@
     "react-srv": "file:../../lib/react-srv-0.0.46.tgz"
   },
   "devDependencies": {
-    "@babel/core": "^7.28.5",
-    "@babel/preset-env": "^7.28.5",
     "@babel/preset-react": "^7.28.5",
-    "@babel/register": "^7.28.3",
-    "esbuild": "^0.25.11",
-    "nodemon": "^3.1.10"
+    "@babel/register": "^7.28.3"
   }
 }
