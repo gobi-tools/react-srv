@@ -1,12 +1,14 @@
 Todos
 =====
 
-- [x] plain JS integration
-- [ ] add docs for JS integration
+- [x] plain JS integration 
+  - [x] in ESM modules
+  - [x] in CommonJS modules
+- [x] add docs for JS integration
 - [ ] test working with various React & React DOM versions
 - [ ] handle various folders when outputting html or js (in case pages have duplicate names)
 - [ ] implement proper minification
-- [ ] when a page doesn't actually need React, we should not not to generate anything 
+- [ ] when a page doesn't actually need React, we should not need to generate anything 
 - [x] implement option to serve data w/o hydration, just HTML, for both static & dynamic rendering
 - [ ] add cache buster to prod build
 - [ ] look into adding "nonce" field

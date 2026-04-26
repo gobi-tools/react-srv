@@ -314,7 +314,7 @@ export default function Page() {
           /* @__PURE__ */ jsx4("a", { href: REACT_PROPS_URL, target: "_blank", children: "props" }),
           " ..."
         ] }),
-        /* @__PURE__ */ jsx4("figure", { children: /* @__PURE__ */ jsx4("pre", { children: /* @__PURE__ */ jsx4("code", { children: `export default function Page(props: { name: string }) {
+        /* @__PURE__ */ jsx4("figure", { children: /* @__PURE__ */ jsx4("pre", { children: /* @__PURE__ */ jsx4("code", { children: `export default function Page(props) {
   return <>
     <h1>Hello, {props.name}!</h1>
     <Greeting/>
@@ -346,7 +346,7 @@ export default function Page() {
 
   ...
 
-  export default function Page(props: { name: string }) {
+  export default function Page(props) {
     return <>
       <h1>Hello, {props.name}!</h1>
       <Greeting/>

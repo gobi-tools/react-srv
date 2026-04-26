@@ -105,7 +105,7 @@ export default function Page() {
           Pages and components don't need to be static. You can define any <a href={REACT_PROPS_URL} target="_blank">props</a> ...
         </p>
         <figure>
-          <pre><code>{`export default function Page(props: { name: string }) {
+          <pre><code>{`export default function Page(props) {
   return <>
     <h1>Hello, {props.name}!</h1>
     <Greeting/>
@@ -139,7 +139,7 @@ export default function Page() {
 
   ...
 
-  export default function Page(props: { name: string }) {
+  export default function Page(props) {
     return <>
       <h1>Hello, {props.name}!</h1>
       <Greeting/>
