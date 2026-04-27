@@ -206,7 +206,7 @@ export default class ReactSrv {
           <div id={rootId}>
             {React.createElement(Page)}
           </div>
-          {hydrate && <script defer type="module" src={this.getRelativeBundleFilePath(pageName)}></script>}
+          {hydrate && <script defer type="module" src={this.getPublicBundleFilePath(pageName)}></script>}
         </this.config.Document>
       );
       const html = hydrate ? renderToString(document) : renderToStaticMarkup(document);
