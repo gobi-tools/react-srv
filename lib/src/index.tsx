@@ -254,7 +254,7 @@ export default class ReactSrv {
   private getPublicBundleFilePath(page: string): string {
     const folder = this.config.outDir;
     const fp = FileUtils.toKebabCase(`${page}.js`);
-    return `/${folder}/${fp}`;
+    return `${folder}/${fp}`;
   }
 
   private getRelativeBundleFilePath(page: string): string {
