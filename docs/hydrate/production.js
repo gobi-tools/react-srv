@@ -1,4 +1,4 @@
-// src/react-srv-hydrate-Production.jsx
+// src/pages/react-srv-hydrate-Production.jsx
 import React from "https://esm.sh/react@19.2.0";
 import { hydrateRoot } from "https://esm.sh/react-dom@19.2.0/client";
 
@@ -8,7 +8,7 @@ var REACT_HYDRATION_URL = "https://react.dev/reference/react-dom/client/hydrateR
 var REACT_RENDER_URL = "https://react.dev/reference/react-dom/server/renderToString";
 var NGINX_URL = "https://nginx.org/";
 var DEMO_PROD_URL = "https://github.com/gobi-tools/react-srv/tree/main/demos";
-var PAGE_HOME_URL = "./index.html";
+var PAGE_HOME_URL = "/";
 
 // src/components/HomeIcon.tsx
 import { jsx, jsxs } from "https://esm.sh/react@19.2.0/jsx-runtime";
@@ -65,7 +65,7 @@ function SettingsIcon() {
   );
 }
 
-// src/Production.tsx
+// src/pages/Production.tsx
 import { Fragment, jsx as jsx4, jsxs as jsxs4 } from "https://esm.sh/react@19.2.0/jsx-runtime";
 function Production() {
   return /* @__PURE__ */ jsxs4(Fragment, { children: [
@@ -258,7 +258,7 @@ react.prebundle()` }) }) }),
   ] });
 }
 
-// src/react-srv-hydrate-Production.jsx
+// src/pages/react-srv-hydrate-Production.jsx
 var root = document.getElementById("root");
 if (!root) {
   throw new Error("react-srv: Could not find hydration root.");

@@ -1,6 +1,6 @@
-import Header from "./components/Header";
-import SettingsIcon from "./components/SettingsIcon";
-import { DEMO_STATIC_URL, PAGE_PRODUCTION_URL, PRODUCT_NAME, SSG_URL } from "./constants";
+import Header from "./../components/Header";
+import SettingsIcon from "./../components/SettingsIcon";
+import { DEMO_STATIC_URL, PAGE_PRODUCTION_URL, PRODUCT_NAME, SSG_URL } from "./../constants";
 
 export default function Static() {
   return <>

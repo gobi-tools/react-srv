@@ -9,7 +9,7 @@ var BABEL_URL = "https://babeljs.io/";
 var DEMO_TS_URL = "https://github.com/gobi-tools/react-srv/tree/main/demos/ts";
 var DEMO_JS_ESM_URL = "https://github.com/gobi-tools/react-srv/tree/main/demos/js-esm";
 var DEMO_JS_CJS_URL = "https://github.com/gobi-tools/react-srv/tree/main/demos/js-cjs";
-var PAGE_HOME_URL = "./index.html";
+var PAGE_HOME_URL = "/";
 
 // src/components/SetupSection.tsx
 import { useState } from "https://esm.sh/react@19.2.0";

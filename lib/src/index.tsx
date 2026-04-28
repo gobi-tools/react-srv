@@ -1,6 +1,5 @@
 // note/system imports
 import fs from "fs";
-import { rm } from "fs/promises";
 import path from "path";
 import { fileURLToPath } from "url";
 // react imports
@@ -55,22 +54,19 @@ export default class ReactSrv {
     FileUtils.validateDir(this.config.srcPath);
   }
 
-  async prebundle() {
+  prebundle() {
     if (!this.config.hydrate) {
       console.log(`Skipping pre-bundiling hydration scripts synce hydrate === ${this.config.hydrate}`);
       return;
     }
 
-    await this.prepOutDir();
-    const bundleFolder = this.getBundleFolderPath();
-    await FileUtils.recreateFolder(bundleFolder);
-
-    const files = await FileUtils.getReactFiles(this.config.srcPath);
+    const files = FileUtils.globSrcForHydration(this.config.srcPath, this.config.outPath, this.config.outDir);
     for (const file of files) {
-      const pageName = FileUtils.getReactName(file);
+      const pageName = file.pageName;
       const rootId = 'root';
       const code = this.bundle({ pageName, rootId });
-      const bundlePath = this.getBundleFilePath(pageName);
+      const bundlePath = file.writeFile;
+      fs.mkdirSync(file.writePath, { recursive: true });
       fs.writeFileSync(bundlePath, code, 'utf8');
       console.log('Wrote', bundlePath);
     }
@@ -80,9 +76,9 @@ export default class ReactSrv {
     const { pageName, rootId } = params;
 
     const tsxName = `${pageName}.tsx`;
-    const tsxPath = this.findFileRecursive(this.config.srcPath, tsxName);
+    const tsxPath = FileUtils.findFileRecursive(this.config.srcPath, tsxName);
     const jsxName = `${pageName}.jsx`;
-    const jsxPath = this.findFileRecursive(this.config.srcPath, jsxName);
+    const jsxPath = FileUtils.findFileRecursive(this.config.srcPath, jsxName);
     const entryPath = tsxPath ?? jsxPath;
     const entryDir = path.dirname(entryPath);
     const entryBase = path.basename(entryPath);
@@ -157,7 +153,7 @@ export default class ReactSrv {
           <Component {...props} />
         </div>
         <script defer dangerouslySetInnerHTML={{ __html: `globalThis.__INITIAL_PROPS__ = ${safeProps};` }} />
-        {(isProd && hydrate) && <script defer type="module" src={this.getPublicBundleFilePath(pageName)}></script>}
+        {(isProd && hydrate) && <script defer type="module" src={this.getPublicHydrationPath(pageName)}></script>}
         {(!isProd && hydrate) && <script defer type="module" dangerouslySetInnerHTML={{ __html: this.bundle({ pageName, rootId }) }} />}
       </this.config.Document>
     );
@@ -169,20 +165,16 @@ export default class ReactSrv {
 
   async prerender() {
     const hydrate = this.config.hydrate === true;
-    await this.prepOutDir();
     if (hydrate) {
-      await this.prebundle();
+      this.prebundle();
     }
 
-    const { srcPath: source, outPath: dest } = this.config;
-
-    const files = await FileUtils.getReactFiles(source);
+    const files = FileUtils.globSrcForHtmlRendering(this.config.srcPath, this.config.outPath);
     for (const file of files) {
-      const pageName = FileUtils.getReactName(file);
-      const outName = FileUtils.toKebabCase(pageName);
+      const outName = FileUtils.toKebabCase(file.pageName);
 
       const result = esbuild.buildSync({
-        entryPoints: [file],
+        entryPoints: [file.absPath],
         bundle: true,
         platform: "node",
         format: "esm",
@@ -206,63 +198,36 @@ export default class ReactSrv {
           <div id={rootId}>
             {React.createElement(Page)}
           </div>
-          {hydrate && <script defer type="module" src={this.getPublicBundleFilePath(pageName)}></script>}
+          {hydrate && <script defer type="module" src={this.getPublicHydrationPath(file.pageName)}></script>}
         </this.config.Document>
       );
       const html = hydrate ? renderToString(document) : renderToStaticMarkup(document);
       const fullHtml = `<!DOCTYPE html>\n${html}`;
 
-      fs.writeFileSync(`${dest}/${outName}.html`, fullHtml);
-      console.log(`✅ Built ${dest}/${outName}.html`);
+      fs.mkdirSync(file.outDir, { recursive: true });
+      fs.writeFileSync(`${file.outDir}/${outName}.html`, fullHtml);
+      console.log(`✅ Built ${file.outDir}/${outName}.html`);
     }
   }
 
-  private findFileRecursive(dir: string, fileName: string): string | null {
-    const entries = fs.readdirSync(dir, { withFileTypes: true });
-
-    for (const entry of entries) {
-      const fullPath = path.join(dir, entry.name);
-
-      if (entry.isDirectory()) {
-        const result = this.findFileRecursive(fullPath, fileName);
-        if (result) return result;
-      } else if (entry.isFile() && entry.name === fileName) {
-        return fullPath;
-      }
-    }
-
-    return null;
-  }
-
-  private async prepOutDir() {
-    const isExist = FileUtils.dirExists(this.config.outPath);
-    if (!isExist) {
-      await FileUtils.recreateFolder(this.config.outPath);
-    }
-  }
-
-  private getBundleFolderPath(): string {
-    return path.join(this.config.outPath, this.config.outDir);
-  }
-
-  private getBundleFilePath(page: string): string {
-    const folder = this.getBundleFolderPath();
-    const fp = FileUtils.toKebabCase(`${page}.js`);
-    return path.join(folder, fp);
-  }
-
-  private getPublicBundleFilePath(page: string): string {
+  private getPublicHydrationPath(page: string): string {
     const folder = this.config.outDir;
     const fp = FileUtils.toKebabCase(`${page}.js`);
-    return `${folder}/${fp}`;
-  }
-
-  private getRelativeBundleFilePath(page: string): string {
-    const folder = this.config.outDir;
-    const fp = FileUtils.toKebabCase(`${page}.js`);
-    return `./${folder}/${fp}`;
+    return `/${folder}/${fp}`;
   }
 }
+
+type HTMLFile = {
+  absPath: string;
+  pageName: string;
+  outDir: string;
+};
+
+type HydrateFile = {
+  writePath: string;
+  pageName: string;
+  writeFile: string;
+};
 
 class FileUtils {
   static validateDir(dir: string): boolean {
@@ -271,6 +236,51 @@ class FileUtils {
     }
 
     return true;
+  }
+
+  static globSrcForHydration(srcPath: string, outPath: string, outDir: string): HydrateFile[] {
+    const files = fg.sync("**/*.{tsx,jsx}", {
+      cwd: srcPath,
+      absolute: true,
+      onlyFiles: true,
+    });
+
+    return files.map((absPath: string) => {
+      const pageName = path.basename(absPath, path.extname(absPath));
+      const writePath = path.join(outPath, outDir);
+      const writeFile = `${writePath}/${FileUtils.toKebabCase(pageName)}.js`;
+
+      return {
+        writePath,
+        writeFile,
+        pageName,
+      };
+    })
+  }
+
+  static globSrcForHtmlRendering(srcDir: string, outPath: string): HTMLFile[] {
+    const files = fg.sync("**/*.{tsx,jsx}", {
+      cwd: srcDir,
+      absolute: true,
+      onlyFiles: true,
+    });
+
+    return files.map((absPath) => {
+      const relPath = path.relative(srcDir, absPath);
+      const relDir = path.dirname(relPath);
+      const pageName = path.basename(absPath, path.extname(absPath));
+
+      const pageOutDir =
+        relDir === "."
+          ? outPath
+          : path.join(outPath, relDir);
+
+      return {
+        absPath,
+        pageName,
+        outDir: pageOutDir,
+      };
+    });
   }
 
   static dirExists(dir: string): boolean {
@@ -286,20 +296,24 @@ class FileUtils {
     }
   }
 
-  static async getReactFiles(dir: string): Promise<string[]> {
-    return await fg(`${dir}/**/*.{tsx,jsx}`);
-  }
+  static findFileRecursive(dir: string, fileName: string): string | null {
+    const entries = fs.readdirSync(dir, { withFileTypes: true });
 
-  static getReactName(file: string): string {
-    return file.split('/').pop().replace('.tsx', '').replace('.jsx', '');
+    for (const entry of entries) {
+      const fullPath = path.join(dir, entry.name);
+
+      if (entry.isDirectory()) {
+        const result = FileUtils.findFileRecursive(fullPath, fileName);
+        if (result) return result;
+      } else if (entry.isFile() && entry.name === fileName) {
+        return fullPath;
+      }
+    }
+
+    return null;
   }
 
   static toKebabCase(str: string): string {
     return str.replace(/([a-z0-9])([A-Z])/g, '$1)$2').toLowerCase();
-  }
-
-  static async recreateFolder(path: string) {
-    await rm(path, { recursive: true, force: true });
-    fs.mkdirSync(path);
   }
 };

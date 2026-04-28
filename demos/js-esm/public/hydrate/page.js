@@ -23,7 +23,8 @@ function Page(props) {
       "!"
     ] }),
     /* @__PURE__ */ jsx(Greeting, {}),
-    /* @__PURE__ */ jsx(Button, {})
+    /* @__PURE__ */ jsx(Button, {}),
+    /* @__PURE__ */ jsx("p", { children: /* @__PURE__ */ jsx("a", { href: "/about", children: "About" }) })
   ] });
 }
 

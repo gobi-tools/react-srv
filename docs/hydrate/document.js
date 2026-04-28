@@ -14,7 +14,7 @@ function Document({ title, children }) {
       /* @__PURE__ */ jsx("meta", { name: "viewport", content: "width=device-width, initial-scale=1.0" }),
       /* @__PURE__ */ jsx("meta", { name: "color-scheme", content: "light dark" }),
       /* @__PURE__ */ jsx("link", { rel: "stylesheet", href: "https://cdn.jsdelivr.net/gh/gobi-tools/css-theme@refs/heads/main/dist/theme.app.min.css" }),
-      /* @__PURE__ */ jsx("link", { rel: "stylesheet", href: "./custom.css" })
+      /* @__PURE__ */ jsx("link", { rel: "stylesheet", href: "/custom.css" })
     ] }),
     /* @__PURE__ */ jsx("body", { children })
   ] });

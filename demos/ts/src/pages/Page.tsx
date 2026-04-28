@@ -19,5 +19,8 @@ export default function Page(props: { name: string }) {
     <h1>Hello, {props.name}!</h1>
     <Greeting/>
     <Button/>
+    <p>
+      <a href="/about">About</a>
+    </p>
   </>
 }

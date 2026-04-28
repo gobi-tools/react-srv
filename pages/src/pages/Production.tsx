@@ -1,6 +1,6 @@
-import Header from "./components/Header";
-import SettingsIcon from "./components/SettingsIcon";
-import { DEMO_PROD_URL, NGINX_URL, PRODUCT_NAME, REACT_HYDRATION_URL, REACT_RENDER_URL } from "./constants";
+import Header from "./../components/Header";
+import SettingsIcon from "./../components/SettingsIcon";
+import { DEMO_PROD_URL, NGINX_URL, PRODUCT_NAME, REACT_HYDRATION_URL, REACT_RENDER_URL } from "./../constants";
 
 export default function Production() {
   return <>
