@@ -153,7 +153,19 @@ export default class ReactSrv {
           <Component {...props} />
         </div>
         <script defer dangerouslySetInnerHTML={{ __html: `globalThis.__INITIAL_PROPS__ = ${safeProps};` }} />
-        {(isProd && hydrate) && <script defer type="module" src={this.getPublicHydrationPath(pageName)}></script>}
+        {isProd && hydrate && (
+            <script
+              dangerouslySetInnerHTML={{
+                __html: `
+                  const path = window.location.pathname;
+                  const base = path.split('/')[1];
+                  const prefix = base ? base : '';
+                  import(\`\${prefix}/${this.getPublicHydrationPath(pageName)}\`);
+                `,
+              }}
+            />
+          )}
+        {/* {(isProd && hydrate) && <script defer type="module" src={this.getPublicHydrationPath(pageName)}></script>} */}
         {(!isProd && hydrate) && <script defer type="module" dangerouslySetInnerHTML={{ __html: this.bundle({ pageName, rootId }) }} />}
       </this.config.Document>
     );
@@ -198,7 +210,19 @@ export default class ReactSrv {
           <div id={rootId}>
             {React.createElement(Page)}
           </div>
-          {hydrate && <script defer type="module" src={this.getPublicHydrationPath(file.pageName)}></script>}
+          {hydrate && (
+            <script
+              dangerouslySetInnerHTML={{
+                __html: `
+                  const path = window.location.pathname;
+                  const base = path.split('/')[1];
+                  const prefix = base ? base : '';
+                  import(\`\${prefix}/${this.getPublicHydrationPath(file.pageName)}\`);
+                `,
+              }}
+            />
+          )}
+          {/* {hydrate && <script defer type="module" src={this.getPublicHydrationPath(file.pageName)}></script>} */}
         </this.config.Document>
       );
       const html = hydrate ? renderToString(document) : renderToStaticMarkup(document);
@@ -213,7 +237,7 @@ export default class ReactSrv {
   private getPublicHydrationPath(page: string): string {
     const folder = this.config.outDir;
     const fp = FileUtils.toKebabCase(`${page}.js`);
-    return `/${folder}/${fp}`;
+    return `${folder}/${fp}`;
   }
 }
 
