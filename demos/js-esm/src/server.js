@@ -2,11 +2,13 @@ import express from 'express';
 
 import Page from './pages/Page.jsx';
 import About from './pages/about/About.jsx';
-import react from './react-srv';
+import config from './react-srv.config.js';
+import ReactSrv from 'react-srv';
 
 const app = express();
-
 app.use(express.static('public'));
+
+const react = new ReactSrv(config);
 
 app.get('/', (req, res) => {
   const name = req.query['name'] ?? 'World';

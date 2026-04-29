@@ -5,8 +5,8 @@
   "main": "server.js",
   "type": "commonjs",
   "scripts": {
-    "prebundle": "node scripts/prebundle.js",
-    "build": "npm run prebundle && rm -rf dist/ && cp -r src/ dist/",
+    "bundle": "react-srv bundle -f src/react-srv.config.js",
+    "build": "npm run bundle && rm -rf dist/ && cp -r src/ dist/",
     "dev": "node src/server.js",
     "start": "NODE_ENV=production node dist/server.js"
   },

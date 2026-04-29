@@ -7,7 +7,7 @@
   "type": "commonjs",
   "main": "index.js",
   "scripts": {
-    "docs": "tsx scripts/prerender.docs.tsx"
+    "docs": "react-srv render -f src/react-srv.config.ts"
   },
   "dependencies": {
     "express": "^5.2.1",

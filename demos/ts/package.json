@@ -6,8 +6,8 @@
   "author": "",
   "main": "server.js",
   "scripts": {
-    "prebundle": "tsx scripts/prebundle.ts",
-    "build": "tsc && npm run prebundle",
+    "bundle": "react-srv bundle -f src/react-srv.config.ts",
+    "build": "tsc && npm run bundle",
     "dev": "tsx src/server.ts",
     "start": "NODE_ENV=production node dist/server.js"
   },

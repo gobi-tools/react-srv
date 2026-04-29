@@ -71,7 +71,7 @@ export default class ReactSrv {
       const fp = `${path}/${file.name.js}`;
       fs.mkdirSync(path, { recursive: true });
       fs.writeFileSync(fp, code, 'utf8');
-      console.log('Wrote', fp);
+      console.log('✅ Wrote', fp);
     }
   }
 
@@ -209,7 +209,7 @@ export default class ReactSrv {
 
       fs.mkdirSync(file.writePath, { recursive: true });
       fs.writeFileSync(htmlFp, fullHtml);
-      console.log(`✅ Built ${htmlFp}`);
+      console.log(`✅ Wrote ${htmlFp}`);
     }
   }
 

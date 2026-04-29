@@ -5,8 +5,8 @@
   "main": "server.js",
   "type": "module",
   "scripts": {
-    "prebundle": "tsx scripts/prebundle.js",
-    "build": "npm run prebundle && rm -rf dist/ && cp -r src/ dist/",
+    "bundle": "react-srv bundle -f src/react-srv.config.js",
+    "build": "npm run bundle && rm -rf dist/ && cp -r src/ dist/",
     "dev": "tsx src/server.js",
     "start": "NODE_ENV=production tsx dist/server.js"
   },
