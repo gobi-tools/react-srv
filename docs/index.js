@@ -257,7 +257,7 @@ function Index() {
           " will render it as static HTML you can send down the wire:"
         ] }),
         /* @__PURE__ */ jsx4("figure", { children: /* @__PURE__ */ jsx4("pre", { children: /* @__PURE__ */ jsx4("code", { children: `const app = express();
-const react = new ReactSrv({});
+const react = new ReactSrv();
 
 app.get('/', (_, res) => {
   return res.status(200).send(react.render(Page));

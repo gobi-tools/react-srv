@@ -11,7 +11,7 @@
     &lt;h1&gt;Hello, world!&lt;/h1&gt;
   &lt;/&gt;
 }</code></pre></figure><p>And <!-- -->React Srv<!-- --> will render it as static HTML you can send down the wire:</p><figure><pre><code>const app = express();
-const react = new ReactSrv({});
+const react = new ReactSrv();
 
 app.get(&#x27;/&#x27;, (_, res) =&gt; {
   return res.status(200).send(react.render(Page));

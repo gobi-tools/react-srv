@@ -44,7 +44,7 @@ export const DefaultReactSrvConfig: TReactSrvConfig = {
 export default class ReactSrv {
   private readonly config: TReactSrvConfig;
 
-  constructor(readonly userConfig: TReactSrvConfig) {
+  constructor(readonly userConfig: TReactSrvConfig = DefaultReactSrvConfig) {
     this.config = {
       ...DefaultReactSrvConfig,
       ...userConfig,

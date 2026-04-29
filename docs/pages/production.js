@@ -4,9 +4,6 @@ import { hydrateRoot } from "https://esm.sh/react-dom@19.2.0/client";
 
 // src/constants.ts
 var PRODUCT_NAME = "React Srv";
-var REACT_HYDRATION_URL = "https://react.dev/reference/react-dom/client/hydrateRoot";
-var REACT_RENDER_URL = "https://react.dev/reference/react-dom/server/renderToString";
-var NGINX_URL = "https://nginx.org/";
 var DEMO_PROD_URL = "https://github.com/gobi-tools/react-srv/tree/main/demos";
 var PAGE_HOME_URL = "index.html";
 
@@ -67,37 +64,21 @@ function SettingsIcon() {
 
 // src/pages/Production.tsx
 import { Fragment, jsx as jsx4, jsxs as jsxs4 } from "https://esm.sh/react@19.2.0/jsx-runtime";
+{
+}
 function Production() {
   return /* @__PURE__ */ jsxs4(Fragment, { children: [
     /* @__PURE__ */ jsx4("header", { children: /* @__PURE__ */ jsx4(Header, {}) }),
     /* @__PURE__ */ jsxs4("main", { children: [
       /* @__PURE__ */ jsxs4("section", { children: [
-        /* @__PURE__ */ jsx4("h2", { children: "Anatomy of a request" }),
-        /* @__PURE__ */ jsx4("p", { children: "Every time this example endpoint is hit ..." }),
-        /* @__PURE__ */ jsx4("figure", { children: /* @__PURE__ */ jsx4("pre", { children: /* @__PURE__ */ jsx4("code", { children: `app.get('/', (_, res) => {
-  const name = req.query['name'];
-  return res.status(200).send(react.render(Page, { name }));
-});` }) }) }),
+        /* @__PURE__ */ jsx4("h2", { children: "Production" }),
         /* @__PURE__ */ jsxs4("p", { children: [
-          "... there's a number of things ",
-          PRODUCT_NAME,
-          " does inside the ",
+          "Every time the ",
           /* @__PURE__ */ jsx4("code", { children: "render" }),
-          " method:"
+          " method is called, ",
+          PRODUCT_NAME,
+          " transforms a JSX component into HTML and Javascript:"
         ] }),
-        /* @__PURE__ */ jsxs4("ol", { children: [
-          /* @__PURE__ */ jsxs4("li", { children: [
-            "First, it ",
-            /* @__PURE__ */ jsx4("a", { href: REACT_RENDER_URL, target: "_blank", children: "creates static markup" }),
-            " (that includes initial props)"
-          ] }),
-          /* @__PURE__ */ jsxs4("li", { children: [
-            "Then, it creates a ",
-            /* @__PURE__ */ jsx4("a", { href: REACT_HYDRATION_URL, target: "_blank", children: "hydration" }),
-            " script (for subsequent interactivity)"
-          ] })
-        ] }),
-        /* @__PURE__ */ jsx4("p", { children: "Therefore, at each request, the final payload consists of both HTML and Javascript:" }),
         /* @__PURE__ */ jsx4("figure", { children: /* @__PURE__ */ jsx4("pre", { children: /* @__PURE__ */ jsx4("code", { children: `<html>
   <head><title>Page</title></head>
   <body>...</body>
@@ -105,134 +86,48 @@ function Production() {
   <script type="module">... hydration script ... <\/script>
 </html>` }) }) }),
         /* @__PURE__ */ jsxs4("p", { children: [
-          "The static markup is created at runtime from the component - ",
-          /* @__PURE__ */ jsx4("code", { children: `<Page/>` }),
-          " - itself."
-        ] }),
-        /* @__PURE__ */ jsxs4("p", { children: [
-          "The hydration script is also created at runtime by reading the file - ",
-          /* @__PURE__ */ jsx4("code", { children: `Page.tsx` }),
+          "The markup is created from the component itself. The hydration script is created by reading the source file, ",
+          /* @__PURE__ */ jsx4("code", { children: "Page.tsx" }),
           " or ",
-          /* @__PURE__ */ jsx4("code", { children: `Page.jsx` }),
-          " - from disk."
+          /* @__PURE__ */ jsx4("code", { children: "Page.jsx" }),
+          " from disk."
         ] }),
+        /* @__PURE__ */ jsx4("p", { children: "This is good for development but it's not ideal for production, firstly because the source code might not be present at all and secondly because reading and compiling code every time is not very fast." }),
+        /* @__PURE__ */ jsx4("p", { children: "So, for production we can pre compile the necessary javascript and have it ready to go." }),
         /* @__PURE__ */ jsxs4("p", { children: [
-          "In order to know where to find the file, ",
-          PRODUCT_NAME,
-          " needs to know where to look. By default it looks in the ",
-          /* @__PURE__ */ jsx4("code", { children: "/src" }),
-          " folder. This can be changed by specifying the ",
-          /* @__PURE__ */ jsx4("code", { children: "srcPath" }),
-          " parameter when initialising the shared object."
-        ] }),
-        /* @__PURE__ */ jsx4("figure", { children: /* @__PURE__ */ jsx4("pre", { children: /* @__PURE__ */ jsx4("code", { children: `const react = new ReactSrv({
-  Document,
-  srcPath: './input',
-});` }) }) })
-      ] }),
-      /* @__PURE__ */ jsxs4("section", { children: [
-        /* @__PURE__ */ jsx4("h2", { children: "Prebundling" }),
-        /* @__PURE__ */ jsx4("p", { children: "For a small project or for development, reading from disk might be good enough. It does require the source always be present, however, and it does mean the same code will be compiled over and over again, at each request." }),
-        /* @__PURE__ */ jsxs4("p", { children: [
-          "For production builds, it's always best to ",
-          /* @__PURE__ */ jsx4("b", { children: "prebundle" }),
-          " all the hydration scripts."
-        ] }),
-        /* @__PURE__ */ jsxs4("p", { children: [
-          "You can do so by creating a ",
-          /* @__PURE__ */ jsx4("code", { children: "prebundle.ts" }),
-          " or ",
-          /* @__PURE__ */ jsx4("code", { children: "prbundle.js" }),
-          " script:"
-        ] }),
-        /* @__PURE__ */ jsx4("figure", { children: /* @__PURE__ */ jsx4("pre", { children: /* @__PURE__ */ jsx4("code", { children: `// import the "react" instance 
-react.prebundle()` }) }) }),
-        /* @__PURE__ */ jsxs4("p", { children: [
-          "Than you can execute directly or add it to your own build pipeline. When successfull, it will write the compiled ",
+          "First, we need to create a config file, ",
+          /* @__PURE__ */ jsx4("code", { children: "react-srv.config.ts" }),
+          " (or ",
           /* @__PURE__ */ jsx4("code", { children: ".js" }),
-          " files in ",
-          /* @__PURE__ */ jsx4("code", { children: "./public/hydrate" }),
-          "."
+          ")."
         ] }),
-        /* @__PURE__ */ jsxs4("p", { children: [
-          "You can control the output path with the ",
-          /* @__PURE__ */ jsx4("code", { children: "outPath" }),
-          " config value:"
-        ] }),
-        /* @__PURE__ */ jsx4("figure", { children: /* @__PURE__ */ jsx4("pre", { children: /* @__PURE__ */ jsx4("code", { children: `const react = new ReactSrv({
-  Document,
-  srcPath: './input',
-  outPath: './dist',    // default "./public/hydrate"
-});` }) }) }),
-        /* @__PURE__ */ jsx4("p", { children: "The root of the output folder must be statically served or accessible via the internet, otherwise the hydration scripts won't be able to load." }),
-        /* @__PURE__ */ jsx4("figure", { children: /* @__PURE__ */ jsx4("pre", { children: /* @__PURE__ */ jsx4("code", { children: `app.use(express.static('public'));` }) }) })
-      ] }),
-      /* @__PURE__ */ jsxs4("section", { children: [
-        /* @__PURE__ */ jsx4("h2", { children: "Select environment" }),
-        /* @__PURE__ */ jsxs4("p", { children: [
-          "One final step is to let ",
-          PRODUCT_NAME,
-          " know when you're running in a test environment and when in a production one. You can use the ",
-          /* @__PURE__ */ jsx4("code", { children: "isProd" }),
-          " config value. The underlying logic is up to you:"
-        ] }),
-        /* @__PURE__ */ jsx4("figure", { children: /* @__PURE__ */ jsx4("pre", { children: /* @__PURE__ */ jsx4("code", { children: `const react = new ReactSrv({
-  Document,
-  srcPath: './input',
-  outPath: './dist',
+        /* @__PURE__ */ jsx4("figure", { children: /* @__PURE__ */ jsx4("pre", { children: /* @__PURE__ */ jsx4("code", { children: `export default {
+  document: Document,
+  srcPath: './src',
+  outPath: './public/hydrate',
   isProd: process.env.NODE_ENV === 'production',
-});` }) }) }),
+}` }) }) }),
         /* @__PURE__ */ jsxs4("p", { children: [
-          "When setup like this, ",
+          "This tells ",
           PRODUCT_NAME,
-          " will compile ",
-          /* @__PURE__ */ jsx4("code", { children: ".tsx" }),
-          " and ",
-          /* @__PURE__ */ jsx4("code", { children: ".jsx" }),
-          " files on the go in test mode and serve pre-compiled ",
-          /* @__PURE__ */ jsx4("code", { children: ".js" }),
-          " files from the bundle output folder in production model."
+          " where to find all the source code that needs pre compiling and where to place the output."
         ] }),
-        /* @__PURE__ */ jsxs4("details", { className: "card", children: [
-          /* @__PURE__ */ jsx4("summary", { children: "Small optimisation" }),
-          /* @__PURE__ */ jsxs4("p", { children: [
-            "It's worthwhile to create the ",
-            /* @__PURE__ */ jsx4("code", { children: "ReactSrv" }),
-            " instance in one file and import it in your route definitions file or your prebundling script so as to avoid duplicating instances that are harder to keep in sync."
-          ] }),
-          /* @__PURE__ */ jsx4("figure", { children: /* @__PURE__ */ jsx4("pre", { children: /* @__PURE__ */ jsx4("code", { children: `export default new ReactSrv({
-  Document,
-  srcPath: './input',
-  outPath: './dist',
-  isProd: process.env.NODE_ENV === 'production',
-});` }) }) })
+        /* @__PURE__ */ jsxs4("p", { children: [
+          "We can now reference it via the ",
+          /* @__PURE__ */ jsx4("code", { children: "bundle" }),
+          " command, in ",
+          /* @__PURE__ */ jsx4("code", { children: "package.json" })
+        ] }),
+        /* @__PURE__ */ jsx4("figure", { children: /* @__PURE__ */ jsx4("pre", { children: /* @__PURE__ */ jsx4("code", { children: `...
+"scripts": {
+  "bundle": "react-srv bundle -f src/react-srv.config.ts",
+  "build": "npm run bundle && ... other build steps",
+},` }) }) }),
+        /* @__PURE__ */ jsxs4("p", { children: [
+          "The last thing you need to do is to make sure the ",
+          /* @__PURE__ */ jsx4("code", { children: "/public" }),
+          " folder is statically served and accessible and you're good to go."
         ] })
-      ] }),
-      /* @__PURE__ */ jsxs4("section", { children: [
-        /* @__PURE__ */ jsx4("h2", { children: "Performance" }),
-        /* @__PURE__ */ jsxs4("p", { children: [
-          "In development mode we've seen that every time the ",
-          /* @__PURE__ */ jsx4("code", { children: "render" }),
-          " method gets called, we generate both HTML and a hydration script and we send it over to the client browser."
-        ] }),
-        /* @__PURE__ */ jsx4("p", { children: "This is still pretty reasonable. The content that weighs the most is the React library itself, which needs to be present on every page for hydration and interactivity to work. But that's only loaded once and then cached locally by the browser." }),
-        /* @__PURE__ */ jsxs4("p", { children: [
-          "By applying the tecniques above to prepare ",
-          PRODUCT_NAME,
-          " for production, we can gain extra performance."
-        ] }),
-        /* @__PURE__ */ jsxs4("p", { children: [
-          "First, now on every request we'll send over ",
-          /* @__PURE__ */ jsx4("i", { children: "just" }),
-          " the HTML, with a link to the hydration script."
-        ] }),
-        /* @__PURE__ */ jsxs4("p", { children: [
-          "Secondly, the hydration script needs to be loaded once, towards the end of the rendering loop. It too can be cached (e.g. by using ",
-          /* @__PURE__ */ jsx4("a", { href: NGINX_URL, target: "_blank", children: "nginx" }),
-          " as a reverse proxy)"
-        ] }),
-        /* @__PURE__ */ jsx4("p", { children: "Finally, React itself, just like in development mode, will be available async and cached by the browser." }),
-        /* @__PURE__ */ jsx4("p", { children: "In this way, in production we can squeeze as much performance as we can out of rendering React." })
       ] }),
       /* @__PURE__ */ jsx4("hr", {}),
       /* @__PURE__ */ jsxs4("blockquote", { className: "card success", children: [

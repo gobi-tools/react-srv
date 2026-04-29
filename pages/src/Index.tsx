@@ -38,7 +38,7 @@ export default function Index() {
         </p>
         <figure>
           <pre><code>{`const app = express();
-const react = new ReactSrv({});
+const react = new ReactSrv();
 
 app.get('/', (_, res) => {
   return res.status(200).send(react.render(Page));

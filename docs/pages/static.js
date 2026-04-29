@@ -81,49 +81,34 @@ function Static() {
           ", then you're already ninety percent there."
         ] }),
         /* @__PURE__ */ jsxs4("p", { children: [
-          "What you'll need is to create a new file. You can call it ",
-          /* @__PURE__ */ jsx4("code", { children: "prerender.ts" }),
-          " or ",
-          /* @__PURE__ */ jsx4("code", { children: "prerender.js" }),
-          "."
+          "You can keep the same ",
+          /* @__PURE__ */ jsx4("code", { children: "react-srv.config.ts" }),
+          " (or ",
+          /* @__PURE__ */ jsx4("code", { children: ".js" }),
+          ") file. Additionally you can choose to enable javascript hydration (default) or disable it for a pure static experience:"
         ] }),
-        /* @__PURE__ */ jsx4("figure", { children: /* @__PURE__ */ jsx4("pre", { children: /* @__PURE__ */ jsx4("code", { children: `
-const react = new ReactSrv({ 
-  Document, 
+        /* @__PURE__ */ jsx4("figure", { children: /* @__PURE__ */ jsx4("pre", { children: /* @__PURE__ */ jsx4("code", { children: `export default {
+  document: Document,
   srcPath: './src',
   outPath: './public',
-});
-react.prerender()` }) }) }),
+  hydrate: true, // or false
+  isProd: process.env.NODE_ENV === 'production',
+}` }) }) }),
         /* @__PURE__ */ jsxs4("p", { children: [
-          "We setup the ",
-          /* @__PURE__ */ jsx4("code", { children: "react" }),
-          " instance in a familiar way:"
+          "Then you can add the following step to your build pipeline in ",
+          /* @__PURE__ */ jsx4("code", { children: "package.json" }),
+          ":"
         ] }),
-        /* @__PURE__ */ jsxs4("ul", { children: [
-          /* @__PURE__ */ jsx4("li", { children: "Set a custom HTML Document (or use the default one)" }),
-          /* @__PURE__ */ jsxs4("li", { children: [
-            "Tell the library where the source ",
-            /* @__PURE__ */ jsx4("code", { children: ".tsx" }),
-            " or ",
-            /* @__PURE__ */ jsx4("code", { children: ".jsx" }),
-            " pages are"
-          ] }),
-          /* @__PURE__ */ jsx4("li", { children: "And where to output the resulting HTML and JS files" })
-        ] }),
-        /* @__PURE__ */ jsx4("p", { children: "And that's it! All you need to do is execute the file to have a full, statically generated, website." })
-      ] }),
-      /* @__PURE__ */ jsxs4("section", { children: [
-        /* @__PURE__ */ jsx4("h2", { children: "Disable hydration" }),
-        /* @__PURE__ */ jsx4("p", { children: "Prerendering, by default, generates both HTML and hydration JS. In this way statically generated websites can maintain most of the interactivity provided by React." }),
-        /* @__PURE__ */ jsx4("p", { children: "If you don't want interactivity, you can disable hydration altogether:" }),
-        /* @__PURE__ */ jsx4("figure", { children: /* @__PURE__ */ jsx4("pre", { children: /* @__PURE__ */ jsx4("code", { children: `const react = new ReactSrv({ 
-  Document, 
-  srcPath: './src',
-  outPath: './public',
-  hydrate: false,
-});
-react.prerender()` }) }) }),
-        /* @__PURE__ */ jsx4("p", { children: "In this way, only HTML files will be generated. A trully static website!" })
+        /* @__PURE__ */ jsx4("figure", { children: /* @__PURE__ */ jsx4("pre", { children: /* @__PURE__ */ jsx4("code", { children: `...
+"scripts": {
+  "render": "react-srv render -f src/react-srv.config.ts",
+  "build": "npm run render && ... other build steps",
+},` }) }) }),
+        /* @__PURE__ */ jsxs4("p", { children: [
+          "The last thing you need to do is to make sure the ",
+          /* @__PURE__ */ jsx4("code", { children: "/public" }),
+          " folder is accessible on the internet and you're good to go."
+        ] })
       ] }),
       /* @__PURE__ */ jsx4("hr", {}),
       /* @__PURE__ */ jsxs4("blockquote", { className: "card success", children: [

@@ -1,8 +1,6 @@
 Todos
 =====
 
-- [ ] export a "prebundle" bin command
-- [ ] export a "prerender" bin command
 - [ ] test working with various React & React DOM versions
 - [ ] implement proper minification
 - [ ] when a page doesn't actually need React, we should not need to generate anything 
@@ -14,6 +12,8 @@ Todos
 - [ ] look at using: https://www.solidjs.com/
 - [ ] look at how it will look like in Deno: https://deno.com/
 - [ ] look at how it will look like in Bun: https://bun.com/
+- [x] export a "prebundle" bin command
+- [x] export a "prerender" bin command
 - [x] plain JS integration 
   - [x] in ESM modules
   - [x] in CommonJS modules

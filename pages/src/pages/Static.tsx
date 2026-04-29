@@ -15,50 +15,31 @@ export default function Static() {
           If you've read the section on <a href={PAGE_PRODUCTION_URL}>getting to production</a>, then you're already ninety percent there.
         </p>
         <p>
-          What you'll need is to create a new file. You can call it <code>prerender.ts</code> or <code>prerender.js</code>.
+          You can keep the same <code>react-srv.config.ts</code> (or <code>.js</code>) file. Additionally you can choose to
+          enable javascript hydration (default) or disable it for a pure static experience:
         </p>
         <figure>
-          <pre><code>{`
-const react = new ReactSrv({ 
-  Document, 
+          <pre><code>{`export default {
+  document: Document,
   srcPath: './src',
   outPath: './public',
-});
-react.prerender()`}</code></pre>
+  hydrate: true, // or false
+  isProd: process.env.NODE_ENV === 'production',
+}`}</code></pre>
         </figure>
         <p>
-          We setup the <code>react</code> instance in a familiar way:
-        </p>
-        <ul>
-          <li>Set a custom HTML Document (or use the default one)</li>
-          <li>Tell the library where the source <code>.tsx</code> or <code>.jsx</code> pages are</li>
-          <li>And where to output the resulting HTML and JS files</li>
-        </ul>
-        <p>
-          And that's it! All you need to do is execute the file to have a full, statically generated, website.
-        </p>
-      </section>
-
-      <section>
-        <h2>Disable hydration</h2>
-        <p>
-          Prerendering, by default, generates both HTML and hydration JS. In this way statically generated
-          websites can maintain most of the interactivity provided by React.
-        </p>
-        <p>
-          If you don't want interactivity, you can disable hydration altogether:
+          Then you can add the following step to your build pipeline in <code>package.json</code>:
         </p>
         <figure>
-          <pre><code>{`const react = new ReactSrv({ 
-  Document, 
-  srcPath: './src',
-  outPath: './public',
-  hydrate: false,
-});
-react.prerender()`}</code></pre>
+          <pre><code>{`...
+"scripts": {
+  "render": "react-srv render -f src/react-srv.config.ts",
+  "build": "npm run render && ... other build steps",
+},`}</code></pre>
         </figure>
         <p>
-          In this way, only HTML files will be generated. A trully static website!
+          The last thing you need to do is to make sure the <code>/public</code> folder is
+          accessible on the internet and you're good to go.
         </p>
       </section>
 
@@ -66,7 +47,7 @@ react.prerender()`}</code></pre>
 
       <blockquote className="card success">
         <p className="group">
-          <SettingsIcon/>
+          <SettingsIcon />
           <b>Demo</b>
         </p>
         <p>
