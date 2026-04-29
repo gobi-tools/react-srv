@@ -60,15 +60,20 @@ export default class ReactSrv {
       return;
     }
 
-    const files = FileUtils.globSrcForHydration(this.config.srcPath, this.config.outPath, this.config.outDir);
+    const files = FileUtils.globglob(this.config.srcPath, this.config.outPath, this.config.outDir);
+    this.prepbundle(files);
+  }
+
+  private prepbundle(files: TGlobGlob[]) {
     for (const file of files) {
-      const pageName = file.pageName;
+      const pageName = file.component;
       const rootId = 'root';
       const code = this.bundle({ pageName, rootId });
-      const bundlePath = file.writeFile;
-      fs.mkdirSync(file.writePath, { recursive: true });
-      fs.writeFileSync(bundlePath, code, 'utf8');
-      console.log('Wrote', bundlePath);
+      const path = file.writePath;
+      const fp = `${path}/${file.name.js}`;
+      fs.mkdirSync(path, { recursive: true });
+      fs.writeFileSync(fp, code, 'utf8');
+      console.log('Wrote', fp);
     }
   }
 
@@ -153,19 +158,7 @@ export default class ReactSrv {
           <Component {...props} />
         </div>
         <script defer dangerouslySetInnerHTML={{ __html: `globalThis.__INITIAL_PROPS__ = ${safeProps};` }} />
-        {isProd && hydrate && (
-            <script
-              dangerouslySetInnerHTML={{
-                __html: `
-                  const path = window.location.pathname;
-                  const base = path.split('/')[1];
-                  const prefix = base ? base : '';
-                  import(\`\${prefix}/${this.getPublicHydrationPath(pageName)}\`);
-                `,
-              }}
-            />
-          )}
-        {/* {(isProd && hydrate) && <script defer type="module" src={this.getPublicHydrationPath(pageName)}></script>} */}
+        {(isProd && hydrate) && <script defer type="module" src={this.getPublicHydrationPath(pageName)}></script>}
         {(!isProd && hydrate) && <script defer type="module" dangerouslySetInnerHTML={{ __html: this.bundle({ pageName, rootId }) }} />}
       </this.config.Document>
     );
@@ -176,15 +169,14 @@ export default class ReactSrv {
   }
 
   async prerender() {
+    const files = FileUtils.globglob(this.config.srcPath, this.config.outPath);
+    
     const hydrate = this.config.hydrate === true;
     if (hydrate) {
-      this.prebundle();
+      this.prepbundle(files);
     }
 
-    const files = FileUtils.globSrcForHtmlRendering(this.config.srcPath, this.config.outPath);
     for (const file of files) {
-      const outName = FileUtils.toKebabCase(file.pageName);
-
       const result = esbuild.buildSync({
         entryPoints: [file.absPath],
         bundle: true,
@@ -198,7 +190,7 @@ export default class ReactSrv {
 
       // 2️⃣ Load the compiled module dynamically
       const __dirname = path.dirname(fileURLToPath(import.meta.url));
-      const tempFile = path.join(__dirname, `temp-${outName}.mjs`);
+      const tempFile = path.join(__dirname, file.name.mjs);
       fs.writeFileSync(tempFile, js);
       const { default: Page } = await import(`file://${tempFile}`);
       fs.unlinkSync(tempFile);
@@ -210,34 +202,27 @@ export default class ReactSrv {
           <div id={rootId}>
             {React.createElement(Page)}
           </div>
-          {hydrate && (
-            <script
-              dangerouslySetInnerHTML={{
-                __html: `
-                  const path = window.location.pathname;
-                  const base = path.split('/')[1];
-                  const prefix = base ? base : '';
-                  import(\`\${prefix}/${this.getPublicHydrationPath(file.pageName)}\`);
-                `,
-              }}
-            />
-          )}
-          {/* {hydrate && <script defer type="module" src={this.getPublicHydrationPath(file.pageName)}></script>} */}
+          {hydrate && <script defer type="module" src={this.getRelativeHydrationPath(file.name.js)}></script>}
         </this.config.Document>
       );
       const html = hydrate ? renderToString(document) : renderToStaticMarkup(document);
       const fullHtml = `<!DOCTYPE html>\n${html}`;
+      const htmlFp = `${file.writePath}/${file.name.html}`;
 
-      fs.mkdirSync(file.outDir, { recursive: true });
-      fs.writeFileSync(`${file.outDir}/${outName}.html`, fullHtml);
-      console.log(`✅ Built ${file.outDir}/${outName}.html`);
+      fs.mkdirSync(file.writePath, { recursive: true });
+      fs.writeFileSync(htmlFp, fullHtml);
+      console.log(`✅ Built ${htmlFp}`);
     }
   }
 
   private getPublicHydrationPath(page: string): string {
     const folder = this.config.outDir;
     const fp = FileUtils.toKebabCase(`${page}.js`);
-    return `${folder}/${fp}`;
+    return `/${folder}/${fp}`;
+  }
+
+  private getRelativeHydrationPath(page: string): string {
+    return `./${page}`;
   }
 }
 
@@ -253,6 +238,17 @@ type HydrateFile = {
   writeFile: string;
 };
 
+type TGlobGlob = {
+  absPath: string;
+  component: string;
+  name: {
+    js: string,
+    html: string,
+    mjs: string,
+  },
+  writePath: string,
+};
+
 class FileUtils {
   static validateDir(dir: string): boolean {
     if (!this.dirExists(dir)) {
@@ -260,6 +256,34 @@ class FileUtils {
     }
 
     return true;
+  }
+
+  static globglob(srcPath: string, outPath: string, outDir?: string): TGlobGlob[] {
+    const files = fg.sync("**/*.{tsx,jsx}", {
+      cwd: srcPath,
+      absolute: true,
+      onlyFiles: true,
+    });
+
+    return files.map((absPath: string) => {
+      const component = path.basename(absPath, path.extname(absPath));
+      const normalised = FileUtils.toKebabCase(component);
+      const js = `${normalised}.js`;
+      const html = `${normalised}.html`;
+      const mjs = `${normalised}.mjs`;
+
+      const relPath = path.relative(srcPath, absPath);
+      const relDir = path.dirname(relPath);
+
+      const writePath = !!outDir ? path.join(outPath, outDir) : (relDir === "." ? outPath : path.join(outPath, relDir));
+
+      return {
+        absPath,
+        component,
+        name: { js, html, mjs },
+        writePath,
+      };
+    });
   }
 
   static globSrcForHydration(srcPath: string, outPath: string, outDir: string): HydrateFile[] {
@@ -338,6 +362,6 @@ class FileUtils {
   }
 
   static toKebabCase(str: string): string {
-    return str.replace(/([a-z0-9])([A-Z])/g, '$1)$2').toLowerCase();
+    return str.replace(/([a-z0-9])([A-Z])/g, '$1_$2').toLowerCase();
   }
 };
