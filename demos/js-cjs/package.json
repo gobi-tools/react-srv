@@ -17,7 +17,7 @@
     "express": "^5.1.0",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
-    "react-srv": "file:../../lib/react-srv-0.0.48.tgz"
+    "react-srv": "file:../../lib/react-srv-0.0.49.tgz"
   },
   "devDependencies": {
     "@babel/preset-react": "^7.28.5",

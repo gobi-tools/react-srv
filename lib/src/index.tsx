@@ -60,11 +60,11 @@ export default class ReactSrv {
       return;
     }
 
-    const files = FileUtils.globglob(this.config.srcPath, this.config.outPath, this.config.outDir);
+    const files = FileUtils.formOutputFiles(this.config.srcPath, this.config.outPath, this.config.outDir);
     this.prepbundle(files);
   }
 
-  private prepbundle(files: TGlobGlob[]) {
+  private prepbundle(files: TOutputFile[]) {
     for (const file of files) {
       const pageName = file.component;
       const rootId = 'root';
@@ -169,7 +169,7 @@ export default class ReactSrv {
   }
 
   async prerender() {
-    const files = FileUtils.globglob(this.config.srcPath, this.config.outPath);
+    const files = FileUtils.formOutputFiles(this.config.srcPath, this.config.outPath);
     
     const hydrate = this.config.hydrate === true;
     if (hydrate) {
@@ -226,19 +226,7 @@ export default class ReactSrv {
   }
 }
 
-type HTMLFile = {
-  absPath: string;
-  pageName: string;
-  outDir: string;
-};
-
-type HydrateFile = {
-  writePath: string;
-  pageName: string;
-  writeFile: string;
-};
-
-type TGlobGlob = {
+type TOutputFile = {
   absPath: string;
   component: string;
   name: {
@@ -258,7 +246,7 @@ class FileUtils {
     return true;
   }
 
-  static globglob(srcPath: string, outPath: string, outDir?: string): TGlobGlob[] {
+  static formOutputFiles(srcPath: string, outPath: string, outDir?: string): TOutputFile[] {
     const files = fg.sync("**/*.{tsx,jsx}", {
       cwd: srcPath,
       absolute: true,
@@ -282,51 +270,6 @@ class FileUtils {
         component,
         name: { js, html, mjs },
         writePath,
-      };
-    });
-  }
-
-  static globSrcForHydration(srcPath: string, outPath: string, outDir: string): HydrateFile[] {
-    const files = fg.sync("**/*.{tsx,jsx}", {
-      cwd: srcPath,
-      absolute: true,
-      onlyFiles: true,
-    });
-
-    return files.map((absPath: string) => {
-      const pageName = path.basename(absPath, path.extname(absPath));
-      const writePath = path.join(outPath, outDir);
-      const writeFile = `${writePath}/${FileUtils.toKebabCase(pageName)}.js`;
-
-      return {
-        writePath,
-        writeFile,
-        pageName,
-      };
-    })
-  }
-
-  static globSrcForHtmlRendering(srcDir: string, outPath: string): HTMLFile[] {
-    const files = fg.sync("**/*.{tsx,jsx}", {
-      cwd: srcDir,
-      absolute: true,
-      onlyFiles: true,
-    });
-
-    return files.map((absPath) => {
-      const relPath = path.relative(srcDir, absPath);
-      const relDir = path.dirname(relPath);
-      const pageName = path.basename(absPath, path.extname(absPath));
-
-      const pageOutDir =
-        relDir === "."
-          ? outPath
-          : path.join(outPath, relDir);
-
-      return {
-        absPath,
-        pageName,
-        outDir: pageOutDir,
       };
     });
   }
