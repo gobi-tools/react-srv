@@ -5,8 +5,21 @@ import { hydrateRoot } from "https://esm.sh/react-dom@19.2.0/client";
 // src/documents/Document.tsx
 import { jsx, jsxs } from "https://esm.sh/react@19.2.0/jsx-runtime";
 function BaseTag() {
-  const base = typeof window !== "undefined" && window.location.hostname.includes("github.io") ? "/react-srv/" : "/";
-  return /* @__PURE__ */ jsx("base", { href: base });
+  return /* @__PURE__ */ jsx(
+    "script",
+    {
+      dangerouslySetInnerHTML: {
+        __html: `
+              (function() {
+                var base = location.hostname.includes('github.io')
+                  ? '/react-srv/'
+                  : '/';
+                document.write('<base href="' + base + '">');
+              })();
+            `
+      }
+    }
+  );
 }
 function Document({ title, children }) {
   return /* @__PURE__ */ jsxs("html", { lang: "en", children: [
