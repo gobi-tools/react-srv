@@ -31,7 +31,7 @@ export function DefaultDocument({ children }) {
   );
 };
 
-const DefaultReactSrvConfig: TReactSrvConfig = {
+export const DefaultReactSrvConfig: TReactSrvConfig = {
   reactVersion: '19.2.0',
   reactLocation: 'https://esm.sh',
   srcPath: './src',

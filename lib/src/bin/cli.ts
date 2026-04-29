@@ -3,7 +3,7 @@
 import { Command } from "commander";
 import path from "path";
 import * as esbuild from "esbuild";
-import ReactSrv from "../index.js";
+import ReactSrv, { DefaultReactSrvConfig } from "../index.js";
 
 export async function loadConfig(file: string) {
   const result = await esbuild.build({
@@ -33,9 +33,8 @@ function resolveConfig(file: string) {
   return path.resolve(process.cwd(), file);
 }
 
-async function createSrv(file: string) {
-  const configPath = resolveConfig(file);
-  const config = await loadConfig(configPath);
+async function createSrv(file?: string) {
+  const config = !!file ? await loadConfig(resolveConfig(file)) : DefaultReactSrvConfig;
 
   if (!config || typeof config !== "object") {
     throw new Error("Invalid config export");
@@ -48,7 +47,7 @@ async function createSrv(file: string) {
 program
   .command("bundle")
   .description("Bundle the project")
-  .requiredOption("-f, --file <path>", "Config file")
+  .option("-f, --file <path>", "Config file")
   .action(async (opts) => {
     const srv = await createSrv(opts.file);
     await srv.prebundle();
@@ -58,7 +57,7 @@ program
 program
   .command("render")
   .description("Prerender static output")
-  .requiredOption("-f, --file <path>", "Config file")
+  .option("-f, --file <path>", "Config file")
   .action(async (opts) => {
     const srv = await createSrv(opts.file);
     await srv.prerender();
