@@ -7,7 +7,6 @@ const Document = require('./documents/Document.jsx').default;
 module.exports = new ReactSrv({
   Document, 
   isProd: process.env.NODE_ENV === 'production',
-  outDir: 'hydrate',
-  outPath: './public',
+  outPath: './public/hydrate',
   srcPath: './src',
 });

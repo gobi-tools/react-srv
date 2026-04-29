@@ -92,7 +92,6 @@ const react = new ReactSrv({
   Document, 
   srcPath: './src',
   outPath: './public',
-  outDir: 'hydrate',
 });
 react.prerender()` }) }) }),
         /* @__PURE__ */ jsxs4("p", { children: [

@@ -15,7 +15,6 @@ type TReactSrvConfig = {
   reactLocation?: string;
   srcPath?: string;
   outPath?: string,
-  outDir?: string,
   hydrate?: boolean;
   isProd?: boolean,
   Document?: React.FC<any>,
@@ -36,8 +35,7 @@ const DefaultReactSrvConfig: TReactSrvConfig = {
   reactVersion: '19.2.0',
   reactLocation: 'https://esm.sh',
   srcPath: './src',
-  outPath: './public',
-  outDir: 'react-srv',
+  outPath: './public/hydrate',
   hydrate: true,
   isProd: false,
   Document: DefaultDocument
@@ -60,7 +58,7 @@ export default class ReactSrv {
       return;
     }
 
-    const files = FileUtils.formOutputFiles(this.config.srcPath, this.config.outPath, this.config.outDir);
+    const files = FileUtils.formOutputFiles(this.config.srcPath, this.config.outPath, true);
     this.prepbundle(files);
   }
 
@@ -216,9 +214,14 @@ export default class ReactSrv {
   }
 
   private getPublicHydrationPath(page: string): string {
-    const folder = this.config.outDir;
+    const outPath = this.config.outPath;
+    const subpaths = outPath.split('/').map(s => s.trim()).filter(s => s != '' && s != '.');
+    subpaths.shift(); // remove first element
+    const path = subpaths.join('/');
     const fp = FileUtils.toKebabCase(`${page}.js`);
-    return `/${folder}/${fp}`;
+    const finalPath = path === '' ? '' : `/${path}`;
+    const result = `${finalPath}/${fp}`;
+    return result;
   }
 
   private getRelativeHydrationPath(page: string): string {
@@ -246,7 +249,7 @@ class FileUtils {
     return true;
   }
 
-  static formOutputFiles(srcPath: string, outPath: string, outDir?: string): TOutputFile[] {
+  static formOutputFiles(srcPath: string, outPath: string, flatten: boolean = false): TOutputFile[] {
     const files = fg.sync("**/*.{tsx,jsx}", {
       cwd: srcPath,
       absolute: true,
@@ -263,7 +266,7 @@ class FileUtils {
       const relPath = path.relative(srcPath, absPath);
       const relDir = path.dirname(relPath);
 
-      const writePath = !!outDir ? path.join(outPath, outDir) : (relDir === "." ? outPath : path.join(outPath, relDir));
+      const writePath = flatten === true ? outPath : (relDir === "." ? outPath : path.join(outPath, relDir));
 
       return {
         absPath,

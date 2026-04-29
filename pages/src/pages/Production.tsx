@@ -73,29 +73,25 @@ react.prebundle()`}</code></pre>
         </figure>
         <p>
           Than you can execute directly or add it to your own build pipeline.
-          When successfull, it will write the compiled <code>.js</code> files in <code>./public/react-srv</code>.
+          When successfull, it will write the compiled <code>.js</code> files in <code>./public/hydrate</code>.
         </p>
         <p>
-          You can control the output path and name with the <code>outPath</code> and <code>outDir</code> config values:
+          You can control the output path with the <code>outPath</code> config value:
         </p>
         <figure>
           <pre><code>{`const react = new ReactSrv({
   Document,
   srcPath: './input',
-  outPath: './dist',    // ./public
-  outDir: 'hydration',  // ./react-srv
+  outPath: './dist',    // default "./public/hydrate"
 });`}</code></pre>
         </figure>
-        <details className="card">
-          <summary>Notes on the output folder</summary>
-          <p>
-            The output folder must be statically served or accessible via the internet, otherwise
-            the hydration scripts won't be able to load.
-          </p>
-          <figure>
-            <pre><code>{`app.use(express.static('public'));`}</code></pre>
-          </figure>
-        </details>
+        <p>
+          The root of the output folder must be statically served or accessible via the internet, otherwise
+          the hydration scripts won't be able to load.
+        </p>
+        <figure>
+          <pre><code>{`app.use(express.static('public'));`}</code></pre>
+        </figure>
       </section>
 
       <section>
@@ -109,7 +105,6 @@ react.prebundle()`}</code></pre>
   Document,
   srcPath: './input',
   outPath: './dist',
-  outDir: 'hydration',
   isProd: process.env.NODE_ENV === 'production',
 });`}</code></pre>
         </figure>
@@ -120,7 +115,7 @@ react.prebundle()`}</code></pre>
         <details className="card">
           <summary>Small optimisation</summary>
           <p>
-            It's worthwhile to create the <code>ReactSrv</code> instance in one file and import it in 
+            It's worthwhile to create the <code>ReactSrv</code> instance in one file and import it in
             your route definitions file or your prebundling script so as to avoid duplicating instances
             that are harder to keep in sync.
           </p>
@@ -129,7 +124,6 @@ react.prebundle()`}</code></pre>
   Document,
   srcPath: './input',
   outPath: './dist',
-  outDir: 'hydration',
   isProd: process.env.NODE_ENV === 'production',
 });`}</code></pre>
           </figure>
@@ -169,7 +163,7 @@ react.prebundle()`}</code></pre>
 
       <blockquote className="card success">
         <p className="group">
-          <SettingsIcon/>
+          <SettingsIcon />
           <b>Demos</b>
         </p>
         <p>

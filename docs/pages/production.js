@@ -151,27 +151,21 @@ react.prebundle()` }) }) }),
           "Than you can execute directly or add it to your own build pipeline. When successfull, it will write the compiled ",
           /* @__PURE__ */ jsx4("code", { children: ".js" }),
           " files in ",
-          /* @__PURE__ */ jsx4("code", { children: "./public/react-srv" }),
+          /* @__PURE__ */ jsx4("code", { children: "./public/hydrate" }),
           "."
         ] }),
         /* @__PURE__ */ jsxs4("p", { children: [
-          "You can control the output path and name with the ",
+          "You can control the output path with the ",
           /* @__PURE__ */ jsx4("code", { children: "outPath" }),
-          " and ",
-          /* @__PURE__ */ jsx4("code", { children: "outDir" }),
-          " config values:"
+          " config value:"
         ] }),
         /* @__PURE__ */ jsx4("figure", { children: /* @__PURE__ */ jsx4("pre", { children: /* @__PURE__ */ jsx4("code", { children: `const react = new ReactSrv({
   Document,
   srcPath: './input',
-  outPath: './dist',    // ./public
-  outDir: 'hydration',  // ./react-srv
+  outPath: './dist',    // default "./public/hydrate"
 });` }) }) }),
-        /* @__PURE__ */ jsxs4("details", { className: "card", children: [
-          /* @__PURE__ */ jsx4("summary", { children: "Notes on the output folder" }),
-          /* @__PURE__ */ jsx4("p", { children: "The output folder must be statically served or accessible via the internet, otherwise the hydration scripts won't be able to load." }),
-          /* @__PURE__ */ jsx4("figure", { children: /* @__PURE__ */ jsx4("pre", { children: /* @__PURE__ */ jsx4("code", { children: `app.use(express.static('public'));` }) }) })
-        ] })
+        /* @__PURE__ */ jsx4("p", { children: "The root of the output folder must be statically served or accessible via the internet, otherwise the hydration scripts won't be able to load." }),
+        /* @__PURE__ */ jsx4("figure", { children: /* @__PURE__ */ jsx4("pre", { children: /* @__PURE__ */ jsx4("code", { children: `app.use(express.static('public'));` }) }) })
       ] }),
       /* @__PURE__ */ jsxs4("section", { children: [
         /* @__PURE__ */ jsx4("h2", { children: "Select environment" }),
@@ -186,7 +180,6 @@ react.prebundle()` }) }) }),
   Document,
   srcPath: './input',
   outPath: './dist',
-  outDir: 'hydration',
   isProd: process.env.NODE_ENV === 'production',
 });` }) }) }),
         /* @__PURE__ */ jsxs4("p", { children: [
@@ -211,7 +204,6 @@ react.prebundle()` }) }) }),
   Document,
   srcPath: './input',
   outPath: './dist',
-  outDir: 'hydration',
   isProd: process.env.NODE_ENV === 'production',
 });` }) }) })
         ] })

@@ -11,7 +11,6 @@ const react = new ReactSrv({
   Document, 
   srcPath: &#x27;./src&#x27;,
   outPath: &#x27;./public&#x27;,
-  outDir: &#x27;hydrate&#x27;,
 });
 react.prerender()</code></pre></figure><p>We setup the <code>react</code> instance in a familiar way:</p><ul><li>Set a custom HTML Document (or use the default one)</li><li>Tell the library where the source <code>.tsx</code> or <code>.jsx</code> pages are</li><li>And where to output the resulting HTML and JS files</li></ul><p>And that&#x27;s it! All you need to do is execute the file to have a full, statically generated, website.</p></section><section><h2>Disable hydration</h2><p>Prerendering, by default, generates both HTML and hydration JS. In this way statically generated websites can maintain most of the interactivity provided by React.</p><p>If you don&#x27;t want interactivity, you can disable hydration altogether:</p><figure><pre><code>const react = new ReactSrv({ 
   Document, 

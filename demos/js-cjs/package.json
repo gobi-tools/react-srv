@@ -6,7 +6,7 @@
   "type": "commonjs",
   "scripts": {
     "prebundle": "node scripts/prebundle.js",
-    "build": "npm run prebundle && cp -r src/ dist/",
+    "build": "npm run prebundle && rm -rf dist/ && cp -r src/ dist/",
     "dev": "node src/server.js",
     "start": "NODE_ENV=production node dist/server.js"
   },
@@ -17,7 +17,7 @@
     "express": "^5.1.0",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
-    "react-srv": "file:../../lib/react-srv-0.0.49.tgz"
+    "react-srv": "file:../../lib/react-srv-0.0.50.tgz"
   },
   "devDependencies": {
     "@babel/preset-react": "^7.28.5",

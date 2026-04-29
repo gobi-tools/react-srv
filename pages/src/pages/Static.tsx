@@ -23,7 +23,6 @@ const react = new ReactSrv({
   Document, 
   srcPath: './src',
   outPath: './public',
-  outDir: 'hydrate',
 });
 react.prerender()`}</code></pre>
         </figure>
