@@ -3,7 +3,7 @@ import React from "https://esm.sh/react@19.2.0";
 import { hydrateRoot } from "https://esm.sh/react-dom@19.2.0/client";
 
 // src/constants.ts
-var PAGE_HOME_URL = "/";
+var PAGE_HOME_URL = "index.html";
 
 // src/components/HomeIcon.tsx
 import { jsx, jsxs } from "https://esm.sh/react@19.2.0/jsx-runtime";

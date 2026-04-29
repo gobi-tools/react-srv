@@ -22,9 +22,9 @@ var BABEL_URL = "https://babeljs.io/";
 var DEMO_TS_URL = "https://github.com/gobi-tools/react-srv/tree/main/demos/ts";
 var DEMO_JS_ESM_URL = "https://github.com/gobi-tools/react-srv/tree/main/demos/js-esm";
 var DEMO_JS_CJS_URL = "https://github.com/gobi-tools/react-srv/tree/main/demos/js-cjs";
-var PAGE_HOME_URL = "/";
-var PAGE_PRODUCTION_URL = "/pages/production.html";
-var PAGE_STATIC_URL = "/pages/static.html";
+var PAGE_HOME_URL = "index.html";
+var PAGE_PRODUCTION_URL = "pages/production.html";
+var PAGE_STATIC_URL = "pages/static.html";
 var SSR_URL = "https://developer.mozilla.org/en-US/docs/Glossary/SSR";
 var SSG_URL = "https://en.wikipedia.org/wiki/Static_site_generator";
 

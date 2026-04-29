@@ -5,8 +5,8 @@ import { hydrateRoot } from "https://esm.sh/react-dom@19.2.0/client";
 // src/constants.ts
 var PRODUCT_NAME = "React Srv";
 var DEMO_STATIC_URL = "https://github.com/gobi-tools/react-srv/tree/main/pages";
-var PAGE_HOME_URL = "/";
-var PAGE_PRODUCTION_URL = "/pages/production.html";
+var PAGE_HOME_URL = "index.html";
+var PAGE_PRODUCTION_URL = "pages/production.html";
 var SSG_URL = "https://en.wikipedia.org/wiki/Static_site_generator";
 
 // src/components/HomeIcon.tsx

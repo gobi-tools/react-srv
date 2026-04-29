@@ -8,7 +8,7 @@ var REACT_HYDRATION_URL = "https://react.dev/reference/react-dom/client/hydrateR
 var REACT_RENDER_URL = "https://react.dev/reference/react-dom/server/renderToString";
 var NGINX_URL = "https://nginx.org/";
 var DEMO_PROD_URL = "https://github.com/gobi-tools/react-srv/tree/main/demos";
-var PAGE_HOME_URL = "/";
+var PAGE_HOME_URL = "index.html";
 
 // src/components/HomeIcon.tsx
 import { jsx, jsxs } from "https://esm.sh/react@19.2.0/jsx-runtime";
