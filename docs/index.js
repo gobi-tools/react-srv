@@ -252,12 +252,20 @@ function Index() {
   </>
 }` }) }) }),
         /* @__PURE__ */ jsxs4("p", { children: [
+          "Optionally add a ",
+          /* @__PURE__ */ jsx4("code", { children: "react-srv.config.ts" }),
+          " or ",
+          /* @__PURE__ */ jsx4("code", { children: ".js" }),
+          " file:"
+        ] }),
+        /* @__PURE__ */ jsx4("figure", { children: /* @__PURE__ */ jsx4("pre", { children: /* @__PURE__ */ jsx4("code", { children: `export default {}` }) }) }),
+        /* @__PURE__ */ jsxs4("p", { children: [
           "And ",
           PRODUCT_NAME,
           " will render it as static HTML you can send down the wire:"
         ] }),
         /* @__PURE__ */ jsx4("figure", { children: /* @__PURE__ */ jsx4("pre", { children: /* @__PURE__ */ jsx4("code", { children: `const app = express();
-const react = new ReactSrv();
+const react = new ReactSrv(config);
 
 app.get('/', (_, res) => {
   return res.status(200).send(react.render(Page));
@@ -268,12 +276,12 @@ app.get('/', (_, res) => {
         /* @__PURE__ */ jsx4("h2", { children: "Documents" }),
         /* @__PURE__ */ jsxs4("p", { children: [
           PRODUCT_NAME,
-          " will wrap all components in a default HTML document. You may create a custom one ..."
+          " will wrap all components in a default HTML document. You may create a custom one to specify titles, stylesheets, scaling, etc."
         ] }),
         /* @__PURE__ */ jsx4("figure", { children: /* @__PURE__ */ jsx4("pre", { children: /* @__PURE__ */ jsx4("code", { children: `export default function Document({ children }) {
   return <html lang="en">
     <head>
-      <title>My document</title>
+      <title>Title</title>
       {/*... all other meta tags, link tags, etc */}
     </head>
     <body>
@@ -281,13 +289,8 @@ app.get('/', (_, res) => {
     </body>
   </html>
 }` }) }) }),
-        /* @__PURE__ */ jsxs4("p", { children: [
-          "... which you can reference when creating the ",
-          /* @__PURE__ */ jsx4("code", { children: "ReactSrv" }),
-          " instance:"
-        ] }),
-        /* @__PURE__ */ jsx4("figure", { children: /* @__PURE__ */ jsx4("pre", { children: /* @__PURE__ */ jsx4("code", { children: `const react = new ReactSrv({ Document });` }) }) }),
-        /* @__PURE__ */ jsx4("p", { children: "In this way you  can even have different documents for different routes, if you wish." })
+        /* @__PURE__ */ jsx4("p", { children: "You can reference it in the config file:" }),
+        /* @__PURE__ */ jsx4("figure", { children: /* @__PURE__ */ jsx4("pre", { children: /* @__PURE__ */ jsx4("code", { children: `export default { Document };` }) }) })
       ] }),
       /* @__PURE__ */ jsxs4("section", { children: [
         /* @__PURE__ */ jsx4("h2", { children: "Components" }),

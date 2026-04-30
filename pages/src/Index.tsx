@@ -34,11 +34,17 @@ export default function Index() {
 }`}</code></pre>
         </figure>
         <p>
+          Optionally add a <code>react-srv.config.ts</code> or <code>.js</code> file:
+        </p>
+        <figure>
+          <pre><code>{`export default {}`}</code></pre>
+        </figure>
+        <p>
           And {PRODUCT_NAME} will render it as static HTML you can send down the wire:
         </p>
         <figure>
           <pre><code>{`const app = express();
-const react = new ReactSrv();
+const react = new ReactSrv(config);
 
 app.get('/', (_, res) => {
   return res.status(200).send(react.render(Page));
@@ -51,13 +57,14 @@ app.get('/', (_, res) => {
       <section>
         <h2>Documents</h2>
         <p>
-          {PRODUCT_NAME} will wrap all components in a default HTML document. You may create a custom one ...
+          {PRODUCT_NAME} will wrap all components in a default HTML document. You may create a custom one to 
+          specify titles, stylesheets, scaling, etc.
         </p>
         <figure>
           <pre><code>{`export default function Document({ children }) {
   return <html lang="en">
     <head>
-      <title>My document</title>
+      <title>Title</title>
       {/*... all other meta tags, link tags, etc */}
     </head>
     <body>
@@ -67,17 +74,13 @@ app.get('/', (_, res) => {
 }`}</code></pre>
         </figure>
         <p>
-          ... which you can reference when creating the <code>ReactSrv</code> instance:
+          You can reference it in the config file:
         </p>
         <figure>
-          <pre><code>{`const react = new ReactSrv({ Document });`}</code></pre>
+          <pre><code>{`export default { Document };`}</code></pre>
         </figure>
-        <p>
-          In this way you  can even have different documents for different routes, if you wish.
-        </p>
       </section>
 
-      {/* components */}
       <section>
         <h2>Components</h2>
         <p>

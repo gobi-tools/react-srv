@@ -15,16 +15,19 @@ export default function Static() {
           If you've read the section on <a href={PAGE_PRODUCTION_URL}>getting to production</a>, then you're already ninety percent there.
         </p>
         <p>
+          You can specify the source and output destinations and whether you want to keep javascript hydration (default) 
+          or disable it completely for a pure static experiece, in the config file:
+        </p>
+        {/* <p>
           You can keep the same <code>react-srv.config.ts</code> (or <code>.js</code>) file. Additionally you can choose to
           enable javascript hydration (default) or disable it for a pure static experience:
-        </p>
+        </p> */}
         <figure>
           <pre><code>{`export default {
   document: Document,
   srcPath: './src',
   outPath: './public',
   hydrate: true, // or false
-  isProd: process.env.NODE_ENV === 'production',
 }`}</code></pre>
         </figure>
         <p>
@@ -33,8 +36,7 @@ export default function Static() {
         <figure>
           <pre><code>{`...
 "scripts": {
-  "render": "react-srv render -f src/react-srv.config.ts",
-  "build": "npm run render && ... other build steps",
+  "render": "react-srv render -f src/react-srv.config.ts && ... other build steos"
 },`}</code></pre>
         </figure>
         <p>

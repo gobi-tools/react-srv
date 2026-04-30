@@ -80,19 +80,12 @@ function Static() {
           /* @__PURE__ */ jsx4("a", { href: PAGE_PRODUCTION_URL, children: "getting to production" }),
           ", then you're already ninety percent there."
         ] }),
-        /* @__PURE__ */ jsxs4("p", { children: [
-          "You can keep the same ",
-          /* @__PURE__ */ jsx4("code", { children: "react-srv.config.ts" }),
-          " (or ",
-          /* @__PURE__ */ jsx4("code", { children: ".js" }),
-          ") file. Additionally you can choose to enable javascript hydration (default) or disable it for a pure static experience:"
-        ] }),
+        /* @__PURE__ */ jsx4("p", { children: "You can specify the source and output destinations and whether you want to keep javascript hydration (default) or disable it completely for a pure static experiece, in the config file:" }),
         /* @__PURE__ */ jsx4("figure", { children: /* @__PURE__ */ jsx4("pre", { children: /* @__PURE__ */ jsx4("code", { children: `export default {
   document: Document,
   srcPath: './src',
   outPath: './public',
   hydrate: true, // or false
-  isProd: process.env.NODE_ENV === 'production',
 }` }) }) }),
         /* @__PURE__ */ jsxs4("p", { children: [
           "Then you can add the following step to your build pipeline in ",
@@ -101,8 +94,7 @@ function Static() {
         ] }),
         /* @__PURE__ */ jsx4("figure", { children: /* @__PURE__ */ jsx4("pre", { children: /* @__PURE__ */ jsx4("code", { children: `...
 "scripts": {
-  "render": "react-srv render -f src/react-srv.config.ts",
-  "build": "npm run render && ... other build steps",
+  "render": "react-srv render -f src/react-srv.config.ts && ... other build steos"
 },` }) }) }),
         /* @__PURE__ */ jsxs4("p", { children: [
           "The last thing you need to do is to make sure the ",

@@ -11,13 +11,13 @@
   &lt;body&gt;...&lt;/body&gt;
   &lt;script&gt;... set initial props ...&lt;/script&gt;
   &lt;script type=&quot;module&quot;&gt;... hydration script ... &lt;/script&gt;
-&lt;/html&gt;</code></pre></figure><p>The markup is created from the component itself. The hydration script is created by reading the source file, <code>Page.tsx</code> or <code>Page.jsx</code> from disk.</p><p>This is good for development but it&#x27;s not ideal for production, firstly because the source code might not be present at all and secondly because reading and compiling code every time is not very fast.</p><p>So, for production we can pre compile the necessary javascript and have it ready to go.</p><p>First, we need to create a config file, <code>react-srv.config.ts</code> (or <code>.js</code>).</p><figure><pre><code>export default {
+&lt;/html&gt;</code></pre></figure><p>The markup is created from the component itself and the hydration script is created by reading the source file, <code>Page.tsx</code> or <code>Page.jsx</code>, from disk.</p><p>This is good for development but it&#x27;s not ideal for production, first because the source code might not be present at all and second because reading and compiling code every time is not very efficient.</p><p>So, for production we can precompile the necessary javascript and have it ready to go.</p><p>By default, <!-- -->React Srv<!-- --> looks in the <code>./src</code> folder to find React files and outputs compiled javascript in <code>./public/hydrate</code>. You can change this these locations as well as whether you&#x27;re in dev or prod mode in the config file:</p><figure><pre><code>export default {
   document: Document,
-  srcPath: &#x27;./src&#x27;,
-  outPath: &#x27;./public/hydrate&#x27;,
+  srcPath: &#x27;./src&#x27;, // default
+  outPath: &#x27;./public/hydrate&#x27;, // default
   isProd: process.env.NODE_ENV === &#x27;production&#x27;,
-}</code></pre></figure><p>This tells <!-- -->React Srv<!-- --> where to find all the source code that needs pre compiling and where to place the output.</p><p>We can now reference it via the <code>bundle</code> command, in <code>package.json</code></p><figure><pre><code>...
+}</code></pre></figure><p>Which you can reference via the <code>bundle</code> command, in <code>package.json</code></p><figure><pre><code>...
 &quot;scripts&quot;: {
-  &quot;bundle&quot;: &quot;react-srv bundle -f src/react-srv.config.ts&quot;,
-  &quot;build&quot;: &quot;npm run bundle &amp;&amp; ... other build steps&quot;,
+  &quot;build&quot;: &quot;react-srv bundle -f src/react-srv.config.ts &amp;&amp; ... other build steps&quot;,
+  &quot;start&quot;: &quot;NODE_ENV=production node dist/server.js&quot;
 },</code></pre></figure><p>The last thing you need to do is to make sure the <code>/public</code> folder is statically served and accessible and you&#x27;re good to go.</p></section><hr/><blockquote class="card success"><p class="group"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.671 4.136a2.34 2.34 0 0 1 4.659 0 2.34 2.34 0 0 0 3.319 1.915 2.34 2.34 0 0 1 2.33 4.033 2.34 2.34 0 0 0 0 3.831 2.34 2.34 0 0 1-2.33 4.033 2.34 2.34 0 0 0-3.319 1.915 2.34 2.34 0 0 1-4.659 0 2.34 2.34 0 0 0-3.32-1.915 2.34 2.34 0 0 1-2.33-4.033 2.34 2.34 0 0 0 0-3.831A2.34 2.34 0 0 1 6.35 6.051a2.34 2.34 0 0 0 3.319-1.915"></path><circle cx="12" cy="12" r="3"></circle></svg><b>Demos</b></p><p>Check out production ready demos for Typescript and Javascript <a href="https://github.com/gobi-tools/react-srv/tree/main/demos" target="_blank">here</a>.</p></blockquote></main></div><script defer="" type="module" src="./production.js"></script></body></html>

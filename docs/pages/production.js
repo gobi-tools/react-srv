@@ -86,42 +86,39 @@ function Production() {
   <script type="module">... hydration script ... <\/script>
 </html>` }) }) }),
         /* @__PURE__ */ jsxs4("p", { children: [
-          "The markup is created from the component itself. The hydration script is created by reading the source file, ",
+          "The markup is created from the component itself and the hydration script is created by reading the source file, ",
           /* @__PURE__ */ jsx4("code", { children: "Page.tsx" }),
           " or ",
           /* @__PURE__ */ jsx4("code", { children: "Page.jsx" }),
-          " from disk."
+          ", from disk."
         ] }),
-        /* @__PURE__ */ jsx4("p", { children: "This is good for development but it's not ideal for production, firstly because the source code might not be present at all and secondly because reading and compiling code every time is not very fast." }),
-        /* @__PURE__ */ jsx4("p", { children: "So, for production we can pre compile the necessary javascript and have it ready to go." }),
+        /* @__PURE__ */ jsx4("p", { children: "This is good for development but it's not ideal for production, first because the source code might not be present at all and second because reading and compiling code every time is not very efficient." }),
+        /* @__PURE__ */ jsx4("p", { children: "So, for production we can precompile the necessary javascript and have it ready to go." }),
         /* @__PURE__ */ jsxs4("p", { children: [
-          "First, we need to create a config file, ",
-          /* @__PURE__ */ jsx4("code", { children: "react-srv.config.ts" }),
-          " (or ",
-          /* @__PURE__ */ jsx4("code", { children: ".js" }),
-          ")."
+          "By default, ",
+          PRODUCT_NAME,
+          " looks in the ",
+          /* @__PURE__ */ jsx4("code", { children: "./src" }),
+          " folder to find React files and outputs compiled javascript in ",
+          /* @__PURE__ */ jsx4("code", { children: "./public/hydrate" }),
+          ". You can change this these locations as well as whether you're in dev or prod mode in the config file:"
         ] }),
         /* @__PURE__ */ jsx4("figure", { children: /* @__PURE__ */ jsx4("pre", { children: /* @__PURE__ */ jsx4("code", { children: `export default {
   document: Document,
-  srcPath: './src',
-  outPath: './public/hydrate',
+  srcPath: './src', // default
+  outPath: './public/hydrate', // default
   isProd: process.env.NODE_ENV === 'production',
 }` }) }) }),
         /* @__PURE__ */ jsxs4("p", { children: [
-          "This tells ",
-          PRODUCT_NAME,
-          " where to find all the source code that needs pre compiling and where to place the output."
-        ] }),
-        /* @__PURE__ */ jsxs4("p", { children: [
-          "We can now reference it via the ",
+          "Which you can reference via the ",
           /* @__PURE__ */ jsx4("code", { children: "bundle" }),
           " command, in ",
           /* @__PURE__ */ jsx4("code", { children: "package.json" })
         ] }),
         /* @__PURE__ */ jsx4("figure", { children: /* @__PURE__ */ jsx4("pre", { children: /* @__PURE__ */ jsx4("code", { children: `...
 "scripts": {
-  "bundle": "react-srv bundle -f src/react-srv.config.ts",
-  "build": "npm run bundle && ... other build steps",
+  "build": "react-srv bundle -f src/react-srv.config.ts && ... other build steps",
+  "start": "NODE_ENV=production node dist/server.js"
 },` }) }) }),
         /* @__PURE__ */ jsxs4("p", { children: [
           "The last thing you need to do is to make sure the ",

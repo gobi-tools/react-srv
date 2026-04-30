@@ -10,23 +10,23 @@
   return &lt;&gt;
     &lt;h1&gt;Hello, world!&lt;/h1&gt;
   &lt;/&gt;
-}</code></pre></figure><p>And <!-- -->React Srv<!-- --> will render it as static HTML you can send down the wire:</p><figure><pre><code>const app = express();
-const react = new ReactSrv();
+}</code></pre></figure><p>Optionally add a <code>react-srv.config.ts</code> or <code>.js</code> file:</p><figure><pre><code>export default {}</code></pre></figure><p>And <!-- -->React Srv<!-- --> will render it as static HTML you can send down the wire:</p><figure><pre><code>const app = express();
+const react = new ReactSrv(config);
 
 app.get(&#x27;/&#x27;, (_, res) =&gt; {
   return res.status(200).send(react.render(Page));
 });
-</code></pre></figure></section><section><h2>Documents</h2><p>React Srv<!-- --> will wrap all components in a default HTML document. You may create a custom one ...</p><figure><pre><code>export default function Document({ children }) {
+</code></pre></figure></section><section><h2>Documents</h2><p>React Srv<!-- --> will wrap all components in a default HTML document. You may create a custom one to specify titles, stylesheets, scaling, etc.</p><figure><pre><code>export default function Document({ children }) {
   return &lt;html lang=&quot;en&quot;&gt;
     &lt;head&gt;
-      &lt;title&gt;My document&lt;/title&gt;
+      &lt;title&gt;Title&lt;/title&gt;
       {/*... all other meta tags, link tags, etc */}
     &lt;/head&gt;
     &lt;body&gt;
       {children}
     &lt;/body&gt;
   &lt;/html&gt;
-}</code></pre></figure><p>... which you can reference when creating the <code>ReactSrv</code> instance:</p><figure><pre><code>const react = new ReactSrv({ Document });</code></pre></figure><p>In this way you  can even have different documents for different routes, if you wish.</p></section><section><h2>Components</h2><p>Just like in <a href="https://react.dev/learn#components" target="_blanl">any React app</a>, you can split a large page into multiple components.</p><figure><pre><code>function Greeting() { 
+}</code></pre></figure><p>You can reference it in the config file:</p><figure><pre><code>export default { Document };</code></pre></figure></section><section><h2>Components</h2><p>Just like in <a href="https://react.dev/learn#components" target="_blanl">any React app</a>, you can split a large page into multiple components.</p><figure><pre><code>function Greeting() { 
   return &lt;p&gt;Today is a fine day!&lt;/p&gt;
 }
 
