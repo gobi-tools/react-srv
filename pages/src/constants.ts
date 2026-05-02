@@ -18,9 +18,7 @@ export const DEMO_JS_CJS_URL = 'https://github.com/gobi-tools/react-srv/tree/mai
 export const DEMO_STATIC_URL = 'https://github.com/gobi-tools/react-srv/tree/main/pages';
 export const DEMO_PROD_URL = 'https://github.com/gobi-tools/react-srv/tree/main/demos';
 
-export const PAGE_HOME_URL = 'index.html';
-export const PAGE_PRODUCTION_URL = 'pages/production.html';
-export const PAGE_STATIC_URL = 'pages/static.html';
-
 export const SSR_URL = 'https://developer.mozilla.org/en-US/docs/Glossary/SSR';
 export const SSG_URL = 'https://en.wikipedia.org/wiki/Static_site_generator';
+
+export const PUB_SUBDOMAIN = 'react-srv';

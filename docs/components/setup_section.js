@@ -9,10 +9,10 @@ var BABEL_URL = "https://babeljs.io/";
 var DEMO_TS_URL = "https://github.com/gobi-tools/react-srv/tree/main/demos/ts";
 var DEMO_JS_ESM_URL = "https://github.com/gobi-tools/react-srv/tree/main/demos/js-esm";
 var DEMO_JS_CJS_URL = "https://github.com/gobi-tools/react-srv/tree/main/demos/js-cjs";
-var PAGE_HOME_URL = "index.html";
+var PUB_SUBDOMAIN = "react-srv";
 
 // src/components/SetupSection.tsx
-import { useState } from "https://esm.sh/react@19.2.0";
+import { useState as useState2 } from "https://esm.sh/react@19.2.0";
 
 // src/components/SettingsIcon.tsx
 import { jsx, jsxs } from "https://esm.sh/react@19.2.0/jsx-runtime";
@@ -37,13 +37,52 @@ function SettingsIcon() {
   );
 }
 
+// src/common/useRoute.ts
+import { useState, useEffect } from "https://esm.sh/react@19.2.0";
+function useRoute() {
+  const [route, setRoute] = useState(void 0);
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const path = window.location.pathname;
+      const baseRoute = path.includes(PUB_SUBDOMAIN) ? PUB_SUBDOMAIN : "";
+      setRoute(baseRoute);
+    }
+  }, []);
+  return route;
+}
+
+// src/common/routes.ts
+var PAGE_HOME_URL = "index.html";
+var PAGE_PRODUCTION_URL = "pages/production.html";
+var PAGE_STATIC_URL = "pages/static.html";
+var RouteMaster = class _RouteMaster {
+  static baseRoute = "";
+  static home(domain) {
+    const base = _RouteMaster.getBase(domain);
+    return `${base}${PAGE_HOME_URL}`;
+  }
+  static production(domain) {
+    const base = _RouteMaster.getBase(domain);
+    return `${base}${PAGE_PRODUCTION_URL}`;
+  }
+  static stat(domain) {
+    const base = _RouteMaster.getBase(domain);
+    return `${base}${PAGE_STATIC_URL}`;
+  }
+  static getBase(domain) {
+    if (!domain) return "/";
+    return domain === "" ? "/" : `/${domain}/`;
+  }
+};
+
 // src/components/SetupSection.tsx
 import { Fragment, jsx as jsx2, jsxs as jsxs2 } from "https://esm.sh/react@19.2.0/jsx-runtime";
 function TypescriptSetup() {
+  const route = useRoute();
   return /* @__PURE__ */ jsxs2(Fragment, { children: [
     /* @__PURE__ */ jsxs2("p", { children: [
       "First, install the latest versions of ",
-      /* @__PURE__ */ jsx2("a", { href: PAGE_HOME_URL, children: "react-srv" }),
+      /* @__PURE__ */ jsx2("a", { href: RouteMaster.home(route), children: "react-srv" }),
       " and ",
       /* @__PURE__ */ jsx2("a", { href: REACT_URL, target: "_blank", children: "React" }),
       "."
@@ -83,10 +122,11 @@ npm i @types/react-dom@19.2.0 --save-dev` }) }) }),
   ] });
 }
 function JSESMSetup() {
+  const route = useRoute();
   return /* @__PURE__ */ jsxs2(Fragment, { children: [
     /* @__PURE__ */ jsxs2("p", { children: [
       "First, install the latest versions of ",
-      /* @__PURE__ */ jsx2("a", { href: PAGE_HOME_URL, children: "react-srv" }),
+      /* @__PURE__ */ jsx2("a", { href: RouteMaster.home(route), children: "react-srv" }),
       ", ",
       /* @__PURE__ */ jsx2("a", { href: REACT_URL, target: "_blank", children: "React" }),
       " and ",
@@ -135,10 +175,11 @@ npm i tsx --save-dev` }) }) }),
   ] });
 }
 function JSCJSSetup() {
+  const route = useRoute();
   return /* @__PURE__ */ jsxs2(Fragment, { children: [
     /* @__PURE__ */ jsxs2("p", { children: [
       "First, install the latest versions of ",
-      /* @__PURE__ */ jsx2("a", { href: PAGE_HOME_URL, children: "react-srv" }),
+      /* @__PURE__ */ jsx2("a", { href: RouteMaster.home(route), children: "react-srv" }),
       ", ",
       /* @__PURE__ */ jsx2("a", { href: REACT_URL, target: "_blank", children: "React" }),
       " and ",
@@ -191,7 +232,7 @@ npm i @babel/register --save-dev` }) }) }),
   ] });
 }
 function SetupSection() {
-  const [environment, selectEnvironment] = useState("ts");
+  const [environment, selectEnvironment] = useState2("ts");
   return /* @__PURE__ */ jsxs2("section", { children: [
     /* @__PURE__ */ jsx2("h2", { children: "Setup" }),
     /* @__PURE__ */ jsx2("p", { children: "Setup is slightly different based on the platform you're running:" }),

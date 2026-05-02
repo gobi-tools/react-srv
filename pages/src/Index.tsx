@@ -1,8 +1,12 @@
+import { RouteMaster } from "./common/routes";
+import { useRoute } from "./common/useRoute";
 import GitHubIcon from "./components/GitHubIcon";
 import SetupSection from "./components/SetupSection";
-import { PAGE_PRODUCTION_URL, PAGE_STATIC_URL, PRODUCT_NAME, REACT_COMPONENTS_URL, REACT_HOOKS_URL, REACT_PROPS_URL, SSG_URL, SSR_URL } from "./constants";
+import { PRODUCT_NAME, REACT_COMPONENTS_URL, REACT_HOOKS_URL, REACT_PROPS_URL, SSG_URL, SSR_URL } from "./constants";
  
 export default function Index() {
+  const route = useRoute();
+
   return <>
     <header>
       <div className="hero align-center">
@@ -168,7 +172,7 @@ export default function Page() {
                 Look at best practices for <a href={SSR_URL} target="_blank">server side rendering (SSR)</a> in production.
               </p>
               <p>
-                <a href={PAGE_PRODUCTION_URL}>Learn more</a>
+                <a href={RouteMaster.production(route)}>Learn more</a>
               </p>
             </div>
           </div>
@@ -181,7 +185,7 @@ export default function Page() {
                 {PRODUCT_NAME} can directly output HTML for <a href={SSG_URL} target="_blank">static site generation (SSG)</a>.
               </p>
               <p>
-                <a href={PAGE_STATIC_URL}>Learn more</a>
+                <a href={RouteMaster.stat(route)}>Learn more</a>
               </p>
             </div>
           </div>

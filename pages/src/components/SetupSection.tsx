@@ -1,13 +1,17 @@
-import { BABEL_URL, DEMO_JS_CJS_URL, DEMO_JS_ESM_URL, DEMO_TS_URL, PAGE_HOME_URL, REACT_URL, TSX_URL } from "../constants";
+import { BABEL_URL, DEMO_JS_CJS_URL, DEMO_JS_ESM_URL, DEMO_TS_URL, REACT_URL, TSX_URL } from "../constants";
 import { useState } from "react";
 import SettingsIcon from "./SettingsIcon";
+import { useRoute } from "../common/useRoute";
+import { RouteMaster } from "../common/routes";
 
 type TEnvironment = 'ts' | 'js-esm' | 'js-cjs';
 
 function TypescriptSetup() {
+  const route = useRoute();
+
   return <>
     <p>
-      First, install the latest versions of <a href={PAGE_HOME_URL}>react-srv</a> and <a href={REACT_URL} target="_blank">React</a>.
+      First, install the latest versions of <a href={RouteMaster.home(route)}>react-srv</a> and <a href={REACT_URL} target="_blank">React</a>.
     </p>
     <figure>
       <pre><code>{`npm i react-srv
@@ -45,9 +49,11 @@ npm i @types/react-dom@19.2.0 --save-dev`}</code></pre>
 }
 
 function JSESMSetup() {
+  const route = useRoute();
+
   return <>
     <p>
-      First, install the latest versions of <a href={PAGE_HOME_URL}>react-srv</a>, <a href={REACT_URL} target="_blank">React</a> and <a href={TSX_URL} target="_blank">tsx</a>.
+      First, install the latest versions of <a href={RouteMaster.home(route)}>react-srv</a>, <a href={REACT_URL} target="_blank">React</a> and <a href={TSX_URL} target="_blank">tsx</a>.
     </p>
     <figure>
       <pre><code>{`npm i react-srv
@@ -90,9 +96,11 @@ npm i tsx --save-dev`}</code></pre>
 }
 
 function JSCJSSetup() {
+  const route = useRoute();
+
   return <>
     <p>
-      First, install the latest versions of <a href={PAGE_HOME_URL}>react-srv</a>, <a href={REACT_URL} target="_blank">React</a> and <a href={BABEL_URL} target="_blank">babel</a>.
+      First, install the latest versions of <a href={RouteMaster.home(route)}>react-srv</a>, <a href={REACT_URL} target="_blank">React</a> and <a href={BABEL_URL} target="_blank">babel</a>.
     </p>
     <figure>
       <pre><code>{`npm i react-srv

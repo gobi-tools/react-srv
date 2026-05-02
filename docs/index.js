@@ -2,14 +2,32 @@
 import React from "https://esm.sh/react@19.2.0";
 import { hydrateRoot } from "https://esm.sh/react-dom@19.2.0/client";
 
-// src/components/GitHubIcon.tsx
-import { jsx, jsxs } from "https://esm.sh/react@19.2.0/jsx-runtime";
-function GitHubIcon() {
-  return /* @__PURE__ */ jsxs("svg", { width: "98", height: "96", viewBox: "0 0 98 96", fill: "none", xmlns: "http://www.w3.org/2000/svg", children: [
-    /* @__PURE__ */ jsx("g", { clipPath: "url(#clip0_730_27136)", children: /* @__PURE__ */ jsx("path", { d: "M41.4395 69.3848C28.8066 67.8535 19.9062 58.7617 19.9062 46.9902C19.9062 42.2051 21.6289 37.0371 24.5 33.5918C23.2559 30.4336 23.4473 23.7344 24.8828 20.959C28.7109 20.4805 33.8789 22.4902 36.9414 25.2656C40.5781 24.1172 44.4062 23.543 49.0957 23.543C53.7852 23.543 57.6133 24.1172 61.0586 25.1699C64.0254 22.4902 69.2891 20.4805 73.1172 20.959C74.457 23.543 74.6484 30.2422 73.4043 33.4961C76.4668 37.1328 78.0937 42.0137 78.0937 46.9902C78.0937 58.7617 69.1934 67.6621 56.3691 69.2891C59.623 71.3945 61.8242 75.9883 61.8242 81.252L61.8242 91.2051C61.8242 94.0762 64.2168 95.7031 67.0879 94.5547C84.4102 87.9512 98 70.6289 98 49.1914C98 22.1074 75.9883 6.69539e-07 48.9043 4.309e-07C21.8203 1.92261e-07 -1.9479e-07 22.1074 -4.3343e-07 49.1914C-6.20631e-07 70.4375 13.4941 88.0469 31.6777 94.6504C34.2617 95.6074 36.75 93.8848 36.75 91.3008L36.75 83.6445C35.4102 84.2188 33.6875 84.6016 32.1562 84.6016C25.8398 84.6016 22.1074 81.1563 19.4277 74.7441C18.375 72.1602 17.2266 70.6289 15.0254 70.3418C13.877 70.2461 13.4941 69.7676 13.4941 69.1934C13.4941 68.0449 15.4082 67.1836 17.3223 67.1836C20.0977 67.1836 22.4902 68.9063 24.9785 72.4473C26.8926 75.2227 28.9023 76.4668 31.2949 76.4668C33.6875 76.4668 35.2187 75.6055 37.4199 73.4043C39.0469 71.7773 40.291 70.3418 41.4395 69.3848Z", fill: "currentColor" }) }),
-    /* @__PURE__ */ jsx("defs", { children: /* @__PURE__ */ jsx("clipPath", { id: "clip0_730_27136", children: /* @__PURE__ */ jsx("rect", { width: "98", height: "96", fill: "currentColor" }) }) })
-  ] });
-}
+// src/common/routes.ts
+var PAGE_HOME_URL = "index.html";
+var PAGE_PRODUCTION_URL = "pages/production.html";
+var PAGE_STATIC_URL = "pages/static.html";
+var RouteMaster = class _RouteMaster {
+  static baseRoute = "";
+  static home(domain) {
+    const base = _RouteMaster.getBase(domain);
+    return `${base}${PAGE_HOME_URL}`;
+  }
+  static production(domain) {
+    const base = _RouteMaster.getBase(domain);
+    return `${base}${PAGE_PRODUCTION_URL}`;
+  }
+  static stat(domain) {
+    const base = _RouteMaster.getBase(domain);
+    return `${base}${PAGE_STATIC_URL}`;
+  }
+  static getBase(domain) {
+    if (!domain) return "/";
+    return domain === "" ? "/" : `/${domain}/`;
+  }
+};
+
+// src/common/useRoute.ts
+import { useState, useEffect } from "https://esm.sh/react@19.2.0";
 
 // src/constants.ts
 var PRODUCT_NAME = "React Srv";
@@ -22,14 +40,34 @@ var BABEL_URL = "https://babeljs.io/";
 var DEMO_TS_URL = "https://github.com/gobi-tools/react-srv/tree/main/demos/ts";
 var DEMO_JS_ESM_URL = "https://github.com/gobi-tools/react-srv/tree/main/demos/js-esm";
 var DEMO_JS_CJS_URL = "https://github.com/gobi-tools/react-srv/tree/main/demos/js-cjs";
-var PAGE_HOME_URL = "index.html";
-var PAGE_PRODUCTION_URL = "pages/production.html";
-var PAGE_STATIC_URL = "pages/static.html";
 var SSR_URL = "https://developer.mozilla.org/en-US/docs/Glossary/SSR";
 var SSG_URL = "https://en.wikipedia.org/wiki/Static_site_generator";
+var PUB_SUBDOMAIN = "react-srv";
+
+// src/common/useRoute.ts
+function useRoute() {
+  const [route, setRoute] = useState(void 0);
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const path = window.location.pathname;
+      const baseRoute = path.includes(PUB_SUBDOMAIN) ? PUB_SUBDOMAIN : "";
+      setRoute(baseRoute);
+    }
+  }, []);
+  return route;
+}
+
+// src/components/GitHubIcon.tsx
+import { jsx, jsxs } from "https://esm.sh/react@19.2.0/jsx-runtime";
+function GitHubIcon() {
+  return /* @__PURE__ */ jsxs("svg", { width: "98", height: "96", viewBox: "0 0 98 96", fill: "none", xmlns: "http://www.w3.org/2000/svg", children: [
+    /* @__PURE__ */ jsx("g", { clipPath: "url(#clip0_730_27136)", children: /* @__PURE__ */ jsx("path", { d: "M41.4395 69.3848C28.8066 67.8535 19.9062 58.7617 19.9062 46.9902C19.9062 42.2051 21.6289 37.0371 24.5 33.5918C23.2559 30.4336 23.4473 23.7344 24.8828 20.959C28.7109 20.4805 33.8789 22.4902 36.9414 25.2656C40.5781 24.1172 44.4062 23.543 49.0957 23.543C53.7852 23.543 57.6133 24.1172 61.0586 25.1699C64.0254 22.4902 69.2891 20.4805 73.1172 20.959C74.457 23.543 74.6484 30.2422 73.4043 33.4961C76.4668 37.1328 78.0937 42.0137 78.0937 46.9902C78.0937 58.7617 69.1934 67.6621 56.3691 69.2891C59.623 71.3945 61.8242 75.9883 61.8242 81.252L61.8242 91.2051C61.8242 94.0762 64.2168 95.7031 67.0879 94.5547C84.4102 87.9512 98 70.6289 98 49.1914C98 22.1074 75.9883 6.69539e-07 48.9043 4.309e-07C21.8203 1.92261e-07 -1.9479e-07 22.1074 -4.3343e-07 49.1914C-6.20631e-07 70.4375 13.4941 88.0469 31.6777 94.6504C34.2617 95.6074 36.75 93.8848 36.75 91.3008L36.75 83.6445C35.4102 84.2188 33.6875 84.6016 32.1562 84.6016C25.8398 84.6016 22.1074 81.1563 19.4277 74.7441C18.375 72.1602 17.2266 70.6289 15.0254 70.3418C13.877 70.2461 13.4941 69.7676 13.4941 69.1934C13.4941 68.0449 15.4082 67.1836 17.3223 67.1836C20.0977 67.1836 22.4902 68.9063 24.9785 72.4473C26.8926 75.2227 28.9023 76.4668 31.2949 76.4668C33.6875 76.4668 35.2187 75.6055 37.4199 73.4043C39.0469 71.7773 40.291 70.3418 41.4395 69.3848Z", fill: "currentColor" }) }),
+    /* @__PURE__ */ jsx("defs", { children: /* @__PURE__ */ jsx("clipPath", { id: "clip0_730_27136", children: /* @__PURE__ */ jsx("rect", { width: "98", height: "96", fill: "currentColor" }) }) })
+  ] });
+}
 
 // src/components/SetupSection.tsx
-import { useState } from "https://esm.sh/react@19.2.0";
+import { useState as useState2 } from "https://esm.sh/react@19.2.0";
 
 // src/components/SettingsIcon.tsx
 import { jsx as jsx2, jsxs as jsxs2 } from "https://esm.sh/react@19.2.0/jsx-runtime";
@@ -57,10 +95,11 @@ function SettingsIcon() {
 // src/components/SetupSection.tsx
 import { Fragment, jsx as jsx3, jsxs as jsxs3 } from "https://esm.sh/react@19.2.0/jsx-runtime";
 function TypescriptSetup() {
+  const route = useRoute();
   return /* @__PURE__ */ jsxs3(Fragment, { children: [
     /* @__PURE__ */ jsxs3("p", { children: [
       "First, install the latest versions of ",
-      /* @__PURE__ */ jsx3("a", { href: PAGE_HOME_URL, children: "react-srv" }),
+      /* @__PURE__ */ jsx3("a", { href: RouteMaster.home(route), children: "react-srv" }),
       " and ",
       /* @__PURE__ */ jsx3("a", { href: REACT_URL, target: "_blank", children: "React" }),
       "."
@@ -100,10 +139,11 @@ npm i @types/react-dom@19.2.0 --save-dev` }) }) }),
   ] });
 }
 function JSESMSetup() {
+  const route = useRoute();
   return /* @__PURE__ */ jsxs3(Fragment, { children: [
     /* @__PURE__ */ jsxs3("p", { children: [
       "First, install the latest versions of ",
-      /* @__PURE__ */ jsx3("a", { href: PAGE_HOME_URL, children: "react-srv" }),
+      /* @__PURE__ */ jsx3("a", { href: RouteMaster.home(route), children: "react-srv" }),
       ", ",
       /* @__PURE__ */ jsx3("a", { href: REACT_URL, target: "_blank", children: "React" }),
       " and ",
@@ -152,10 +192,11 @@ npm i tsx --save-dev` }) }) }),
   ] });
 }
 function JSCJSSetup() {
+  const route = useRoute();
   return /* @__PURE__ */ jsxs3(Fragment, { children: [
     /* @__PURE__ */ jsxs3("p", { children: [
       "First, install the latest versions of ",
-      /* @__PURE__ */ jsx3("a", { href: PAGE_HOME_URL, children: "react-srv" }),
+      /* @__PURE__ */ jsx3("a", { href: RouteMaster.home(route), children: "react-srv" }),
       ", ",
       /* @__PURE__ */ jsx3("a", { href: REACT_URL, target: "_blank", children: "React" }),
       " and ",
@@ -208,7 +249,7 @@ npm i @babel/register --save-dev` }) }) }),
   ] });
 }
 function SetupSection() {
-  const [environment, selectEnvironment] = useState("ts");
+  const [environment, selectEnvironment] = useState2("ts");
   return /* @__PURE__ */ jsxs3("section", { children: [
     /* @__PURE__ */ jsx3("h2", { children: "Setup" }),
     /* @__PURE__ */ jsx3("p", { children: "Setup is slightly different based on the platform you're running:" }),
@@ -227,6 +268,7 @@ function SetupSection() {
 // src/Index.tsx
 import { Fragment as Fragment2, jsx as jsx4, jsxs as jsxs4 } from "https://esm.sh/react@19.2.0/jsx-runtime";
 function Index() {
+  const route = useRoute();
   return /* @__PURE__ */ jsxs4(Fragment2, { children: [
     /* @__PURE__ */ jsx4("header", { children: /* @__PURE__ */ jsxs4("div", { className: "hero align-center", children: [
       /* @__PURE__ */ jsx4("h1", { children: PRODUCT_NAME }),
@@ -368,7 +410,7 @@ export default function Page() {
             /* @__PURE__ */ jsx4("a", { href: SSR_URL, target: "_blank", children: "server side rendering (SSR)" }),
             " in production."
           ] }),
-          /* @__PURE__ */ jsx4("p", { children: /* @__PURE__ */ jsx4("a", { href: PAGE_PRODUCTION_URL, children: "Learn more" }) })
+          /* @__PURE__ */ jsx4("p", { children: /* @__PURE__ */ jsx4("a", { href: RouteMaster.production(route), children: "Learn more" }) })
         ] }) }),
         /* @__PURE__ */ jsx4("div", { children: /* @__PURE__ */ jsxs4("div", { className: "card", children: [
           /* @__PURE__ */ jsx4("p", { children: /* @__PURE__ */ jsx4("b", { children: "SSG" }) }),
@@ -378,7 +420,7 @@ export default function Page() {
             /* @__PURE__ */ jsx4("a", { href: SSG_URL, target: "_blank", children: "static site generation (SSG)" }),
             "."
           ] }),
-          /* @__PURE__ */ jsx4("p", { children: /* @__PURE__ */ jsx4("a", { href: PAGE_STATIC_URL, children: "Learn more" }) })
+          /* @__PURE__ */ jsx4("p", { children: /* @__PURE__ */ jsx4("a", { href: RouteMaster.stat(route), children: "Learn more" }) })
         ] }) })
       ] }) })
     ] })

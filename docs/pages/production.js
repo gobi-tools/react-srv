@@ -2,10 +2,50 @@
 import React from "https://esm.sh/react@19.2.0";
 import { hydrateRoot } from "https://esm.sh/react-dom@19.2.0/client";
 
+// src/common/routes.ts
+var PAGE_HOME_URL = "index.html";
+var PAGE_PRODUCTION_URL = "pages/production.html";
+var PAGE_STATIC_URL = "pages/static.html";
+var RouteMaster = class _RouteMaster {
+  static baseRoute = "";
+  static home(domain) {
+    const base = _RouteMaster.getBase(domain);
+    return `${base}${PAGE_HOME_URL}`;
+  }
+  static production(domain) {
+    const base = _RouteMaster.getBase(domain);
+    return `${base}${PAGE_PRODUCTION_URL}`;
+  }
+  static stat(domain) {
+    const base = _RouteMaster.getBase(domain);
+    return `${base}${PAGE_STATIC_URL}`;
+  }
+  static getBase(domain) {
+    if (!domain) return "/";
+    return domain === "" ? "/" : `/${domain}/`;
+  }
+};
+
+// src/common/useRoute.ts
+import { useState, useEffect } from "https://esm.sh/react@19.2.0";
+
 // src/constants.ts
 var PRODUCT_NAME = "React Srv";
 var DEMO_PROD_URL = "https://github.com/gobi-tools/react-srv/tree/main/demos";
-var PAGE_HOME_URL = "index.html";
+var PUB_SUBDOMAIN = "react-srv";
+
+// src/common/useRoute.ts
+function useRoute() {
+  const [route, setRoute] = useState(void 0);
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const path = window.location.pathname;
+      const baseRoute = path.includes(PUB_SUBDOMAIN) ? PUB_SUBDOMAIN : "";
+      setRoute(baseRoute);
+    }
+  }, []);
+  return route;
+}
 
 // src/components/HomeIcon.tsx
 import { jsx, jsxs } from "https://esm.sh/react@19.2.0/jsx-runtime";
@@ -33,7 +73,8 @@ function HomeIcon() {
 // src/components/Header.tsx
 import { jsx as jsx2, jsxs as jsxs2 } from "https://esm.sh/react@19.2.0/jsx-runtime";
 function Header() {
-  return /* @__PURE__ */ jsx2("nav", { children: /* @__PURE__ */ jsx2("ul", { children: /* @__PURE__ */ jsx2("li", { children: /* @__PURE__ */ jsxs2("a", { href: PAGE_HOME_URL, children: [
+  const route = useRoute();
+  return /* @__PURE__ */ jsx2("nav", { children: /* @__PURE__ */ jsx2("ul", { children: /* @__PURE__ */ jsx2("li", { children: /* @__PURE__ */ jsxs2("a", { href: RouteMaster.home(route), children: [
     /* @__PURE__ */ jsx2(HomeIcon, {}),
     /* @__PURE__ */ jsx2("span", { children: "Home" })
   ] }) }) }) });
@@ -64,8 +105,6 @@ function SettingsIcon() {
 
 // src/pages/Production.tsx
 import { Fragment, jsx as jsx4, jsxs as jsxs4 } from "https://esm.sh/react@19.2.0/jsx-runtime";
-{
-}
 function Production() {
   return /* @__PURE__ */ jsxs4(Fragment, { children: [
     /* @__PURE__ */ jsx4("header", { children: /* @__PURE__ */ jsx4(Header, {}) }),
