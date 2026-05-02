@@ -1,8 +1,6 @@
 Todos
 =====
 
-- [ ] deploying docs on localhost vs github/prod is still broken
-- [ ] for JS (CJS) make it so that imports don't require the "default" part
 - [ ] test working with various React & React DOM versions
 - [ ] implement proper minification
 - [ ] when a page doesn't actually need React, we should not need to generate anything 
@@ -14,6 +12,8 @@ Todos
 - [ ] look at using: https://www.solidjs.com/
 - [ ] look at how it will look like in Deno: https://deno.com/
 - [ ] look at how it will look like in Bun: https://bun.com/
+- [x][wontfix] for JS (CJS) make it so that imports don't require the "default" part
+- [x] deploying docs on localhost vs github/prod is still broken
 - [x] add initial props for static rendering
 - [x] export a "prebundle" bin command
 - [x] export a "prerender" bin command
