@@ -18,6 +18,7 @@ type TReactSrvConfig = {
   hydrate?: boolean;
   isProd?: boolean,
   Document?: React.FC<any>,
+  initProps?: any,
 };
 
 export function DefaultDocument({ children }) {
@@ -38,7 +39,8 @@ export const DefaultReactSrvConfig: TReactSrvConfig = {
   outPath: './public/hydrate',
   hydrate: true,
   isProd: false,
-  Document: DefaultDocument
+  Document: DefaultDocument,
+  initProps: {},
 };
 
 export default class ReactSrv {
@@ -155,9 +157,9 @@ export default class ReactSrv {
         <div id={rootId}>
           <Component {...props} />
         </div>
-        <script defer dangerouslySetInnerHTML={{ __html: `globalThis.__INITIAL_PROPS__ = ${safeProps};` }} />
-        {(isProd && hydrate) && <script defer type="module" src={this.getPublicHydrationPath(pageName)}></script>}
-        {(!isProd && hydrate) && <script defer type="module" dangerouslySetInnerHTML={{ __html: this.bundle({ pageName, rootId }) }} />}
+        <script dangerouslySetInnerHTML={{ __html: `globalThis.__INITIAL_PROPS__ = ${safeProps};` }} />
+        {(isProd && hydrate) && <script type="module" src={this.getPublicHydrationPath(pageName)}></script>}
+        {(!isProd && hydrate) && <script type="module" dangerouslySetInnerHTML={{ __html: this.bundle({ pageName, rootId }) }} />}
       </this.config.Document>
     );
 
@@ -173,6 +175,9 @@ export default class ReactSrv {
     if (hydrate) {
       this.prepbundle(files);
     }
+
+    const props = this.config.initProps;
+    const safeProps = serialize(props, { isJSON: true });
 
     for (const file of files) {
       const result = esbuild.buildSync({
@@ -196,11 +201,12 @@ export default class ReactSrv {
       // 3️⃣ Render to static HTML
       const rootId = 'root';
       const document = (
-        <this.config.Document>
+        <this.config.Document {...props} >
           <div id={rootId}>
-            {React.createElement(Page)}
+            {React.createElement(Page, props)}
           </div>
-          {hydrate && <script defer type="module" src={this.getRelativeHydrationPath(file.name.js)}></script>}
+          <script dangerouslySetInnerHTML={{ __html: `globalThis.__INITIAL_PROPS__ = ${safeProps};` }} />
+          {hydrate && <script type="module" src={this.getRelativeHydrationPath(file.name.js)}></script>}
         </this.config.Document>
       );
       const html = hydrate ? renderToString(document) : renderToStaticMarkup(document);
