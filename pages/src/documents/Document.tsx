@@ -29,7 +29,7 @@ export default function Document({ title, children }) {
         <BaseTag/>
 
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/gobi-tools/css-theme@refs/heads/main/dist/theme.app.min.css" />
-        <link rel="stylesheet" href="custom.css" />
+        <link rel="stylesheet" href="/custom.css" />
       </head>
       <body>
         {children}

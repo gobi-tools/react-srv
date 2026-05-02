@@ -206,7 +206,7 @@ export default class ReactSrv {
             {React.createElement(Page, props)}
           </div>
           <script dangerouslySetInnerHTML={{ __html: `globalThis.__INITIAL_PROPS__ = ${safeProps};` }} />
-          {hydrate && <script type="module" src={this.getRelativeHydrationPath(file.name.js)}></script>}
+          {hydrate && <script type="module" src={this.getRelativeHydrationPath(file)}></script>}
         </this.config.Document>
       );
       const html = hydrate ? renderToString(document) : renderToStaticMarkup(document);
@@ -230,13 +230,18 @@ export default class ReactSrv {
     return result;
   }
 
-  private getRelativeHydrationPath(page: string): string {
-    return `./${page}`;
+  private getRelativeHydrationPath(file: TOutputFile): string {
+    return `/${file.relPath}/${file.name.js}`;
   }
+
+  // private getRelativeHydrationPath(page: string): string {
+  //   return `./${page}`;
+  // }
 }
 
 type TOutputFile = {
   absPath: string;
+  relPath: string;
   component: string;
   name: {
     js: string,
@@ -276,6 +281,7 @@ class FileUtils {
 
       return {
         absPath,
+        relPath: relDir,
         component,
         name: { js, html, mjs },
         writePath,
