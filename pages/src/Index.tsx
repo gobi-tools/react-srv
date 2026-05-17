@@ -3,17 +3,19 @@ import { useRoute } from "./common/useRoute";
 import GitHubIcon from "./components/GitHubIcon";
 import SetupSection from "./components/SetupSection";
 import { PRODUCT_NAME, REACT_COMPONENTS_URL, REACT_HOOKS_URL, REACT_PROPS_URL, SSG_URL, SSR_URL } from "./constants";
- 
+
 export default function Index() {
   const route = useRoute();
 
   return <>
     <header>
-      <div className="hero align-center">
-        <h1>{PRODUCT_NAME}</h1>
-        <p>
-          Add React to your server side rendered or statically generated website.
-        </p>
+      <div className="align-center">
+        <hgroup>
+          <h1>{PRODUCT_NAME}</h1>
+          <p>
+            Add React to your server side rendered or statically generated website.
+          </p>
+        </hgroup>
         <p>
           <a href="https://github.com/gobi-tools/react-srv" target="_blank">
             <button>
@@ -22,50 +24,51 @@ export default function Index() {
             </button>
           </a>
         </p>
-        <br />
       </div>
     </header>
     <main>
       <section>
-        <p>
-          All you need to do is define a React component as a default export of a <code>.tsx</code> or <code>.jsx</code> file of the same name:
-        </p>
-        <figure>
-          <pre><code>{`export default function Page() {
+        <hgroup>
+          <p>
+            All you need to do is define a React component as a default export of a <code>.tsx</code> or <code>.jsx</code> file of the same name:
+          </p>
+          <figure>
+            <pre><code>{`export default function Page() {
   return <>
     <h1>Hello, world!</h1>
   </>
 }`}</code></pre>
-        </figure>
-        <p>
-          Optionally add a <code>react-srv.config.ts</code> or <code>.js</code> file:
-        </p>
-        <figure>
-          <pre><code>{`export default {}`}</code></pre>
-        </figure>
-        <p>
-          And {PRODUCT_NAME} will render it as static HTML you can send down the wire:
-        </p>
-        <figure>
-          <pre><code>{`const app = express();
+          </figure>
+          <p>
+            Optionally add a <code>react-srv.config.ts</code> or <code>.js</code> file:
+          </p>
+          <figure>
+            <pre><code>{`export default {}`}</code></pre>
+          </figure>
+          <p>
+            And {PRODUCT_NAME} will render it as static HTML you can send down the wire:
+          </p>
+          <figure>
+            <pre><code>{`const app = express();
 const react = new ReactSrv(config);
 
 app.get('/', (_, res) => {
   return res.status(200).send(react.render(Page));
 });
 `}</code></pre>
-        </figure>
+          </figure>
+        </hgroup>
       </section>
 
-      {/* documents */}
       <section>
-        <h2>Documents</h2>
-        <p>
-          {PRODUCT_NAME} will wrap all components in a default HTML document. You may create a custom one to 
-          specify titles, stylesheets, scaling, etc.
-        </p>
-        <figure>
-          <pre><code>{`export default function Document({ children }) {
+        <hgroup>
+          <h2>Documents</h2>
+          <p>
+            {PRODUCT_NAME} will wrap all components in a default HTML document. You may create a custom one to
+            specify titles, stylesheets, scaling, etc.
+          </p>
+          <figure>
+            <pre><code>{`export default function Document({ children }) {
   return <html lang="en">
     <head>
       <title>Title</title>
@@ -76,23 +79,25 @@ app.get('/', (_, res) => {
     </body>
   </html>
 }`}</code></pre>
-        </figure>
-        <p>
-          You can reference it in the config file:
-        </p>
-        <figure>
-          <pre><code>{`export default { Document };`}</code></pre>
-        </figure>
+          </figure>
+          <p>
+            You can reference it in the config file:
+          </p>
+          <figure>
+            <pre><code>{`export default { Document };`}</code></pre>
+          </figure>
+        </hgroup>
       </section>
 
       <section>
-        <h2>Components</h2>
-        <p>
-          Just like in <a href={REACT_COMPONENTS_URL} target="_blanl">any React app</a>,
-          you can split a large page into multiple components.
-        </p>
-        <figure>
-          <pre><code>{`function Greeting() { 
+        <hgroup>
+          <h2>Components</h2>
+          <p>
+            Just like in <a href={REACT_COMPONENTS_URL} target="_blanl">any React app</a>,
+            you can split a large page into multiple components.
+          </p>
+          <figure>
+            <pre><code>{`function Greeting() { 
   return <p>Today is a fine day!</p>
 }
 
@@ -102,42 +107,44 @@ export default function Page() {
     <Greeting/>
   </>
 }`}</code></pre>
-        </figure>
+          </figure>
+        </hgroup>
       </section>
 
-      {/* props */}
       <section>
-        <h2>Props</h2>
-        <p>
-          Pages and components don't need to be static. You can define any <a href={REACT_PROPS_URL} target="_blank">props</a> ...
-        </p>
-        <figure>
-          <pre><code>{`export default function Page(props) {
+        <hgroup>
+          <h2>Props</h2>
+          <p>
+            Pages and components don't need to be static. You can define any <a href={REACT_PROPS_URL} target="_blank">props</a> ...
+          </p>
+          <figure>
+            <pre><code>{`export default function Page(props) {
   return <>
     <h1>Hello, {props.name}!</h1>
     <Greeting/>
   </>
 }`}</code></pre>
-        </figure>
-        <p>
-          ... and pass them to the rendering function.
-        </p>
-        <figure>
-          <pre><code>{`app.get('/', (req, res) => {
+          </figure>
+          <p>
+            ... and pass them to the rendering function.
+          </p>
+          <figure>
+            <pre><code>{`app.get('/', (req, res) => {
   const name = req.query['name'];
   return res.status(200).send(react.render(Page, { name }));
 });`}</code></pre>
-        </figure>
+          </figure>
+        </hgroup>
       </section>
 
-      {/* internal state / hooks / serving dynami content  */}
       <section>
-        <h2>Hooks</h2>
-        <p>
-          For interactivity you can use all types of <a href={REACT_HOOKS_URL} target="_blank">React hooks</a>, like <code>useState</code> or <code>useEffect</code>.
-        </p>
-        <figure>
-          <pre><code>{`function Button () {
+        <hgroup>
+          <h2>Hooks</h2>
+          <p>
+            For interactivity you can use all types of <a href={REACT_HOOKS_URL} target="_blank">React hooks</a>, like <code>useState</code> or <code>useEffect</code>.
+          </p>
+          <figure>
+            <pre><code>{`function Button () {
   const [clicks, setClicks] = useState(0);
 
   return <p>
@@ -154,10 +161,11 @@ export default function Page() {
     </>
   }
 }`}</code></pre>
-        </figure>
+          </figure>
+        </hgroup>
       </section>
-      
-      <SetupSection/>
+
+      <SetupSection />
 
       <hr />
 

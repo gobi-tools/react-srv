@@ -151,23 +151,23 @@ export default function SetupSection() {
 
   return (
     <section>
-      <h2>Setup</h2>
-      <p>
-        Setup is slightly different based on the platform you're running:
-      </p>
-      <nav>
-        <ol>
-          <li aria-selected={environment === 'ts'}>
-            <a onClick={() => selectEnvironment('ts')}>Typescript</a>
-          </li>
-          <li aria-selected={environment === 'js-esm'}>
-            <a onClick={() => selectEnvironment('js-esm')}>Javascript (ESM)</a>
-          </li>
-          <li aria-selected={environment === 'js-cjs'}>
-            <a onClick={() => selectEnvironment('js-cjs')}>Javascript (CJS)</a>
-          </li>
-        </ol>
-      </nav>
+      <hgroup>
+        <h2>Setup</h2>
+        <p>
+          Setup is slightly different based on the platform you're running:
+        </p>
+      </hgroup>
+      <menu>
+        <li aria-selected={environment === 'ts'}>
+          <a onClick={() => selectEnvironment('ts')}>Typescript</a>
+        </li>
+        <li aria-selected={environment === 'js-esm'}>
+          <a onClick={() => selectEnvironment('js-esm')}>Javascript (ESM)</a>
+        </li>
+        <li aria-selected={environment === 'js-cjs'}>
+          <a onClick={() => selectEnvironment('js-cjs')}>Javascript (CJS)</a>
+        </li>
+      </menu>
       <br />
       {environment === 'ts' && <TypescriptSetup />}
       {environment === 'js-esm' && <JSESMSetup />}
