@@ -36,7 +36,7 @@ npm i @types/react-dom@19.2.0 --save-dev`}</code></pre>
   }
 }`}</code></pre>
     </figure>
-    <blockquote className="card success">
+    <div className="card success">
       <p className="group">
         <SettingsIcon />
         <b>Demo</b>
@@ -44,7 +44,7 @@ npm i @types/react-dom@19.2.0 --save-dev`}</code></pre>
       <p>
         Check out a fully setup TypeScript project <a href={DEMO_TS_URL} target="_blank">here</a>.
       </p>
-    </blockquote>
+    </div>
   </>
 }
 
@@ -83,7 +83,7 @@ npm i tsx --save-dev`}</code></pre>
     <figure>
       <pre><code>{`tsx src/server.js`}</code></pre>
     </figure>
-    <blockquote className="card success">
+    <div className="card success">
       <p className="group">
         <SettingsIcon />
         <b>Demo</b>
@@ -91,7 +91,7 @@ npm i tsx --save-dev`}</code></pre>
       <p>
         Check out a fully setup ESM Javascript project <a href={DEMO_JS_ESM_URL} target="_blank">here</a>.
       </p>
-    </blockquote>
+    </div>
   </>
 }
 
@@ -134,7 +134,7 @@ npm i @babel/register --save-dev`}</code></pre>
     <figure>
       <pre><code>{`const Page = require('./pages/Page.jsx').default;`}</code></pre>
     </figure>
-    <blockquote className="card success">
+    <div className="card success">
       <p className="group">
         <SettingsIcon />
         <b>Demo</b>
@@ -142,7 +142,7 @@ npm i @babel/register --save-dev`}</code></pre>
       <p>
         Check out a fully setup CommonJS Javascript project <a href={DEMO_JS_CJS_URL} target="_blank">here</a>.
       </p>
-    </blockquote>
+    </div>
   </>
 }
 

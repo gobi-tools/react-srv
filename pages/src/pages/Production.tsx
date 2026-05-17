@@ -9,11 +9,13 @@ export default function Production() {
     </header>
     <main>
       <section>
-        <h2>Production</h2>
-        <p>
-          Every time the <code>render</code> method is called, {PRODUCT_NAME} transforms
-          a JSX component into HTML and Javascript:
-        </p>
+        <hgroup>
+          <h2>Production</h2>
+          <p>
+            Every time the <code>render</code> method is called, {PRODUCT_NAME} transforms
+            a JSX component into HTML and Javascript:
+          </p>
+        </hgroup>
         <figure>
           <pre><code>{`<html>
   <head><title>Page</title></head>
@@ -35,8 +37,8 @@ export default function Production() {
           So, for production we can precompile the necessary javascript and have it ready to go.
         </p>
         <p>
-          By default, {PRODUCT_NAME} looks in the <code>./src</code> folder to find React files and outputs 
-          compiled javascript in <code>./public/hydrate</code>. 
+          By default, {PRODUCT_NAME} looks in the <code>./src</code> folder to find React files and outputs
+          compiled javascript in <code>./public/hydrate</code>.
           You can change this these locations as well as whether you're in dev or prod mode in the config file:
         </p>
         <figure>
@@ -56,7 +58,7 @@ export default function Production() {
   "build": "react-srv bundle -f src/react-srv.config.ts && ... other build steps",
   "start": "NODE_ENV=production node dist/server.js"
 },`}</code></pre>
-        </figure>   
+        </figure>
         <p>
           The last thing you need to do is to make sure the <code>/public</code> folder is
           statically served and accessible and you're good to go.
@@ -65,7 +67,7 @@ export default function Production() {
 
       <hr />
 
-      <blockquote className="card success">
+      <div className="card success">
         <p className="group">
           <SettingsIcon />
           <b>Demos</b>
@@ -73,7 +75,7 @@ export default function Production() {
         <p>
           Check out production ready demos for Typescript and Javascript <a href={DEMO_PROD_URL} target="_blank">here</a>.
         </p>
-      </blockquote>
+      </div>
     </main>
   </>
 }

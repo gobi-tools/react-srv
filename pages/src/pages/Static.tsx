@@ -13,13 +13,15 @@ export default function Static() {
     </header>
     <main>
       <section>
-        <h2>Static site generation (SSG)</h2>
+        <hgroup>
+          <h2>Static site generation (SSG)</h2>
+          <p>
+            {PRODUCT_NAME} can be used for direct static site generation (<a href={SSG_URL} target="_blank">SSG</a>).
+            If you've read the section on <a href={RouteMaster.production(route)}>getting to production</a>, then you're already ninety percent there.
+          </p>
+        </hgroup>
         <p>
-          {PRODUCT_NAME} can be used for direct static site generation (<a href={SSG_URL} target="_blank">SSG</a>).
-          If you've read the section on <a href={RouteMaster.production(route)}>getting to production</a>, then you're already ninety percent there.
-        </p>
-        <p>
-          You can specify the source and output destinations and whether you want to keep javascript hydration (default) 
+          You can specify the source and output destinations and whether you want to keep javascript hydration (default)
           or disable it completely for a pure static experiece, in the config file:
         </p>
         <figure>
@@ -47,7 +49,7 @@ export default function Static() {
 
       <hr />
 
-      <blockquote className="card success">
+      <div className="card success">
         <p className="group">
           <SettingsIcon />
           <b>Demo</b>
@@ -55,7 +57,7 @@ export default function Static() {
         <p>
           The source for this documentation is a statically generated site. Check it out <a href={DEMO_STATIC_URL} target="_blank">here</a>.
         </p>
-      </blockquote>
+      </div>
     </main>
   </>
 }

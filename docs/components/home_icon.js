@@ -1,1 +1,39 @@
-import n from"react";import{hydrateRoot as a}from"react-dom/client";import{jsx as t,jsxs as e}from"react/jsx-runtime";function o(){return e("svg",{xmlns:"http://www.w3.org/2000/svg",width:"24",height:"24",viewBox:"0 0 24 24",fill:"none",stroke:"currentColor",strokeWidth:"2",strokeLinecap:"round",strokeLinejoin:"round",children:[t("path",{d:"M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8"}),t("path",{d:"M3 10a2 2 0 0 1 .709-1.528l7-6a2 2 0 0 1 2.582 0l7 6A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"})]})}var r=document.getElementById("root");if(!r)throw new Error("react-srv: Could not find hydration root.");globalThis.__REACT_SRV_HYDRATED__||(globalThis.__REACT_SRV_HYDRATED__=!0,a(r,n.createElement(o,globalThis.__INITIAL_PROPS__||{})));
+// src/components/react-srv-hydrate-HomeIcon.jsx
+import React from "https://esm.sh/react@19.2.0";
+import { hydrateRoot } from "https://esm.sh/react-dom@19.2.0/client";
+
+// src/components/HomeIcon.tsx
+import { jsx, jsxs } from "https://esm.sh/react@19.2.0/jsx-runtime";
+function HomeIcon() {
+  return /* @__PURE__ */ jsxs(
+    "svg",
+    {
+      xmlns: "http://www.w3.org/2000/svg",
+      width: "24",
+      height: "24",
+      viewBox: "0 0 24 24",
+      fill: "none",
+      stroke: "currentColor",
+      strokeWidth: "2",
+      strokeLinecap: "round",
+      strokeLinejoin: "round",
+      children: [
+        /* @__PURE__ */ jsx("path", { d: "M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8" }),
+        /* @__PURE__ */ jsx("path", { d: "M3 10a2 2 0 0 1 .709-1.528l7-6a2 2 0 0 1 2.582 0l7 6A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" })
+      ]
+    }
+  );
+}
+
+// src/components/react-srv-hydrate-HomeIcon.jsx
+var root = document.getElementById("root");
+if (!root) {
+  throw new Error("react-srv: Could not find hydration root.");
+}
+if (!globalThis.__REACT_SRV_HYDRATED__) {
+  globalThis.__REACT_SRV_HYDRATED__ = true;
+  hydrateRoot(
+    root,
+    React.createElement(HomeIcon, globalThis.__INITIAL_PROPS__ || {})
+  );
+}
