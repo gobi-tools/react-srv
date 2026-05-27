@@ -42,7 +42,7 @@ npm i @types/react-dom@19.2.0 --save-dev`}</code></pre>
         <b>Demo</b>
       </p>
       <p>
-        Check out a fully setup TypeScript project <a href={DEMO_TS_URL} target="_blank">here</a>.
+        Check out a fully set up TypeScript project <a href={DEMO_TS_URL} target="_blank">here</a>.
       </p>
     </div>
   </>
@@ -89,7 +89,7 @@ npm i tsx --save-dev`}</code></pre>
         <b>Demo</b>
       </p>
       <p>
-        Check out a fully setup ESM Javascript project <a href={DEMO_JS_ESM_URL} target="_blank">here</a>.
+        Check out a fully set up ESM Javascript project <a href={DEMO_JS_ESM_URL} target="_blank">here</a>.
       </p>
     </div>
   </>
@@ -140,7 +140,7 @@ npm i @babel/register --save-dev`}</code></pre>
         <b>Demo</b>
       </p>
       <p>
-        Check out a fully setup CommonJS Javascript project <a href={DEMO_JS_CJS_URL} target="_blank">here</a>.
+        Check out a fully set up CommonJS Javascript project <a href={DEMO_JS_CJS_URL} target="_blank">here</a>.
       </p>
     </div>
   </>

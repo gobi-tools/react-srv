@@ -136,7 +136,7 @@ npm i @types/react-dom@19.2.0 --save-dev` }) }) }),
         /* @__PURE__ */ jsx3("b", { children: "Demo" })
       ] }),
       /* @__PURE__ */ jsxs3("p", { children: [
-        "Check out a fully setup TypeScript project ",
+        "Check out a fully set up TypeScript project ",
         /* @__PURE__ */ jsx3("a", { href: DEMO_TS_URL, target: "_blank", children: "here" }),
         "."
       ] })
@@ -189,7 +189,7 @@ npm i tsx --save-dev` }) }) }),
         /* @__PURE__ */ jsx3("b", { children: "Demo" })
       ] }),
       /* @__PURE__ */ jsxs3("p", { children: [
-        "Check out a fully setup ESM Javascript project ",
+        "Check out a fully set up ESM Javascript project ",
         /* @__PURE__ */ jsx3("a", { href: DEMO_JS_ESM_URL, target: "_blank", children: "here" }),
         "."
       ] })
@@ -246,7 +246,7 @@ npm i @babel/register --save-dev` }) }) }),
         /* @__PURE__ */ jsx3("b", { children: "Demo" })
       ] }),
       /* @__PURE__ */ jsxs3("p", { children: [
-        "Check out a fully setup CommonJS Javascript project ",
+        "Check out a fully set up CommonJS Javascript project ",
         /* @__PURE__ */ jsx3("a", { href: DEMO_JS_CJS_URL, target: "_blank", children: "here" }),
         "."
       ] })
