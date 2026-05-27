@@ -16,7 +16,7 @@ export default function Index() {
             Add React to your server side rendered or statically generated website.
           </p>
         </hgroup>
-        <p>
+        <p className="row align-center disable-mobile">
           <a href="https://github.com/gobi-tools/react-srv" target="_blank">
             <button>
               <GitHubIcon />

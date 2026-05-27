@@ -282,7 +282,7 @@ function Index() {
         /* @__PURE__ */ jsx4("h1", { children: PRODUCT_NAME }),
         /* @__PURE__ */ jsx4("p", { children: "Add React to your server side rendered or statically generated website." })
       ] }),
-      /* @__PURE__ */ jsxs4("p", { children: [
+      /* @__PURE__ */ jsxs4("p", { className: "row align-center disable-mobile", children: [
         /* @__PURE__ */ jsx4("a", { href: "https://github.com/gobi-tools/react-srv", target: "_blank", children: /* @__PURE__ */ jsxs4("button", { children: [
           /* @__PURE__ */ jsx4(GitHubIcon, {}),
           /* @__PURE__ */ jsx4("span", { children: "Source" })
