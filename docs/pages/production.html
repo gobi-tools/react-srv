@@ -4,12 +4,12 @@
   &lt;body&gt;...&lt;/body&gt;
   &lt;script&gt;... set initial props ...&lt;/script&gt;
   &lt;script type=&quot;module&quot;&gt;... hydration script ... &lt;/script&gt;
-&lt;/html&gt;</code></pre></figure><p>The markup is created from the component itself and the hydration script is created by reading the source file, <code>Page.tsx</code> or <code>Page.jsx</code>, from disk.</p><p>This is good for development but it&#x27;s not ideal for production, first because the source code might not be present at all and second because reading and compiling code every time is not very efficient.</p><p>So, for production we can precompile the necessary javascript and have it ready to go.</p><p>By default, <!-- -->React Srv<!-- --> looks in the <code>./src</code> folder to find React files and outputs compiled javascript in <code>./public/hydrate</code>. You can change this these locations as well as whether you&#x27;re in dev or prod mode in the config file:</p><figure><pre><code>export default {
+&lt;/html&gt;</code></pre></figure><p>The markup is created from the component itself and the hydration script is created by reading the source file, <code>Page.tsx</code> or <code>Page.jsx</code>, from disk.</p><p>This is good for development but it&#x27;s not ideal for production, first because the source code might not be present at all and second because reading and compiling code every time is not very efficient.</p><p>So, for production we can precompile the necessary javascript and have it ready to go.</p><p>By default, <!-- -->React Srv<!-- --> looks in the <code>./src</code> folder to find React files and outputs compiled javascript in <code>./public/hydrate</code>. You can change these locations, as well as whether you&#x27;re in dev or prod mode, in the config file:</p><figure><pre><code>export default {
   document: Document,
   srcPath: &#x27;./src&#x27;, // default
   outPath: &#x27;./public/hydrate&#x27;, // default
   isProd: process.env.NODE_ENV === &#x27;production&#x27;,
-}</code></pre></figure><p>Which you can reference via the <code>bundle</code> command, in <code>package.json</code></p><figure><pre><code>...
+}</code></pre></figure><p>You can reference the config file in the <code>bundle</code> command in <code>package.json</code></p><figure><pre><code>...
 &quot;scripts&quot;: {
   &quot;build&quot;: &quot;react-srv bundle -f src/react-srv.config.ts &amp;&amp; ... other build steps&quot;,
   &quot;start&quot;: &quot;NODE_ENV=production node dist/server.js&quot;

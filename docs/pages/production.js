@@ -147,7 +147,7 @@ function Production() {
           /* @__PURE__ */ jsx4("code", { children: "./src" }),
           " folder to find React files and outputs compiled javascript in ",
           /* @__PURE__ */ jsx4("code", { children: "./public/hydrate" }),
-          ". You can change this these locations as well as whether you're in dev or prod mode in the config file:"
+          ". You can change these locations, as well as whether you're in dev or prod mode, in the config file:"
         ] }),
         /* @__PURE__ */ jsx4("figure", { children: /* @__PURE__ */ jsx4("pre", { children: /* @__PURE__ */ jsx4("code", { children: `export default {
   document: Document,
@@ -156,9 +156,9 @@ function Production() {
   isProd: process.env.NODE_ENV === 'production',
 }` }) }) }),
         /* @__PURE__ */ jsxs4("p", { children: [
-          "Which you can reference via the ",
+          "You can reference the config file in the ",
           /* @__PURE__ */ jsx4("code", { children: "bundle" }),
-          " command, in ",
+          " command in ",
           /* @__PURE__ */ jsx4("code", { children: "package.json" })
         ] }),
         /* @__PURE__ */ jsx4("figure", { children: /* @__PURE__ */ jsx4("pre", { children: /* @__PURE__ */ jsx4("code", { children: `...

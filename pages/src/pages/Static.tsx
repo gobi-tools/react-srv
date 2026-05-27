@@ -38,7 +38,7 @@ export default function Static() {
         <figure>
           <pre><code>{`...
 "scripts": {
-  "render": "react-srv render -f src/react-srv.config.ts && ... other build steos"
+  "render": "react-srv render -f src/react-srv.config.ts && ... other build steps"
 },`}</code></pre>
         </figure>
         <p>

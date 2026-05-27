@@ -142,7 +142,7 @@ function Static() {
         ] }),
         /* @__PURE__ */ jsx4("figure", { children: /* @__PURE__ */ jsx4("pre", { children: /* @__PURE__ */ jsx4("code", { children: `...
 "scripts": {
-  "render": "react-srv render -f src/react-srv.config.ts && ... other build steos"
+  "render": "react-srv render -f src/react-srv.config.ts && ... other build steps"
 },` }) }) }),
         /* @__PURE__ */ jsxs4("p", { children: [
           "The last thing you need to do is to make sure the ",

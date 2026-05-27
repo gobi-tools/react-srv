@@ -39,7 +39,7 @@ export default function Production() {
         <p>
           By default, {PRODUCT_NAME} looks in the <code>./src</code> folder to find React files and outputs
           compiled javascript in <code>./public/hydrate</code>.
-          You can change this these locations as well as whether you're in dev or prod mode in the config file:
+          You can change these locations, as well as whether you're in dev or prod mode, in the config file:
         </p>
         <figure>
           <pre><code>{`export default {
@@ -50,7 +50,7 @@ export default function Production() {
 }`}</code></pre>
         </figure>
         <p>
-          Which you can reference via the <code>bundle</code> command, in <code>package.json</code>
+          You can reference the config file in the <code>bundle</code> command in <code>package.json</code>
         </p>
         <figure>
           <pre><code>{`...
