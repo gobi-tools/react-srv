@@ -6,6 +6,7 @@ import { hydrateRoot } from "https://esm.sh/react-dom@19.2.0/client";
 var PAGE_HOME_URL = "index.html";
 var PAGE_PRODUCTION_URL = "pages/production.html";
 var PAGE_STATIC_URL = "pages/static.html";
+var PAGE_DEMO_URL = "pages/demo.html";
 var RouteMaster = class _RouteMaster {
   static baseRoute = "";
   static home(domain) {
@@ -19,6 +20,10 @@ var RouteMaster = class _RouteMaster {
   static stat(domain) {
     const base = _RouteMaster.getBase(domain);
     return `${base}${PAGE_STATIC_URL}`;
+  }
+  static demo(domain) {
+    const base = _RouteMaster.getBase(domain);
+    return `${base}${PAGE_DEMO_URL}`;
   }
   static getBase(domain) {
     if (!domain) return "/";
@@ -277,10 +282,13 @@ function Index() {
         /* @__PURE__ */ jsx4("h1", { children: PRODUCT_NAME }),
         /* @__PURE__ */ jsx4("p", { children: "Add React to your server side rendered or statically generated website." })
       ] }),
-      /* @__PURE__ */ jsx4("p", { children: /* @__PURE__ */ jsx4("a", { href: "https://github.com/gobi-tools/react-srv", target: "_blank", children: /* @__PURE__ */ jsxs4("button", { children: [
-        /* @__PURE__ */ jsx4(GitHubIcon, {}),
-        /* @__PURE__ */ jsx4("span", { children: "Source" })
-      ] }) }) })
+      /* @__PURE__ */ jsxs4("p", { children: [
+        /* @__PURE__ */ jsx4("a", { href: "https://github.com/gobi-tools/react-srv", target: "_blank", children: /* @__PURE__ */ jsxs4("button", { children: [
+          /* @__PURE__ */ jsx4(GitHubIcon, {}),
+          /* @__PURE__ */ jsx4("span", { children: "Source" })
+        ] }) }),
+        /* @__PURE__ */ jsx4("a", { href: RouteMaster.demo(route), target: "_blank", children: /* @__PURE__ */ jsx4("button", { type: "reset", children: "Demo" }) })
+      ] })
     ] }) }),
     /* @__PURE__ */ jsxs4("main", { children: [
       /* @__PURE__ */ jsxs4("section", { children: [

@@ -55,6 +55,7 @@ function useRoute() {
 var PAGE_HOME_URL = "index.html";
 var PAGE_PRODUCTION_URL = "pages/production.html";
 var PAGE_STATIC_URL = "pages/static.html";
+var PAGE_DEMO_URL = "pages/demo.html";
 var RouteMaster = class _RouteMaster {
   static baseRoute = "";
   static home(domain) {
@@ -68,6 +69,10 @@ var RouteMaster = class _RouteMaster {
   static stat(domain) {
     const base = _RouteMaster.getBase(domain);
     return `${base}${PAGE_STATIC_URL}`;
+  }
+  static demo(domain) {
+    const base = _RouteMaster.getBase(domain);
+    return `${base}${PAGE_DEMO_URL}`;
   }
   static getBase(domain) {
     if (!domain) return "/";

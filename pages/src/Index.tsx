@@ -23,6 +23,11 @@ export default function Index() {
               <span>Source</span>
             </button>
           </a>
+          <a href={RouteMaster.demo(route)} target="_blank">
+            <button type="reset">
+              Demo
+            </button>
+          </a>
         </p>
       </div>
     </header>
