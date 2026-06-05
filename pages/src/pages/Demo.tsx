@@ -47,7 +47,7 @@ export default function Demo() {
       <section>
         <h2>Todo Magic</h2>
         <form onSubmit={addTodo}>
-          <div className="group">
+          <div role="group">
             <input type="text" id="new-todo" placeholder="Add todo ..." value={content} onChange={updateContent} />
             <input disabled={content === ''} type="submit" value={"Add"} />
           </div>

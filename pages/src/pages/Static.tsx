@@ -50,7 +50,7 @@ export default function Static() {
       <hr />
 
       <div className="card success">
-        <p className="group">
+        <p role="group">
           <SettingsIcon />
           <b>Demo</b>
         </p>

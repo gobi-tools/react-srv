@@ -33,7 +33,7 @@ function Demo() {
   };
   return /* @__PURE__ */ jsx(Fragment, { children: /* @__PURE__ */ jsx("main", { children: /* @__PURE__ */ jsxs("section", { children: [
     /* @__PURE__ */ jsx("h2", { children: "Todo Magic" }),
-    /* @__PURE__ */ jsx("form", { onSubmit: addTodo, children: /* @__PURE__ */ jsxs("div", { className: "group", children: [
+    /* @__PURE__ */ jsx("form", { onSubmit: addTodo, children: /* @__PURE__ */ jsxs("div", { role: "group", children: [
       /* @__PURE__ */ jsx("input", { type: "text", id: "new-todo", placeholder: "Add todo ...", value: content, onChange: updateContent }),
       /* @__PURE__ */ jsx("input", { disabled: content === "", type: "submit", value: "Add" })
     ] }) }),

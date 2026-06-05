@@ -114,9 +114,9 @@ npm i @types/react-dom@19.2.0 --save-dev` }) }) }),
   }
 }` }) }) }),
     /* @__PURE__ */ jsxs2("div", { className: "card success", children: [
-      /* @__PURE__ */ jsxs2("p", { className: "group", children: [
+      /* @__PURE__ */ jsxs2("p", { role: "group", children: [
         /* @__PURE__ */ jsx2(SettingsIcon, {}),
-        /* @__PURE__ */ jsx2("b", { children: "Demo" })
+        /* @__PURE__ */ jsx2("b", { children: "Example" })
       ] }),
       /* @__PURE__ */ jsxs2("p", { children: [
         "Check out a fully set up TypeScript project ",
@@ -167,9 +167,9 @@ npm i tsx --save-dev` }) }) }),
     ] }),
     /* @__PURE__ */ jsx2("figure", { children: /* @__PURE__ */ jsx2("pre", { children: /* @__PURE__ */ jsx2("code", { children: `tsx src/server.js` }) }) }),
     /* @__PURE__ */ jsxs2("div", { className: "card success", children: [
-      /* @__PURE__ */ jsxs2("p", { className: "group", children: [
+      /* @__PURE__ */ jsxs2("p", { role: "group", children: [
         /* @__PURE__ */ jsx2(SettingsIcon, {}),
-        /* @__PURE__ */ jsx2("b", { children: "Demo" })
+        /* @__PURE__ */ jsx2("b", { children: "Example" })
       ] }),
       /* @__PURE__ */ jsxs2("p", { children: [
         "Check out a fully set up ESM Javascript project ",
@@ -224,9 +224,9 @@ npm i @babel/register --save-dev` }) }) }),
     ] }),
     /* @__PURE__ */ jsx2("figure", { children: /* @__PURE__ */ jsx2("pre", { children: /* @__PURE__ */ jsx2("code", { children: `const Page = require('./pages/Page.jsx').default;` }) }) }),
     /* @__PURE__ */ jsxs2("div", { className: "card success", children: [
-      /* @__PURE__ */ jsxs2("p", { className: "group", children: [
+      /* @__PURE__ */ jsxs2("p", { role: "group", children: [
         /* @__PURE__ */ jsx2(SettingsIcon, {}),
-        /* @__PURE__ */ jsx2("b", { children: "Demo" })
+        /* @__PURE__ */ jsx2("b", { children: "Example" })
       ] }),
       /* @__PURE__ */ jsxs2("p", { children: [
         "Check out a fully set up CommonJS Javascript project ",

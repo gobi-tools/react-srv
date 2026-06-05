@@ -68,7 +68,7 @@ export default function Production() {
       <hr />
 
       <div className="card success">
-        <p className="group">
+        <p role="group">
           <SettingsIcon />
           <b>Demos</b>
         </p>

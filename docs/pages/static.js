@@ -152,7 +152,7 @@ function Static() {
       ] }),
       /* @__PURE__ */ jsx4("hr", {}),
       /* @__PURE__ */ jsxs4("div", { className: "card success", children: [
-        /* @__PURE__ */ jsxs4("p", { className: "group", children: [
+        /* @__PURE__ */ jsxs4("p", { role: "group", children: [
           /* @__PURE__ */ jsx4(SettingsIcon, {}),
           /* @__PURE__ */ jsx4("b", { children: "Demo" })
         ] }),
