@@ -113,78 +113,75 @@ import { Fragment, jsx as jsx4, jsxs as jsxs4 } from "https://esm.sh/react@19.2.
 function Production() {
   return /* @__PURE__ */ jsxs4(Fragment, { children: [
     /* @__PURE__ */ jsx4("header", { children: /* @__PURE__ */ jsx4(Header, {}) }),
-    /* @__PURE__ */ jsxs4("main", { children: [
-      /* @__PURE__ */ jsxs4("section", { children: [
-        /* @__PURE__ */ jsxs4("hgroup", { children: [
-          /* @__PURE__ */ jsx4("h2", { children: "Production" }),
-          /* @__PURE__ */ jsxs4("p", { children: [
-            "Every time the ",
-            /* @__PURE__ */ jsx4("code", { children: "render" }),
-            " method is called, ",
-            PRODUCT_NAME,
-            " transforms a JSX component into HTML and Javascript:"
-          ] })
-        ] }),
-        /* @__PURE__ */ jsx4("figure", { children: /* @__PURE__ */ jsx4("pre", { children: /* @__PURE__ */ jsx4("code", { children: `<html>
+    /* @__PURE__ */ jsx4("main", { children: /* @__PURE__ */ jsxs4("section", { children: [
+      /* @__PURE__ */ jsxs4("hgroup", { children: [
+        /* @__PURE__ */ jsx4("h2", { children: "Production" }),
+        /* @__PURE__ */ jsxs4("p", { children: [
+          "Every time the ",
+          /* @__PURE__ */ jsx4("code", { children: "render" }),
+          " method is called, ",
+          PRODUCT_NAME,
+          " transforms a JSX component into HTML and Javascript:"
+        ] })
+      ] }),
+      /* @__PURE__ */ jsx4("figure", { children: /* @__PURE__ */ jsx4("pre", { children: /* @__PURE__ */ jsx4("code", { children: `<html>
   <head><title>Page</title></head>
   <body>...</body>
   <script>... set initial props ...<\/script>
   <script type="module">... hydration script ... <\/script>
 </html>` }) }) }),
-        /* @__PURE__ */ jsxs4("p", { children: [
-          "The markup is created from the component itself and the hydration script is created by reading the source file, ",
-          /* @__PURE__ */ jsx4("code", { children: "Page.tsx" }),
-          " or ",
-          /* @__PURE__ */ jsx4("code", { children: "Page.jsx" }),
-          ", from disk."
-        ] }),
-        /* @__PURE__ */ jsx4("p", { children: "This is good for development but it's not ideal for production, first because the source code might not be present at all and second because reading and compiling code every time is not very efficient." }),
-        /* @__PURE__ */ jsx4("p", { children: "So, for production we can precompile the necessary javascript and have it ready to go." }),
-        /* @__PURE__ */ jsxs4("p", { children: [
-          "By default, ",
-          PRODUCT_NAME,
-          " looks in the ",
-          /* @__PURE__ */ jsx4("code", { children: "./src" }),
-          " folder to find React files and outputs compiled javascript in ",
-          /* @__PURE__ */ jsx4("code", { children: "./public/hydrate" }),
-          ". You can change these locations, as well as whether you're in dev or prod mode, in the config file:"
-        ] }),
-        /* @__PURE__ */ jsx4("figure", { children: /* @__PURE__ */ jsx4("pre", { children: /* @__PURE__ */ jsx4("code", { children: `export default {
+      /* @__PURE__ */ jsxs4("p", { children: [
+        "The markup is created from the component itself and the hydration script is created by reading the source file, ",
+        /* @__PURE__ */ jsx4("code", { children: "Page.tsx" }),
+        " or ",
+        /* @__PURE__ */ jsx4("code", { children: "Page.jsx" }),
+        ", from disk."
+      ] }),
+      /* @__PURE__ */ jsx4("p", { children: "This is good for development but it's not ideal for production, first because the source code might not be present at all and second because reading and compiling code every time is not very efficient." }),
+      /* @__PURE__ */ jsx4("p", { children: "So, for production we can precompile the necessary javascript and have it ready to go." }),
+      /* @__PURE__ */ jsxs4("p", { children: [
+        "By default, ",
+        PRODUCT_NAME,
+        " looks in the ",
+        /* @__PURE__ */ jsx4("code", { children: "./src" }),
+        " folder to find React files and outputs compiled javascript in ",
+        /* @__PURE__ */ jsx4("code", { children: "./public/hydrate" }),
+        ". You can change these locations, as well as whether you're in dev or prod mode, in the config file:"
+      ] }),
+      /* @__PURE__ */ jsx4("figure", { children: /* @__PURE__ */ jsx4("pre", { children: /* @__PURE__ */ jsx4("code", { children: `export default {
   document: Document,
   srcPath: './src', // default
   outPath: './public/hydrate', // default
   isProd: process.env.NODE_ENV === 'production',
 }` }) }) }),
-        /* @__PURE__ */ jsxs4("p", { children: [
-          "You can reference the config file in the ",
-          /* @__PURE__ */ jsx4("code", { children: "bundle" }),
-          " command in ",
-          /* @__PURE__ */ jsx4("code", { children: "package.json" })
-        ] }),
-        /* @__PURE__ */ jsx4("figure", { children: /* @__PURE__ */ jsx4("pre", { children: /* @__PURE__ */ jsx4("code", { children: `...
+      /* @__PURE__ */ jsxs4("p", { children: [
+        "You can reference the config file in the ",
+        /* @__PURE__ */ jsx4("code", { children: "bundle" }),
+        " command in ",
+        /* @__PURE__ */ jsx4("code", { children: "package.json" })
+      ] }),
+      /* @__PURE__ */ jsx4("figure", { children: /* @__PURE__ */ jsx4("pre", { children: /* @__PURE__ */ jsx4("code", { children: `...
 "scripts": {
   "build": "react-srv bundle -f src/react-srv.config.ts && ... other build steps",
   "start": "NODE_ENV=production node dist/server.js"
 },` }) }) }),
-        /* @__PURE__ */ jsxs4("p", { children: [
-          "The last thing you need to do is to make sure the ",
-          /* @__PURE__ */ jsx4("code", { children: "/public" }),
-          " folder is statically served and accessible and you're good to go."
-        ] })
+      /* @__PURE__ */ jsxs4("p", { children: [
+        "The last thing you need to do is to make sure the ",
+        /* @__PURE__ */ jsx4("code", { children: "/public" }),
+        " folder is statically served and accessible and you're good to go."
       ] }),
-      /* @__PURE__ */ jsx4("hr", {}),
-      /* @__PURE__ */ jsxs4("div", { className: "card success", children: [
+      /* @__PURE__ */ jsxs4("article", { className: "success", children: [
         /* @__PURE__ */ jsxs4("p", { role: "group", children: [
           /* @__PURE__ */ jsx4(SettingsIcon, {}),
-          /* @__PURE__ */ jsx4("b", { children: "Demos" })
+          /* @__PURE__ */ jsx4("b", { children: "Example" })
         ] }),
         /* @__PURE__ */ jsxs4("p", { children: [
-          "Check out production ready demos for Typescript and Javascript ",
+          "Check out production ready example for Typescript and Javascript ",
           /* @__PURE__ */ jsx4("a", { href: DEMO_PROD_URL, target: "_blank", children: "here" }),
           "."
         ] })
       ] })
-    ] })
+    ] }) })
   ] });
 }
 

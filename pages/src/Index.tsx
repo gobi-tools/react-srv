@@ -168,14 +168,11 @@ export default function Page() {
         </figure>
       </section>
 
-      <SetupSection />
-
-      <hr />
-
       <section>
+        <SetupSection />
         <div className="row">
           <div>
-            <div className="card">
+            <article>
               <p>
                 <b>Production</b>
               </p>
@@ -185,10 +182,10 @@ export default function Page() {
               <p>
                 <a href={RouteMaster.production(route)}>Learn more</a>
               </p>
-            </div>
+            </article>
           </div>
           <div>
-            <div className="card">
+            <article>
               <p>
                 <b>SSG</b>
               </p>
@@ -198,7 +195,7 @@ export default function Page() {
               <p>
                 <a href={RouteMaster.stat(route)}>Learn more</a>
               </p>
-            </div>
+            </article>
           </div>
         </div>
       </section>

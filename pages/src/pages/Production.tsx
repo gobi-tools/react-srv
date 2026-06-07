@@ -63,19 +63,17 @@ export default function Production() {
           The last thing you need to do is to make sure the <code>/public</code> folder is
           statically served and accessible and you're good to go.
         </p>
-      </section>
 
-      <hr />
-
-      <div className="card success">
+        <article className="success">
         <p role="group">
           <SettingsIcon />
-          <b>Demos</b>
+          <b>Example</b>
         </p>
         <p>
-          Check out production ready demos for Typescript and Javascript <a href={DEMO_PROD_URL} target="_blank">here</a>.
+          Check out production ready example for Typescript and Javascript <a href={DEMO_PROD_URL} target="_blank">here</a>.
         </p>
-      </div>
+      </article>
+      </section>
     </main>
   </>
 }

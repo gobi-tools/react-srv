@@ -57,7 +57,7 @@ export default function Demo() {
             <p>You haven't added any todos so far</p>
           </blockquote>}
         {todos.length > 0 &&
-          <div className="card">
+          <article>
             <h4>Today's list</h4>
             {todos.sort((a, b) => {
               // first: unfinished before finished
@@ -80,7 +80,7 @@ export default function Demo() {
                 <span className={t.done ? "success" : ""}>{t.content}</span>
               </label>
             ))}
-          </div>
+          </article>
         }
       </section>
     </main>

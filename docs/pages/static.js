@@ -115,46 +115,43 @@ function Static() {
   const route = useRoute();
   return /* @__PURE__ */ jsxs4(Fragment, { children: [
     /* @__PURE__ */ jsx4("header", { children: /* @__PURE__ */ jsx4(Header, {}) }),
-    /* @__PURE__ */ jsxs4("main", { children: [
-      /* @__PURE__ */ jsxs4("section", { children: [
-        /* @__PURE__ */ jsxs4("hgroup", { children: [
-          /* @__PURE__ */ jsx4("h2", { children: "Static site generation (SSG)" }),
-          /* @__PURE__ */ jsxs4("p", { children: [
-            PRODUCT_NAME,
-            " can be used for direct static site generation (",
-            /* @__PURE__ */ jsx4("a", { href: SSG_URL, target: "_blank", children: "SSG" }),
-            "). If you've read the section on ",
-            /* @__PURE__ */ jsx4("a", { href: RouteMaster.production(route), children: "getting to production" }),
-            ", then you're already ninety percent there."
-          ] })
-        ] }),
-        /* @__PURE__ */ jsx4("p", { children: "You can specify the source and output destinations and whether you want to keep javascript hydration (default) or disable it completely for a pure static experiece, in the config file:" }),
-        /* @__PURE__ */ jsx4("figure", { children: /* @__PURE__ */ jsx4("pre", { children: /* @__PURE__ */ jsx4("code", { children: `export default {
+    /* @__PURE__ */ jsx4("main", { children: /* @__PURE__ */ jsxs4("section", { children: [
+      /* @__PURE__ */ jsxs4("hgroup", { children: [
+        /* @__PURE__ */ jsx4("h2", { children: "Static site generation (SSG)" }),
+        /* @__PURE__ */ jsxs4("p", { children: [
+          PRODUCT_NAME,
+          " can be used for direct static site generation (",
+          /* @__PURE__ */ jsx4("a", { href: SSG_URL, target: "_blank", children: "SSG" }),
+          "). If you've read the section on ",
+          /* @__PURE__ */ jsx4("a", { href: RouteMaster.production(route), children: "getting to production" }),
+          ", then you're already ninety percent there."
+        ] })
+      ] }),
+      /* @__PURE__ */ jsx4("p", { children: "You can specify the source and output destinations and whether you want to keep javascript hydration (default) or disable it completely for a pure static experiece, in the config file:" }),
+      /* @__PURE__ */ jsx4("figure", { children: /* @__PURE__ */ jsx4("pre", { children: /* @__PURE__ */ jsx4("code", { children: `export default {
   document: Document,
   srcPath: './src',
   outPath: './public',
   hydrate: true, // or false
 }` }) }) }),
-        /* @__PURE__ */ jsxs4("p", { children: [
-          "Then you can add the following step to your build pipeline in ",
-          /* @__PURE__ */ jsx4("code", { children: "package.json" }),
-          ":"
-        ] }),
-        /* @__PURE__ */ jsx4("figure", { children: /* @__PURE__ */ jsx4("pre", { children: /* @__PURE__ */ jsx4("code", { children: `...
+      /* @__PURE__ */ jsxs4("p", { children: [
+        "Then you can add the following step to your build pipeline in ",
+        /* @__PURE__ */ jsx4("code", { children: "package.json" }),
+        ":"
+      ] }),
+      /* @__PURE__ */ jsx4("figure", { children: /* @__PURE__ */ jsx4("pre", { children: /* @__PURE__ */ jsx4("code", { children: `...
 "scripts": {
   "render": "react-srv render -f src/react-srv.config.ts && ... other build steps"
 },` }) }) }),
-        /* @__PURE__ */ jsxs4("p", { children: [
-          "The last thing you need to do is to make sure the ",
-          /* @__PURE__ */ jsx4("code", { children: "/public" }),
-          " folder is accessible on the internet and you're good to go."
-        ] })
+      /* @__PURE__ */ jsxs4("p", { children: [
+        "The last thing you need to do is to make sure the ",
+        /* @__PURE__ */ jsx4("code", { children: "/public" }),
+        " folder is accessible on the internet and you're good to go."
       ] }),
-      /* @__PURE__ */ jsx4("hr", {}),
-      /* @__PURE__ */ jsxs4("div", { className: "card success", children: [
+      /* @__PURE__ */ jsxs4("article", { className: "success", children: [
         /* @__PURE__ */ jsxs4("p", { role: "group", children: [
           /* @__PURE__ */ jsx4(SettingsIcon, {}),
-          /* @__PURE__ */ jsx4("b", { children: "Demo" })
+          /* @__PURE__ */ jsx4("b", { children: "Example" })
         ] }),
         /* @__PURE__ */ jsxs4("p", { children: [
           "The source for this documentation is a statically generated site. Check it out ",
@@ -162,7 +159,7 @@ function Static() {
           "."
         ] })
       ] })
-    ] })
+    ] }) })
   ] });
 }
 

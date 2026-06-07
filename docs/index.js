@@ -130,7 +130,7 @@ npm i @types/react-dom@19.2.0 --save-dev` }) }) }),
     "jsxImportSource": "react"
   }
 }` }) }) }),
-    /* @__PURE__ */ jsxs3("div", { className: "card success", children: [
+    /* @__PURE__ */ jsxs3("article", { className: "success", children: [
       /* @__PURE__ */ jsxs3("p", { role: "group", children: [
         /* @__PURE__ */ jsx3(SettingsIcon, {}),
         /* @__PURE__ */ jsx3("b", { children: "Example" })
@@ -183,7 +183,7 @@ npm i tsx --save-dev` }) }) }),
       " error."
     ] }),
     /* @__PURE__ */ jsx3("figure", { children: /* @__PURE__ */ jsx3("pre", { children: /* @__PURE__ */ jsx3("code", { children: `tsx src/server.js` }) }) }),
-    /* @__PURE__ */ jsxs3("div", { className: "card success", children: [
+    /* @__PURE__ */ jsxs3("article", { className: "success", children: [
       /* @__PURE__ */ jsxs3("p", { role: "group", children: [
         /* @__PURE__ */ jsx3(SettingsIcon, {}),
         /* @__PURE__ */ jsx3("b", { children: "Example" })
@@ -240,7 +240,7 @@ npm i @babel/register --save-dev` }) }) }),
       " extension:"
     ] }),
     /* @__PURE__ */ jsx3("figure", { children: /* @__PURE__ */ jsx3("pre", { children: /* @__PURE__ */ jsx3("code", { children: `const Page = require('./pages/Page.jsx').default;` }) }) }),
-    /* @__PURE__ */ jsxs3("div", { className: "card success", children: [
+    /* @__PURE__ */ jsxs3("article", { className: "success", children: [
       /* @__PURE__ */ jsxs3("p", { role: "group", children: [
         /* @__PURE__ */ jsx3(SettingsIcon, {}),
         /* @__PURE__ */ jsx3("b", { children: "Example" })
@@ -255,7 +255,7 @@ npm i @babel/register --save-dev` }) }) }),
 }
 function SetupSection() {
   const [environment, selectEnvironment] = useState2("ts");
-  return /* @__PURE__ */ jsxs3("section", { children: [
+  return /* @__PURE__ */ jsxs3(Fragment, { children: [
     /* @__PURE__ */ jsxs3("hgroup", { children: [
       /* @__PURE__ */ jsx3("h2", { children: "Setup" }),
       /* @__PURE__ */ jsx3("p", { children: "Setup is slightly different based on the platform you're running:" })
@@ -419,29 +419,30 @@ export default function Page() {
   }
 }` }) }) })
       ] }),
-      /* @__PURE__ */ jsx4(SetupSection, {}),
-      /* @__PURE__ */ jsx4("hr", {}),
-      /* @__PURE__ */ jsx4("section", { children: /* @__PURE__ */ jsxs4("div", { className: "row", children: [
-        /* @__PURE__ */ jsx4("div", { children: /* @__PURE__ */ jsxs4("div", { className: "card", children: [
-          /* @__PURE__ */ jsx4("p", { children: /* @__PURE__ */ jsx4("b", { children: "Production" }) }),
-          /* @__PURE__ */ jsxs4("p", { children: [
-            "Look at best practices for ",
-            /* @__PURE__ */ jsx4("a", { href: SSR_URL, target: "_blank", children: "server side rendering (SSR)" }),
-            " in production."
-          ] }),
-          /* @__PURE__ */ jsx4("p", { children: /* @__PURE__ */ jsx4("a", { href: RouteMaster.production(route), children: "Learn more" }) })
-        ] }) }),
-        /* @__PURE__ */ jsx4("div", { children: /* @__PURE__ */ jsxs4("div", { className: "card", children: [
-          /* @__PURE__ */ jsx4("p", { children: /* @__PURE__ */ jsx4("b", { children: "SSG" }) }),
-          /* @__PURE__ */ jsxs4("p", { children: [
-            PRODUCT_NAME,
-            " can directly output HTML for ",
-            /* @__PURE__ */ jsx4("a", { href: SSG_URL, target: "_blank", children: "static site generation (SSG)" }),
-            "."
-          ] }),
-          /* @__PURE__ */ jsx4("p", { children: /* @__PURE__ */ jsx4("a", { href: RouteMaster.stat(route), children: "Learn more" }) })
-        ] }) })
-      ] }) })
+      /* @__PURE__ */ jsxs4("section", { children: [
+        /* @__PURE__ */ jsx4(SetupSection, {}),
+        /* @__PURE__ */ jsxs4("div", { className: "row", children: [
+          /* @__PURE__ */ jsx4("div", { children: /* @__PURE__ */ jsxs4("article", { children: [
+            /* @__PURE__ */ jsx4("p", { children: /* @__PURE__ */ jsx4("b", { children: "Production" }) }),
+            /* @__PURE__ */ jsxs4("p", { children: [
+              "Look at best practices for ",
+              /* @__PURE__ */ jsx4("a", { href: SSR_URL, target: "_blank", children: "server side rendering (SSR)" }),
+              " in production."
+            ] }),
+            /* @__PURE__ */ jsx4("p", { children: /* @__PURE__ */ jsx4("a", { href: RouteMaster.production(route), children: "Learn more" }) })
+          ] }) }),
+          /* @__PURE__ */ jsx4("div", { children: /* @__PURE__ */ jsxs4("article", { children: [
+            /* @__PURE__ */ jsx4("p", { children: /* @__PURE__ */ jsx4("b", { children: "SSG" }) }),
+            /* @__PURE__ */ jsxs4("p", { children: [
+              PRODUCT_NAME,
+              " can directly output HTML for ",
+              /* @__PURE__ */ jsx4("a", { href: SSG_URL, target: "_blank", children: "static site generation (SSG)" }),
+              "."
+            ] }),
+            /* @__PURE__ */ jsx4("p", { children: /* @__PURE__ */ jsx4("a", { href: RouteMaster.stat(route), children: "Learn more" }) })
+          ] }) })
+        ] })
+      ] })
     ] })
   ] });
 }

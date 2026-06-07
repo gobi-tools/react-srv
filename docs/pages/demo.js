@@ -38,7 +38,7 @@ function Demo() {
       /* @__PURE__ */ jsx("input", { disabled: content === "", type: "submit", value: "Add" })
     ] }) }),
     todos.length === 0 && /* @__PURE__ */ jsx("blockquote", { className: "secondary", children: /* @__PURE__ */ jsx("p", { children: "You haven't added any todos so far" }) }),
-    todos.length > 0 && /* @__PURE__ */ jsxs("div", { className: "card", children: [
+    todos.length > 0 && /* @__PURE__ */ jsxs("article", { children: [
       /* @__PURE__ */ jsx("h4", { children: "Today's list" }),
       todos.sort((a, b) => {
         if (a.done !== b.done) {

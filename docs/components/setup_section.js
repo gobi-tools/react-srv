@@ -113,7 +113,7 @@ npm i @types/react-dom@19.2.0 --save-dev` }) }) }),
     "jsxImportSource": "react"
   }
 }` }) }) }),
-    /* @__PURE__ */ jsxs2("div", { className: "card success", children: [
+    /* @__PURE__ */ jsxs2("article", { className: "success", children: [
       /* @__PURE__ */ jsxs2("p", { role: "group", children: [
         /* @__PURE__ */ jsx2(SettingsIcon, {}),
         /* @__PURE__ */ jsx2("b", { children: "Example" })
@@ -166,7 +166,7 @@ npm i tsx --save-dev` }) }) }),
       " error."
     ] }),
     /* @__PURE__ */ jsx2("figure", { children: /* @__PURE__ */ jsx2("pre", { children: /* @__PURE__ */ jsx2("code", { children: `tsx src/server.js` }) }) }),
-    /* @__PURE__ */ jsxs2("div", { className: "card success", children: [
+    /* @__PURE__ */ jsxs2("article", { className: "success", children: [
       /* @__PURE__ */ jsxs2("p", { role: "group", children: [
         /* @__PURE__ */ jsx2(SettingsIcon, {}),
         /* @__PURE__ */ jsx2("b", { children: "Example" })
@@ -223,7 +223,7 @@ npm i @babel/register --save-dev` }) }) }),
       " extension:"
     ] }),
     /* @__PURE__ */ jsx2("figure", { children: /* @__PURE__ */ jsx2("pre", { children: /* @__PURE__ */ jsx2("code", { children: `const Page = require('./pages/Page.jsx').default;` }) }) }),
-    /* @__PURE__ */ jsxs2("div", { className: "card success", children: [
+    /* @__PURE__ */ jsxs2("article", { className: "success", children: [
       /* @__PURE__ */ jsxs2("p", { role: "group", children: [
         /* @__PURE__ */ jsx2(SettingsIcon, {}),
         /* @__PURE__ */ jsx2("b", { children: "Example" })
@@ -238,7 +238,7 @@ npm i @babel/register --save-dev` }) }) }),
 }
 function SetupSection() {
   const [environment, selectEnvironment] = useState2("ts");
-  return /* @__PURE__ */ jsxs2("section", { children: [
+  return /* @__PURE__ */ jsxs2(Fragment, { children: [
     /* @__PURE__ */ jsxs2("hgroup", { children: [
       /* @__PURE__ */ jsx2("h2", { children: "Setup" }),
       /* @__PURE__ */ jsx2("p", { children: "Setup is slightly different based on the platform you're running:" })

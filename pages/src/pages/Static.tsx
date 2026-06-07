@@ -45,19 +45,17 @@ export default function Static() {
           The last thing you need to do is to make sure the <code>/public</code> folder is
           accessible on the internet and you're good to go.
         </p>
+
+        <article className="success">
+          <p role="group">
+            <SettingsIcon />
+            <b>Example</b>
+          </p>
+          <p>
+            The source for this documentation is a statically generated site. Check it out <a href={DEMO_STATIC_URL} target="_blank">here</a>.
+          </p>
+        </article>
       </section>
-
-      <hr />
-
-      <div className="card success">
-        <p role="group">
-          <SettingsIcon />
-          <b>Demo</b>
-        </p>
-        <p>
-          The source for this documentation is a statically generated site. Check it out <a href={DEMO_STATIC_URL} target="_blank">here</a>.
-        </p>
-      </div>
     </main>
   </>
 }
