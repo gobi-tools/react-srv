@@ -170,34 +170,28 @@ export default function Page() {
 
       <section>
         <SetupSection />
-        <div className="row">
-          <div>
-            <article>
-              <p>
-                <b>Production</b>
-              </p>
-              <p>
-                Look at best practices for <a href={SSR_URL} target="_blank">server side rendering (SSR)</a> in production.
-              </p>
-              <p>
-                <a href={RouteMaster.production(route)}>Learn more</a>
-              </p>
-            </article>
-          </div>
-          <div>
-            <article>
-              <p>
-                <b>SSG</b>
-              </p>
-              <p>
-                {PRODUCT_NAME} can directly output HTML for <a href={SSG_URL} target="_blank">static site generation (SSG)</a>.
-              </p>
-              <p>
-                <a href={RouteMaster.stat(route)}>Learn more</a>
-              </p>
-            </article>
-          </div>
-        </div>
+        <article>
+          <p>
+            <b>Production</b>
+          </p>
+          <p>
+            Look at best practices for <a href={SSR_URL} target="_blank">server side rendering (SSR)</a> in production.
+          </p>
+          <p>
+            <a href={RouteMaster.production(route)}>Learn more</a>
+          </p>
+        </article>
+        <article>
+          <p>
+            <b>SSG</b>
+          </p>
+          <p>
+            {PRODUCT_NAME} can directly output HTML for <a href={SSG_URL} target="_blank">static site generation (SSG)</a>.
+          </p>
+          <p>
+            <a href={RouteMaster.stat(route)}>Learn more</a>
+          </p>
+        </article>
       </section>
     </main>
   </>

@@ -421,26 +421,24 @@ export default function Page() {
       ] }),
       /* @__PURE__ */ jsxs4("section", { children: [
         /* @__PURE__ */ jsx4(SetupSection, {}),
-        /* @__PURE__ */ jsxs4("div", { className: "row", children: [
-          /* @__PURE__ */ jsx4("div", { children: /* @__PURE__ */ jsxs4("article", { children: [
-            /* @__PURE__ */ jsx4("p", { children: /* @__PURE__ */ jsx4("b", { children: "Production" }) }),
-            /* @__PURE__ */ jsxs4("p", { children: [
-              "Look at best practices for ",
-              /* @__PURE__ */ jsx4("a", { href: SSR_URL, target: "_blank", children: "server side rendering (SSR)" }),
-              " in production."
-            ] }),
-            /* @__PURE__ */ jsx4("p", { children: /* @__PURE__ */ jsx4("a", { href: RouteMaster.production(route), children: "Learn more" }) })
-          ] }) }),
-          /* @__PURE__ */ jsx4("div", { children: /* @__PURE__ */ jsxs4("article", { children: [
-            /* @__PURE__ */ jsx4("p", { children: /* @__PURE__ */ jsx4("b", { children: "SSG" }) }),
-            /* @__PURE__ */ jsxs4("p", { children: [
-              PRODUCT_NAME,
-              " can directly output HTML for ",
-              /* @__PURE__ */ jsx4("a", { href: SSG_URL, target: "_blank", children: "static site generation (SSG)" }),
-              "."
-            ] }),
-            /* @__PURE__ */ jsx4("p", { children: /* @__PURE__ */ jsx4("a", { href: RouteMaster.stat(route), children: "Learn more" }) })
-          ] }) })
+        /* @__PURE__ */ jsxs4("article", { children: [
+          /* @__PURE__ */ jsx4("p", { children: /* @__PURE__ */ jsx4("b", { children: "Production" }) }),
+          /* @__PURE__ */ jsxs4("p", { children: [
+            "Look at best practices for ",
+            /* @__PURE__ */ jsx4("a", { href: SSR_URL, target: "_blank", children: "server side rendering (SSR)" }),
+            " in production."
+          ] }),
+          /* @__PURE__ */ jsx4("p", { children: /* @__PURE__ */ jsx4("a", { href: RouteMaster.production(route), children: "Learn more" }) })
+        ] }),
+        /* @__PURE__ */ jsxs4("article", { children: [
+          /* @__PURE__ */ jsx4("p", { children: /* @__PURE__ */ jsx4("b", { children: "SSG" }) }),
+          /* @__PURE__ */ jsxs4("p", { children: [
+            PRODUCT_NAME,
+            " can directly output HTML for ",
+            /* @__PURE__ */ jsx4("a", { href: SSG_URL, target: "_blank", children: "static site generation (SSG)" }),
+            "."
+          ] }),
+          /* @__PURE__ */ jsx4("p", { children: /* @__PURE__ */ jsx4("a", { href: RouteMaster.stat(route), children: "Learn more" }) })
         ] })
       ] })
     ] })
