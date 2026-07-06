@@ -121,6 +121,7 @@ export default class ReactSrv {
       write: false,
       jsx: "automatic",
       jsxImportSource: "react",
+      mainFields: this.config.mainFields ?? [],
       external: ["react", "react-dom", "react-dom/client", "react/jsx-runtime", "react/jsx-dev-runtime"],
     });
 
