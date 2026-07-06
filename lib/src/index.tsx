@@ -17,6 +17,7 @@ type TReactSrvConfig = {
   outPath?: string,
   hydrate?: boolean;
   isProd?: boolean,
+  mainFields?: string[],
   Document?: React.FC<any>,
   initProps?: any,
 };
@@ -41,6 +42,7 @@ export const DefaultReactSrvConfig: TReactSrvConfig = {
   isProd: false,
   Document: DefaultDocument,
   initProps: {},
+  mainFields: ["module", "main"],
 };
 
 export default class ReactSrv {
@@ -186,6 +188,7 @@ export default class ReactSrv {
         platform: "node",
         format: "esm",
         write: false,
+        mainFields: this.config.mainFields ?? [],
         external: ["react", "react-dom", "react/jsx-runtime", "react/jsx-dev-runtime"],
       });
 
