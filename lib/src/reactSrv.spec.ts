@@ -2,6 +2,7 @@ import fs from "fs";
 import os from "os";
 import path from "path";
 import { fileURLToPath } from "url";
+import React from "react";
 import { afterAll, afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import ReactSrv, { FileUtils } from "./index.js";
 
@@ -310,6 +311,121 @@ describe("ReactSrv", () => {
         const srv = new ReactSrv({ srcPath, outPath });
         await expect(srv.prerender()).rejects.toThrow("prerender-boom");
         expect(listTempFiles()).toEqual([]);
+      });
+    });
+  });
+
+  describe("render", () => {
+    const tmpRoot = fs.mkdtempSync(path.join(os.tmpdir(), "react-srv-render-"));
+    const srcPath = path.join(tmpRoot, "src");
+
+    // render needs a source file on disk whose name matches the component
+    // function, but only in dev mode (hydrate && !isProd)
+    const writeSource = (name: string) => {
+      fs.writeFileSync(
+        path.join(srcPath, `${name}.tsx`),
+        `import React from "react";\nexport default function ${name}(props) {\n  return <p>${name} source</p>;\n}\n`,
+        "utf8"
+      );
+    };
+
+    function Home() {
+      return React.createElement("p", null, "HOME-CONTENT");
+    }
+    function Greeting(props: any) {
+      return React.createElement("p", null, `Hello ${props.name}`);
+    }
+    function Ghost() {
+      return React.createElement("p", null, "GHOST-CONTENT");
+    }
+    function Standalone() {
+      return React.createElement("p", null, "STANDALONE-CONTENT");
+    }
+
+    beforeEach(() => {
+      fs.rmSync(srcPath, { recursive: true, force: true });
+      fs.mkdirSync(srcPath, { recursive: true });
+      writeSource("Home");
+      writeSource("Greeting");
+    });
+
+    afterAll(() => {
+      fs.rmSync(tmpRoot, { recursive: true, force: true });
+    });
+
+    describe("default config (hydrate: true, isProd: false)", () => {
+      it("returns a full HTML document with the component inside #root", () => {
+        const srv = new ReactSrv({ srcPath });
+        const html = srv.render(Home);
+        expect(html.startsWith("<!DOCTYPE html>")).toBe(true);
+        expect(html).toContain('id="root"');
+        expect(html).toContain("HOME-CONTENT");
+        expect(html).toContain("__INITIAL_PROPS__ = {}");
+      });
+
+      it("passes props to the component and embeds them for hydration", () => {
+        const srv = new ReactSrv({ srcPath });
+        const html = srv.render(Greeting, { name: "Ada" });
+        expect(html).toContain("Hello Ada");
+        expect(html).toContain('__INITIAL_PROPS__ = {"name":"Ada"}');
+      });
+
+      it("inlines the hydration bundle as a module script", () => {
+        const srv = new ReactSrv({ srcPath });
+        const html = srv.render(Home);
+        expect(html).toContain('type="module"');
+        expect(html).toContain("hydrateRoot(");
+        expect(html).toContain("__REACT_SRV_HYDRATED__");
+        expect(html).toContain("https://esm.sh/react@19.2.0");
+      });
+
+      it("throws a clear error when the component has no source file", () => {
+        const srv = new ReactSrv({ srcPath });
+        expect(() => srv.render(Ghost)).toThrow(/could not find page component/i);
+      });
+    });
+
+    describe("hydrate: false", () => {
+      it("renders without a module script, even with no source file on disk", () => {
+        const srv = new ReactSrv({ srcPath, hydrate: false });
+        const html = srv.render(Standalone);
+        expect(html).toContain("STANDALONE-CONTENT");
+        expect(html).not.toContain('type="module"');
+        expect(html).not.toContain("hydrateRoot(");
+      });
+    });
+
+    describe("isProd: true", () => {
+      it("links the public hydration path instead of inlining the bundle", () => {
+        const srv = new ReactSrv({ srcPath, outPath: "./public", isProd: true });
+        const html = srv.render(Home);
+        expect(html).toContain('type="module"');
+        expect(html).toContain('src="/home.js"');
+        expect(html).not.toContain("hydrateRoot(");
+      });
+    });
+
+    describe("errors", () => {
+      it("throws for a component with an empty name", () => {
+        const srv = new ReactSrv({ srcPath });
+        expect(() => srv.render(() => null)).toThrow(/Component.name is empty/);
+      });
+    });
+
+    describe("custom Document", () => {
+      it("renders the page inside the configured Document", () => {
+        const CustomDocument = (props: any) =>
+          React.createElement(
+            "html",
+            null,
+            React.createElement("head", null, React.createElement("title", null, "Custom Title")),
+            React.createElement("body", { "data-custom": "yes" }, props.children)
+          );
+        const srv = new ReactSrv({ srcPath, Document: CustomDocument });
+        const html = srv.render(Home);
+        expect(html).toContain("<title>Custom Title</title>");
+        expect(html).toContain('data-custom="yes"');
+        expect(html).toContain("HOME-CONTENT");
       });
     });
   });
