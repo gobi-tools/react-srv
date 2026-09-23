@@ -279,14 +279,35 @@ export default class ReactSrv {
     const relPath = path.relative(this.config.srcPath, entryPath);
     const hash = FileUtils.pathHash(relPath);
 
-    const outPath = this.config.outPath;
-    const subpaths = outPath.split('/').map(s => s.trim()).filter(s => s != '' && s != '.');
-    subpaths.shift(); // remove first element
-    const urlPath = subpaths.join('/');
     const fp = `${FileUtils.normaliseName(page)}.${hash}.js`;
+    const urlPath = this.getHydrationUrlPrefix();
     const finalPath = urlPath === '' ? '' : `/${urlPath}`;
     const result = `${finalPath}/${fp}`;
     return result;
+  }
+
+  /**
+   * Issue #10: outPath is declared relative to the config file and follows
+   * `<docroot>/<optional subpath>`; the server mounts docroot at "/". So the
+   * URL prefix is everything after the docroot segment: normalize
+   * separators, drop "." and leading ".." segments, then drop the docroot
+   * itself. An absolute outPath has no knowable docroot and is rejected.
+   */
+  private getHydrationUrlPrefix(): string {
+    const outPath = this.config.outPath;
+    if (path.isAbsolute(outPath)) {
+      throw new Error(
+        `react-srv: cannot derive hydration URL: outPath must be relative (from the config file), got absolute path "${outPath}"`
+      );
+    }
+    const segments = path.posix
+      .normalize(outPath.replace(/\\/g, "/"))
+      .split("/")
+      .map((s) => s.trim())
+      .filter((s) => s !== "" && s !== ".");
+    while (segments[0] === "..") segments.shift();
+    segments.shift(); // first remaining segment is the docroot mounted at "/"
+    return segments.join("/");
   }
 
   private getRelativeHydrationPath(page: string): string {

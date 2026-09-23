@@ -473,6 +473,55 @@ describe("ReactSrv", () => {
       });
     });
 
+    describe("hydration URL derived from outPath (issue #10)", () => {
+      // Contract: outPath is declared relative to the config file and follows
+      // `<docroot>/<optional subpath>`; the server mounts docroot at "/".
+      // The URL is "/" + subpath + "/" + filename, so the docroot segment
+      // (first segment that is not "." or "..") is dropped from the URL.
+      const expectSrc = (outPath: string, expected: string) => {
+        const srv = new ReactSrv({ srcPath, outPath, isProd: true });
+        const html = srv.render(Home);
+        expect(html).toContain(`src="${expected}"`);
+      };
+
+      it("./public/hydrate -> /hydrate/ (canonical layout)", () => {
+        expectSrc("./public/hydrate", `/hydrate/${hashedJs("Home.tsx")}`);
+      });
+
+      it("public/hydrate -> /hydrate/ (no ./ prefix)", () => {
+        expectSrc("public/hydrate", `/hydrate/${hashedJs("Home.tsx")}`);
+      });
+
+      it("public/hydrate/ -> /hydrate/ (trailing slash)", () => {
+        expectSrc("public/hydrate/", `/hydrate/${hashedJs("Home.tsx")}`);
+      });
+
+      it("./public -> / (outPath is the docroot itself)", () => {
+        expectSrc("./public", `/${hashedJs("Home.tsx")}`);
+      });
+
+      it("./build -> / (docroot folder name is irrelevant)", () => {
+        expectSrc("./build", `/${hashedJs("Home.tsx")}`);
+      });
+
+      it("../public/hydrate -> /hydrate/ (leading .. dropped before the docroot)", () => {
+        expectSrc("../public/hydrate", `/hydrate/${hashedJs("Home.tsx")}`);
+      });
+
+      it("../docs -> / (docs folder mounted at /)", () => {
+        expectSrc("../docs", `/${hashedJs("Home.tsx")}`);
+      });
+
+      it("public\\hydrate -> /hydrate/ (backslash separators)", () => {
+        expectSrc("public\\hydrate", `/hydrate/${hashedJs("Home.tsx")}`);
+      });
+
+      it("throws for an absolute outPath (docroot unknowable)", () => {
+        const srv = new ReactSrv({ srcPath, outPath: "/var/www/site/public", isProd: true });
+        expect(() => srv.render(Home)).toThrow(/outPath must be relative/i);
+      });
+    });
+
     describe("errors", () => {
       it("throws for a component with an empty name", () => {
         const srv = new ReactSrv({ srcPath });
