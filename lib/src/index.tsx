@@ -72,7 +72,9 @@ export default class ReactSrv {
     for (const file of files) {
       const pageName = file.component;
       const rootId = 'root';
-      const code = this.bundle({ pageName, rootId });
+      // pass the exact source file: name-only lookup is ambiguous when two
+      // folders hold same-named components (issue #7)
+      const code = this.bundle({ pageName, rootId, entryPath: file.absPath });
       const writePath = file.writePath;
       const fp = `${writePath}/${file.name.js}`;
       fs.mkdirSync(writePath, { recursive: true });
@@ -81,10 +83,12 @@ export default class ReactSrv {
     }
   }
 
-  private bundle(params: { pageName: string; rootId: string }): string {
+  private bundle(params: { pageName: string; rootId: string; entryPath?: string }): string {
     const { pageName, rootId } = params;
 
-    const entryPath = this.findEntryPath(pageName);
+    // callers that know the source file pass it directly; render() only has
+    // Component.name, so it falls back to resolving by name (issue #7)
+    const entryPath = params.entryPath ?? this.findEntryPath(pageName);
     const entryDir = path.dirname(entryPath);
     const entryBase = path.basename(entryPath);
 

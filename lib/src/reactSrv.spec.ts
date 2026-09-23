@@ -42,7 +42,7 @@ describe("ReactSrv", () => {
     });
 
     afterEach(() => {
-      vi.restoreAllMocks(); // restores the findFileRecursive spy from the issue #6 test
+      vi.restoreAllMocks(); // restores the findFileRecursive spy from the issue #7 test
     });
 
     afterAll(() => {
@@ -135,11 +135,15 @@ describe("ReactSrv", () => {
         expect(code).toContain('from "https://esm.sh/react-dom@19.2.0"');
       });
 
-      it("throws a descriptive error when the page component file cannot be found", () => {
+      it("bundles straight from the scanned source path, without a name re-lookup (issue #7)", () => {
         writeComponent("Home.tsx");
-        vi.spyOn(FileUtils, "findFileRecursive").mockReturnValue(null);
+        const spy = vi.spyOn(FileUtils, "findFileRecursive").mockReturnValue(null);
         const srv = new ReactSrv({ srcPath, outPath });
-        expect(() => srv.prebundle()).toThrow(/could not find page component/i);
+        srv.prebundle();
+        // paths come from the fg scan itself — findFileRecursive is never
+        // consulted, so there is no name mismatch to produce a bad error
+        expect(spy).not.toHaveBeenCalled();
+        expect(readOutFiles()).toContain(hashedJs("Home.tsx"));
       });
 
       it("keeps hydration scripts for duplicate component names apart (issue #8)", () => {
