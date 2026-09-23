@@ -295,7 +295,7 @@ export class FileUtils {
       return !!info && info.isDirectory();
     } catch (e) {
       if (e.code === 'ENOENT') {
-        console.log('Folder does not exist');
+        return false;
       } else {
         throw e; // Other unexpected errors
       }

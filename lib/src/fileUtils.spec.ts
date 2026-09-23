@@ -1,4 +1,7 @@
-import { describe, expect, it } from "vitest";
+import fs from "fs";
+import os from "os";
+import path from "path";
+import { afterAll, describe, expect, it, vi } from "vitest";
 import { FileUtils } from "./index.js";
 
 describe("FileUtils", () => {
@@ -37,6 +40,47 @@ describe("FileUtils", () => {
 
     it("splits every transition", () => {
       expect(FileUtils.normaliseName("myHomePage")).toBe("my_home_page");
+    });
+  });
+
+  describe("dirExists", () => {
+    const tmpRoot = fs.mkdtempSync(path.join(os.tmpdir(), "react-srv-spec-"));
+
+    afterAll(() => {
+      fs.rmSync(tmpRoot, { recursive: true, force: true });
+    });
+
+    it("returns true for an existing directory", () => {
+      expect(FileUtils.dirExists(tmpRoot)).toBe(true);
+    });
+
+    it("returns false when the path does not exist (ENOENT)", () => {
+      const missing = path.join(tmpRoot, "does-not-exist");
+      const result = FileUtils.dirExists(missing);
+      expect(result).toBe(false);
+    });
+
+    it("returns false when the path is a file, not a directory", () => {
+      const filePath = path.join(tmpRoot, "a-file.txt");
+      fs.writeFileSync(filePath, "hello");
+      expect(FileUtils.dirExists(filePath)).toBe(false);
+    });
+
+    it("rethrows unexpected (non-ENOENT) errors", () => {
+      const eaccsError = Object.assign(new Error("EACCES: permission denied"), {
+        code: "EACCES",
+      });
+      const spy = vi
+        .spyOn(fs, "lstatSync")
+        .mockImplementation(() => {
+          throw eaccsError;
+        });
+
+      try {
+        expect(() => FileUtils.dirExists(tmpRoot)).toThrow(eaccsError);
+      } finally {
+        spy.mockRestore();
+      }
     });
   });
 });
