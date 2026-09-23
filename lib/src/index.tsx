@@ -1,7 +1,8 @@
 // note/system imports
 import fs from "fs";
 import path from "path";
-import { fileURLToPath } from "url";
+import os from "os";
+import { createRequire } from "module";
 // react imports
 import React from "react";
 import { renderToString, renderToStaticMarkup } from "react-dom/server";
@@ -9,7 +10,7 @@ import { renderToString, renderToStaticMarkup } from "react-dom/server";
 import * as esbuild from "esbuild";
 import serialize from "serialize-javascript";
 import fg from "fast-glob";
-
+      
 type TReactSrvConfig = {
   reactVersion?: string;
   reactLocation?: string;
@@ -187,22 +188,41 @@ export default class ReactSrv {
     const props = this.config.initProps;
     const safeProps = serialize(props, { isJSON: true });
 
+    // The temp module lives outside the project (OS temp dir), where bare
+    // specifiers like "react" cannot be resolved — there is no node_modules
+    // above it. Resolve react* to absolute paths instead (via the library's
+    // own location, so the same React instance the library renders with is
+    // reused) and keep them external so they resolve from anywhere.
+    const requireFromLib = createRequire(import.meta.url);
+    const externalsToAbsolute: esbuild.Plugin = {
+      name: "externals-to-absolute",
+      setup(build) {
+        build.onResolve({ filter: /^react(-dom)?($|\/)/ }, (args) => ({
+          path: requireFromLib.resolve(args.path),
+          external: true,
+        }));
+      },
+    };
+
     for (const file of files) {
-      const result = esbuild.buildSync({
+      const result = await esbuild.build({
         entryPoints: [file.absPath],
         bundle: true,
         platform: "node",
         format: "esm",
         write: false,
         mainFields: this.config.mainFields ?? [],
-        external: ["react", "react-dom", "react/jsx-runtime", "react/jsx-dev-runtime"],
+        plugins: [externalsToAbsolute],
       });
 
       const js = result.outputFiles[0].text;
 
       // 2️⃣ Load the compiled module dynamically
-      const __dirname = path.dirname(fileURLToPath(import.meta.url));
-      const tempFile = path.join(__dirname, file.name.mjs);
+      // under the OS temp dir (not next to the library's dist/), in a
+      // per-process folder so concurrent runs can't clobber each other
+      const tempDir = path.join(os.tmpdir(), "react-srv", String(process.pid));
+      const tempFile = path.join(tempDir, file.name.mjs);
+      fs.mkdirSync(tempDir, { recursive: true });
       fs.writeFileSync(tempFile, js);
       let Page: any;
       try {

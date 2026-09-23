@@ -136,13 +136,16 @@ describe("ReactSrv", () => {
     const srcPath = path.join(tmpRoot, "src");
     const outPath = path.join(tmpRoot, "out");
 
-    // prerender writes its temporary .mjs files next to the library source itself
-    const libDir = path.dirname(fileURLToPath(import.meta.url));
-    const preExistingMjs = new Set(
-      fs.readdirSync(libDir).filter((f) => f.endsWith(".mjs"))
-    );
+    // prerender writes its temporary .mjs files under the OS temp dir
+    // (per-process folder, mirrored from index.tsx)
+    const tempDir = path.join(os.tmpdir(), "react-srv", String(process.pid));
+    const listDirMjs = (): string[] =>
+      fs.existsSync(tempDir)
+        ? fs.readdirSync(tempDir).filter((f) => f.endsWith(".mjs"))
+        : [];
+    const preExistingMjs = new Set(listDirMjs());
     const listTempFiles = (): string[] =>
-      fs.readdirSync(libDir).filter((f) => f.endsWith(".mjs") && !preExistingMjs.has(f));
+      listDirMjs().filter((f) => !preExistingMjs.has(f));
 
     const writePage = (relPath: string, jsxChildren: string) => {
       const fp = path.join(srcPath, relPath);
@@ -181,7 +184,7 @@ describe("ReactSrv", () => {
       // remove any temp .mjs a test left behind, so the repo stays clean even
       // while the issue #9 cleanup test is failing
       for (const f of listTempFiles()) {
-        fs.rmSync(path.join(libDir, f), { force: true });
+        fs.rmSync(path.join(tempDir, f), { force: true });
       }
     });
 
@@ -290,6 +293,45 @@ describe("ReactSrv", () => {
         const srv = new ReactSrv({ srcPath, outPath });
         await srv.prerender();
         expect(listTempFiles()).toEqual([]);
+      });
+
+      it("writes its temporary module under the OS temp dir, not next to the library", async () => {
+        writePage("Home.tsx", "HOME-MARKER");
+        const libDir = path.dirname(fileURLToPath(import.meta.url));
+        const spy = vi.spyOn(fs, "writeFileSync");
+        try {
+          const srv = new ReactSrv({ srcPath, outPath });
+          await srv.prerender();
+          const tempWrites = spy.mock.calls
+            .map(([p]) => String(p))
+            .filter((p) => p.endsWith(".mjs"));
+          expect(tempWrites.length).toBeGreaterThan(0);
+          for (const p of tempWrites) {
+            expect(p.startsWith(os.tmpdir())).toBe(true);
+            expect(path.dirname(p)).not.toBe(libDir);
+          }
+        } finally {
+          spy.mockRestore();
+        }
+      });
+
+      it("writes external imports as absolute paths so the temp module resolves outside the project", async () => {
+        writePage("Home.tsx", "HOME-MARKER");
+        const spy = vi.spyOn(fs, "writeFileSync");
+        try {
+          const srv = new ReactSrv({ srcPath, outPath });
+          await srv.prerender();
+          const tempWrite = spy.mock.calls.find(([p]) => String(p).endsWith(".mjs"));
+          expect(tempWrite).toBeDefined();
+          const content = String(tempWrite![1]);
+          // bare specifiers like `from "react"` cannot resolve from the OS
+          // temp dir (no node_modules above it):
+          expect(content).not.toMatch(/["']react(-dom)?(["'/])/);
+          // they must be emitted as absolute paths instead:
+          expect(content).toMatch(/from "\//);
+        } finally {
+          spy.mockRestore();
+        }
       });
 
       it("picks up source changes when prerendering again in the same process (temp module cache)", async () => {
