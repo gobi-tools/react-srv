@@ -58,7 +58,7 @@ export default class ReactSrv {
 
   prebundle() {
     if (!this.config.hydrate) {
-      console.log(`Skipping pre-bundiling hydration scripts synce hydrate === ${this.config.hydrate}`);
+      console.log(`Skipping pre-bundling hydration scripts since hydrate === ${this.config.hydrate}`);
       return;
     }
 
