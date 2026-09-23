@@ -1,6 +1,7 @@
 import fs from "fs";
 import os from "os";
 import path from "path";
+import { fileURLToPath } from "url";
 import { afterAll, afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import ReactSrv, { FileUtils } from "./index.js";
 
@@ -125,6 +126,190 @@ describe("ReactSrv", () => {
         srv.prebundle();
         const jsFiles = readOutFiles().filter((f) => f.endsWith(".js"));
         expect(jsFiles).toHaveLength(2);
+      });
+    });
+  });
+
+  describe("prerender", () => {
+    const tmpRoot = fs.mkdtempSync(path.join(os.tmpdir(), "react-srv-prerender-"));
+    const srcPath = path.join(tmpRoot, "src");
+    const outPath = path.join(tmpRoot, "out");
+
+    // prerender writes its temporary .mjs files next to the library source itself
+    const libDir = path.dirname(fileURLToPath(import.meta.url));
+    const preExistingMjs = new Set(
+      fs.readdirSync(libDir).filter((f) => f.endsWith(".mjs"))
+    );
+    const listTempFiles = (): string[] =>
+      fs.readdirSync(libDir).filter((f) => f.endsWith(".mjs") && !preExistingMjs.has(f));
+
+    const writePage = (relPath: string, jsxChildren: string) => {
+      const fp = path.join(srcPath, relPath);
+      fs.mkdirSync(path.dirname(fp), { recursive: true });
+      const name = path.basename(relPath, path.extname(relPath));
+      fs.writeFileSync(
+        fp,
+        `import React from "react";\nexport default function ${name}(props) {\n  return <p>${jsxChildren}</p>;\n}\n`,
+        "utf8"
+      );
+    };
+
+    const writeFailingPage = () => {
+      fs.writeFileSync(
+        path.join(srcPath, "Boom.tsx"),
+        `throw new Error("prerender-boom");\nexport default function Boom() {\n  return null;\n}\n`,
+        "utf8"
+      );
+    };
+
+    const readOutFiles = (): string[] => {
+      if (!fs.existsSync(outPath)) return [];
+      return fs.readdirSync(outPath, { recursive: true }) as string[];
+    };
+
+    const readOutFile = (relPath: string): string =>
+      fs.readFileSync(path.join(outPath, relPath), "utf8");
+
+    beforeEach(() => {
+      fs.rmSync(srcPath, { recursive: true, force: true });
+      fs.rmSync(outPath, { recursive: true, force: true });
+      fs.mkdirSync(srcPath, { recursive: true });
+    });
+
+    afterEach(() => {
+      // remove any temp .mjs a test left behind, so the repo stays clean even
+      // while the issue #9 cleanup test is failing
+      for (const f of listTempFiles()) {
+        fs.rmSync(path.join(libDir, f), { force: true });
+      }
+    });
+
+    afterAll(() => {
+      fs.rmSync(tmpRoot, { recursive: true, force: true });
+    });
+
+    describe("hydrate: true", () => {
+      it("writes an HTML file and a hydration script per page, preserving folder structure", async () => {
+        writePage("Home.tsx", "HOME-MARKER");
+        writePage("pages/About.tsx", "ABOUT-MARKER");
+        const srv = new ReactSrv({ srcPath, outPath });
+        await srv.prerender();
+        const files = readOutFiles();
+        expect(files).toContain("home.html");
+        expect(files).toContain("home.js");
+        expect(files).toContain(path.join("pages", "about.html"));
+        expect(files).toContain(path.join("pages", "about.js"));
+      });
+
+      it("renders the page into a full HTML document", async () => {
+        writePage("Home.tsx", "HOME-MARKER");
+        const srv = new ReactSrv({ srcPath, outPath });
+        await srv.prerender();
+        const html = readOutFile("home.html");
+        expect(html.startsWith("<!DOCTYPE html>")).toBe(true);
+        expect(html).toContain('id="root"');
+        expect(html).toContain("HOME-MARKER");
+      });
+
+      it("embeds the initial props for hydration", async () => {
+        // unique component name so the temp module import isn't served from a
+        // stale ESM cache entry of an earlier test
+        writePage("Greeting.tsx", "{props.name}");
+        const srv = new ReactSrv({ srcPath, outPath, initProps: { name: "Ada" } });
+        await srv.prerender();
+        const html = readOutFile("greeting.html");
+        expect(html).toContain("<p>Ada</p>");
+        expect(html).toContain("__INITIAL_PROPS__");
+        expect(html).toContain('"name":"Ada"');
+      });
+
+      it("links the hydration script with a relative module script tag", async () => {
+        writePage("Home.tsx", "HOME-MARKER");
+        const srv = new ReactSrv({ srcPath, outPath });
+        await srv.prerender();
+        const html = readOutFile("home.html");
+        expect(html).toContain('type="module"');
+        expect(html).toContain('src="./home.js"');
+      });
+
+      it("keeps duplicate component names apart (paths)", async () => {
+        writePage("a/Home.tsx", "ALPHA-MARKER");
+        writePage("b/Home.tsx", "BETA-MARKER");
+        const srv = new ReactSrv({ srcPath, outPath });
+        await srv.prerender();
+        const files = readOutFiles();
+        expect(files).toContain(path.join("a", "home.html"));
+        expect(files).toContain(path.join("b", "home.html"));
+        expect(files).toContain(path.join("a", "home.js"));
+        expect(files).toContain(path.join("b", "home.js"));
+      });
+
+      it("builds each duplicate page's hydration script from its own source file (issue #7)", async () => {
+        // unique component name so this test owns its temp module URL
+        writePage("a/Widget.tsx", "ALPHA-MARKER");
+        writePage("b/Widget.tsx", "BETA-MARKER");
+        const srv = new ReactSrv({ srcPath, outPath });
+        await srv.prerender();
+        // the hydration script is looked up by component name only, so both
+        // files get bundled from whichever Widget.tsx is found first:
+        expect(readOutFile(path.join("a", "widget.js"))).toContain("ALPHA-MARKER");
+        expect(readOutFile(path.join("b", "widget.js"))).toContain("BETA-MARKER");
+      });
+    });
+
+    describe("hydrate: false", () => {
+      it("writes HTML but no hydration scripts", async () => {
+        writePage("Home.tsx", "HOME-MARKER");
+        const srv = new ReactSrv({ srcPath, outPath, hydrate: false });
+        await srv.prerender();
+        const files = readOutFiles();
+        expect(files).toContain("home.html");
+        expect(files.filter((f) => f.endsWith(".js"))).toEqual([]);
+      });
+
+      it("does not link a module script in the HTML", async () => {
+        writePage("Home.tsx", "HOME-MARKER");
+        const srv = new ReactSrv({ srcPath, outPath, hydrate: false });
+        await srv.prerender();
+        const html = readOutFile("home.html");
+        expect(html).not.toContain('type="module"');
+        expect(html).not.toContain("./home.js");
+      });
+    });
+
+    describe("edge cases", () => {
+      it("resolves and writes nothing when src has no pages", async () => {
+        const srv = new ReactSrv({ srcPath, outPath });
+        await srv.prerender();
+        expect(readOutFiles()).toEqual([]);
+      });
+
+      it("removes its temporary module after a successful run", async () => {
+        writePage("Home.tsx", "HOME-MARKER");
+        const srv = new ReactSrv({ srcPath, outPath });
+        await srv.prerender();
+        expect(listTempFiles()).toEqual([]);
+      });
+
+      it("picks up source changes when prerendering again in the same process (temp module cache)", async () => {
+        writePage("Home.tsx", "VERSION-ONE");
+        await new ReactSrv({ srcPath, outPath }).prerender();
+        writePage("Home.tsx", "VERSION-TWO");
+        await new ReactSrv({ srcPath, outPath }).prerender();
+        expect(readOutFile("home.html")).toContain("VERSION-TWO");
+      });
+
+      it("propagates an error thrown while loading a page module", async () => {
+        writeFailingPage();
+        const srv = new ReactSrv({ srcPath, outPath });
+        await expect(srv.prerender()).rejects.toThrow("prerender-boom");
+      });
+
+      it("removes its temporary module when loading the page fails (issue #9)", async () => {
+        writeFailingPage();
+        const srv = new ReactSrv({ srcPath, outPath });
+        await expect(srv.prerender()).rejects.toThrow("prerender-boom");
+        expect(listTempFiles()).toEqual([]);
       });
     });
   });
