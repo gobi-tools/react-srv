@@ -1,7 +1,7 @@
 import fs from "fs";
 import os from "os";
 import path from "path";
-import { afterAll, describe, expect, it, vi } from "vitest";
+import { afterAll, beforeAll, describe, expect, it, vi } from "vitest";
 import { FileUtils } from "./index.js";
 
 describe("FileUtils", () => {
@@ -120,6 +120,57 @@ describe("FileUtils", () => {
         message = e.message;
       }
       expect(message).toContain(missing);
+    });
+  });
+
+  describe("findFileRecursive", () => {
+    const tmpRoot = fs.mkdtempSync(path.join(os.tmpdir(), "react-srv-find-"));
+    const srcDir = path.join(tmpRoot, "src");
+    const homeFile = path.join(srcDir, "Home.tsx");
+    const buttonFile = path.join(srcDir, "components", "Button.tsx");
+    const pageFile = path.join(srcDir, "deep", "nested", "Page.tsx");
+    const emptyDir = path.join(tmpRoot, "empty");
+
+    beforeAll(() => {
+      fs.mkdirSync(path.dirname(buttonFile), { recursive: true });
+      fs.mkdirSync(path.dirname(pageFile), { recursive: true });
+      fs.mkdirSync(emptyDir, { recursive: true });
+      fs.writeFileSync(homeFile, "// Home");
+      fs.writeFileSync(buttonFile, "// Button");
+      fs.writeFileSync(pageFile, "// Page");
+    });
+
+    afterAll(() => {
+      fs.rmSync(tmpRoot, { recursive: true, force: true });
+    });
+
+    it("finds a file in the root of the search directory", () => {
+      expect(FileUtils.findFileRecursive(srcDir, "Home.tsx")).toBe(homeFile);
+    });
+
+    it("finds a file nested one level deep", () => {
+      expect(FileUtils.findFileRecursive(srcDir, "Button.tsx")).toBe(buttonFile);
+    });
+
+    it("finds a file nested several levels deep", () => {
+      expect(FileUtils.findFileRecursive(srcDir, "Page.tsx")).toBe(pageFile);
+    });
+
+    it("returns null (not undefined) when the file does not exist", () => {
+      const result = FileUtils.findFileRecursive(srcDir, "DoesNotExist.tsx");
+      expect(result).toBeNull();
+    });
+
+    it("returns null in an empty directory", () => {
+      expect(FileUtils.findFileRecursive(emptyDir, "Home.tsx")).toBeNull();
+    });
+
+    it("matches the filename exactly: extension must match", () => {
+      expect(FileUtils.findFileRecursive(srcDir, "Home.jsx")).toBeNull();
+    });
+
+    it("matches the filename exactly: case must match", () => {
+      expect(FileUtils.findFileRecursive(srcDir, "home.tsx")).toBeNull();
     });
   });
 });
