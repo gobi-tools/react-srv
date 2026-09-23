@@ -113,6 +113,23 @@ describe("ReactSrv", () => {
         expect(code).not.toContain('from "react/jsx-runtime"');
       });
 
+      it("maps import forms the old rewrites missed to esm.sh (issue #11)", () => {
+        // side-effect import (no `from` clause) + bare react-dom (no rewrite rule):
+        fs.writeFileSync(
+          path.join(srcPath, "Portal.tsx"),
+          `import "react";\nimport { createPortal } from "react-dom";\n` +
+            `export default function Portal() {\n  return createPortal ? <div>PORTAL-MARKER</div> : <div>none</div>;\n}\n`,
+          "utf8"
+        );
+        const srv = new ReactSrv({ srcPath, outPath });
+        srv.prebundle();
+        const code = readOutFile("portal.js");
+        // no bare package specifier may survive into the browser bundle:
+        expect(code).not.toMatch(/["']react(-dom)?(["'/])/);
+        // and bare react-dom must point at esm.sh like everything else:
+        expect(code).toContain('from "https://esm.sh/react-dom@19.2.0"');
+      });
+
       it("throws a descriptive error when the page component file cannot be found", () => {
         writeComponent("Home.tsx");
         vi.spyOn(FileUtils, "findFileRecursive").mockReturnValue(null);

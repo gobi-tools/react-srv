@@ -96,6 +96,7 @@ export default class ReactSrv {
     const entryDir = path.dirname(entryPath);
     const entryBase = path.basename(entryPath);
 
+    const { reactLocation, reactVersion } = this.config;
     const result = esbuild.buildSync({
       stdin: {
         contents: `
@@ -128,19 +129,22 @@ export default class ReactSrv {
       jsx: "automatic",
       jsxImportSource: "react",
       mainFields: this.config.mainFields ?? [],
-      external: ["react", "react-dom", "react-dom/client", "react/jsx-runtime", "react/jsx-dev-runtime"],
+      // Resolve react* imports to their CDN URLs at build time (issue #11):
+      // alias rewrites the specifier, external keeps it out of the bundle.
+      // Unlike the old output-text regexes this catches every import form
+      // (side-effect imports, bare react-dom, future minified output) and
+      // works in the sync API (esbuild plugins do not).
+      alias: {
+        "react": `${reactLocation}/react@${reactVersion}`,
+        "react-dom": `${reactLocation}/react-dom@${reactVersion}`,
+        "react-dom/client": `${reactLocation}/react-dom@${reactVersion}/client`,
+        "react/jsx-runtime": `${reactLocation}/react@${reactVersion}/jsx-runtime`,
+        "react/jsx-dev-runtime": `${reactLocation}/react@${reactVersion}/jsx-dev-runtime`,
+      },
+      external: [`${reactLocation}/*`],
     });
 
-    let code = result.outputFiles[0].text;
-
-    // Fix imports to use esm.sh
-    code = code
-      .replace(/from\s+["']react["']/g, `from "${this.config.reactLocation}/react@${this.config.reactVersion}"`)
-      .replace(/from\s+["']react-dom\/client["']/g, `from "${this.config.reactLocation}/react-dom@${this.config.reactVersion}/client"`)
-      .replace(/from\s+["']react\/jsx-runtime["']/g, `from "${this.config.reactLocation}/react@${this.config.reactVersion}/jsx-runtime"`)
-      .replace(/from\s+["']react\/jsx-dev-runtime["']/g, `from "${this.config.reactLocation}/react@${this.config.reactVersion}/jsx-dev-runtime"`);
-
-    return code;
+    return result.outputFiles[0].text;
   }
 
   private resolvePageName(Component: React.FC<any>): string {
