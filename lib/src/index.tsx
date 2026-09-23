@@ -87,6 +87,11 @@ export default class ReactSrv {
     const jsxName = `${pageName}.jsx`;
     const jsxPath = FileUtils.findFileRecursive(this.config.srcPath, jsxName);
     const entryPath = tsxPath ?? jsxPath;
+    if (!entryPath) {
+      throw new Error(
+        `react-srv: could not find page component "${pageName}.tsx" or "${pageName}.jsx" in ${this.config.srcPath}`
+      );
+    }
     const entryDir = path.dirname(entryPath);
     const entryBase = path.basename(entryPath);
 
