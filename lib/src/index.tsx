@@ -228,7 +228,7 @@ export default class ReactSrv {
     const subpaths = outPath.split('/').map(s => s.trim()).filter(s => s != '' && s != '.');
     subpaths.shift(); // remove first element
     const path = subpaths.join('/');
-    const fp = FileUtils.toKebabCase(`${page}.js`);
+    const fp = FileUtils.normaliseName(`${page}.js`);
     const finalPath = path === '' ? '' : `/${path}`;
     const result = `${finalPath}/${fp}`;
     return result;
@@ -251,7 +251,7 @@ type TOutputFile = {
   writePath: string,
 };
 
-class FileUtils {
+export class FileUtils {
   static validateDir(dir: string): boolean {
     if (!this.dirExists(dir)) {
       throw new Error(`D ${dir} must be a folder`);
@@ -269,7 +269,7 @@ class FileUtils {
 
     return files.map((absPath: string) => {
       const component = path.basename(absPath, path.extname(absPath));
-      const normalised = FileUtils.toKebabCase(component);
+      const normalised = FileUtils.normaliseName(component);
       const js = `${normalised}.js`;
       const html = `${normalised}.html`;
       const mjs = `${normalised}.mjs`;
@@ -319,7 +319,7 @@ class FileUtils {
     return null;
   }
 
-  static toKebabCase(str: string): string {
+  static normaliseName(str: string): string {
     return str.replace(/([a-z0-9])([A-Z])/g, '$1_$2').toLowerCase();
   }
 };

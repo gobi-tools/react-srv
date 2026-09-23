@@ -3,7 +3,9 @@
   "version": "0.0.55",
   "description": "Lightweight JSX renderer for Node",
   "scripts": {
-    "build": "tsc"
+    "build": "tsc",
+    "test": "vitest run",
+    "test:watch": "vitest"
   },
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -34,6 +36,8 @@
     "@types/serialize-javascript": "^5.0.4",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
-    "typescript": "^5.9.3"
+    "typescript": "^5.9.3",
+    "vite": "7.2.7",
+    "vitest": "^5.0.1"
   }
 }

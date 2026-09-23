@@ -141,3 +141,4 @@ vite.config.ts.timestamp-*
 
 docs-examples/package-lock.json
 DEV.md
+.aider*
