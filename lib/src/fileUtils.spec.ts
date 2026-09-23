@@ -226,10 +226,11 @@ describe("FileUtils", () => {
     it("normalises the js/html/mjs output names", () => {
       const files = FileUtils.formOutputFiles(srcDir, outPath);
       const homePage = files.find((f) => f.component === "HomePage");
+      const hash = FileUtils.pathHash("HomePage.jsx");
       expect(homePage?.name).toEqual({
-        js: "home_page.js",
+        js: `home_page.${hash}.js`,
         html: "home_page.html",
-        mjs: "home_page.mjs",
+        mjs: `home_page.${hash}.mjs`,
       });
     });
 
@@ -282,6 +283,16 @@ describe("FileUtils", () => {
       const outputs = files.map((f) => path.join(f.writePath, f.name.js));
       expect(outputs).toHaveLength(2);
       expect(new Set(outputs).size).toBe(2);
+    });
+
+    it("produces identical output names across calls (deterministic nonces)", () => {
+      const run = () =>
+        FileUtils.formOutputFiles(dupDir, outPath, true)
+          .map((f) => path.join(f.writePath, f.name.js))
+          .sort();
+      const [first, second] = [run(), run()];
+      expect(first).toEqual(second);
+      expect(new Set(first).size).toBe(2);
     });
   });
 });

@@ -7,6 +7,11 @@ import { afterAll, afterEach, beforeEach, describe, expect, it, vi } from "vites
 import ReactSrv, { FileUtils } from "./index.js";
 
 describe("ReactSrv", () => {
+  // js/mjs outputs are `<normalised-name>.<6-hex hash of source path>.js`
+  // (issue #8); html keeps its plain name
+  const hashedJs = (relSrc: string) =>
+    `${FileUtils.normaliseName(path.basename(relSrc, path.extname(relSrc)))}.${FileUtils.pathHash(relSrc)}.js`;
+
   describe("prebundle", () => {
     const tmpRoot = fs.mkdtempSync(path.join(os.tmpdir(), "react-srv-prebundle-"));
     const srcPath = path.join(tmpRoot, "src");
@@ -73,28 +78,28 @@ describe("ReactSrv", () => {
         writeComponent("Home.tsx");
         const srv = new ReactSrv({ srcPath, outPath });
         srv.prebundle();
-        expect(readOutFiles()).toContain("home.js");
+        expect(readOutFiles()).toContain(hashedJs("Home.tsx"));
       });
 
-      it("normalises the output filename (MyHomePage.tsx -> my_home_page.js)", () => {
+      it("normalises the output filename (MyHomePage.tsx -> my_home_page.<hash>.js)", () => {
         writeComponent("MyHomePage.tsx");
         const srv = new ReactSrv({ srcPath, outPath });
         srv.prebundle();
-        expect(readOutFiles()).toContain("my_home_page.js");
+        expect(readOutFiles()).toContain(hashedJs("MyHomePage.tsx"));
       });
 
       it("picks up nested page components as well", () => {
         writeComponent("pages/About.tsx");
         const srv = new ReactSrv({ srcPath, outPath });
         srv.prebundle();
-        expect(readOutFiles().some((f) => path.basename(f) === "about.js")).toBe(true);
+        expect(readOutFiles().some((f) => path.basename(f) === hashedJs("pages/About.tsx"))).toBe(true);
       });
 
       it("bundles a hydration entry that hydrates the #root element", () => {
         writeComponent("Home.tsx");
         const srv = new ReactSrv({ srcPath, outPath });
         srv.prebundle();
-        const code = readOutFile("home.js");
+        const code = readOutFile(hashedJs("Home.tsx"));
         expect(code).toContain('document.getElementById("root")');
         expect(code).toContain("hydrateRoot(");
         expect(code).toContain("__REACT_SRV_HYDRATED__");
@@ -104,7 +109,7 @@ describe("ReactSrv", () => {
         writeComponent("Home.tsx");
         const srv = new ReactSrv({ srcPath, outPath });
         srv.prebundle();
-        const code = readOutFile("home.js");
+        const code = readOutFile(hashedJs("Home.tsx"));
         expect(code).toContain('from "https://esm.sh/react@19.2.0"');
         expect(code).toContain('from "https://esm.sh/react-dom@19.2.0/client"');
         expect(code).toContain('from "https://esm.sh/react@19.2.0/jsx-runtime"');
@@ -123,7 +128,7 @@ describe("ReactSrv", () => {
         );
         const srv = new ReactSrv({ srcPath, outPath });
         srv.prebundle();
-        const code = readOutFile("portal.js");
+        const code = readOutFile(hashedJs("Portal.tsx"));
         // no bare package specifier may survive into the browser bundle:
         expect(code).not.toMatch(/["']react(-dom)?(["'/])/);
         // and bare react-dom must point at esm.sh like everything else:
@@ -217,9 +222,9 @@ describe("ReactSrv", () => {
         await srv.prerender();
         const files = readOutFiles();
         expect(files).toContain("home.html");
-        expect(files).toContain("home.js");
+        expect(files).toContain(hashedJs("Home.tsx"));
         expect(files).toContain(path.join("pages", "about.html"));
-        expect(files).toContain(path.join("pages", "about.js"));
+        expect(files).toContain(path.join("pages", hashedJs("pages/About.tsx")));
       });
 
       it("renders the page into a full HTML document", async () => {
@@ -250,7 +255,7 @@ describe("ReactSrv", () => {
         await srv.prerender();
         const html = readOutFile("home.html");
         expect(html).toContain('type="module"');
-        expect(html).toContain('src="./home.js"');
+        expect(html).toContain(`src="./${hashedJs("Home.tsx")}"`);
       });
 
       it("keeps duplicate component names apart (paths)", async () => {
@@ -261,8 +266,8 @@ describe("ReactSrv", () => {
         const files = readOutFiles();
         expect(files).toContain(path.join("a", "home.html"));
         expect(files).toContain(path.join("b", "home.html"));
-        expect(files).toContain(path.join("a", "home.js"));
-        expect(files).toContain(path.join("b", "home.js"));
+        expect(files).toContain(path.join("a", hashedJs("a/Home.tsx")));
+        expect(files).toContain(path.join("b", hashedJs("b/Home.tsx")));
       });
 
       it("builds each duplicate page's hydration script from its own source file (issue #7)", async () => {
@@ -273,8 +278,8 @@ describe("ReactSrv", () => {
         await srv.prerender();
         // the hydration script is looked up by component name only, so both
         // files get bundled from whichever Widget.tsx is found first:
-        expect(readOutFile(path.join("a", "widget.js"))).toContain("ALPHA-MARKER");
-        expect(readOutFile(path.join("b", "widget.js"))).toContain("BETA-MARKER");
+        expect(readOutFile(path.join("a", hashedJs("a/Widget.tsx")))).toContain("ALPHA-MARKER");
+        expect(readOutFile(path.join("b", hashedJs("b/Widget.tsx")))).toContain("BETA-MARKER");
       });
     });
 
@@ -459,7 +464,7 @@ describe("ReactSrv", () => {
         const srv = new ReactSrv({ srcPath, outPath: "./public", isProd: true });
         const html = srv.render(Home);
         expect(html).toContain('type="module"');
-        expect(html).toContain('src="/home.js"');
+        expect(html).toContain(`src="/${hashedJs("Home.tsx")}"`);
         expect(html).not.toContain("hydrateRoot(");
       });
     });

@@ -1,5 +1,6 @@
 // note/system imports
 import fs from "fs";
+import { createHash } from "crypto";
 import path from "path";
 import os from "os";
 import { createRequire } from "module";
@@ -83,16 +84,7 @@ export default class ReactSrv {
   private bundle(params: { pageName: string; rootId: string }): string {
     const { pageName, rootId } = params;
 
-    const tsxName = `${pageName}.tsx`;
-    const tsxPath = FileUtils.findFileRecursive(this.config.srcPath, tsxName);
-    const jsxName = `${pageName}.jsx`;
-    const jsxPath = FileUtils.findFileRecursive(this.config.srcPath, jsxName);
-    const entryPath = tsxPath ?? jsxPath;
-    if (!entryPath) {
-      throw new Error(
-        `react-srv: could not find page component "${pageName}.tsx" or "${pageName}.jsx" in ${this.config.srcPath}`
-      );
-    }
+    const entryPath = this.findEntryPath(pageName);
     const entryDir = path.dirname(entryPath);
     const entryBase = path.basename(entryPath);
 
@@ -256,12 +248,30 @@ export default class ReactSrv {
     }
   }
 
+  private findEntryPath(pageName: string): string {
+    const tsxPath = FileUtils.findFileRecursive(this.config.srcPath, `${pageName}.tsx`);
+    const jsxPath = FileUtils.findFileRecursive(this.config.srcPath, `${pageName}.jsx`);
+    const entryPath = tsxPath ?? jsxPath;
+    if (!entryPath) {
+      throw new Error(
+        `react-srv: could not find page component "${pageName}.tsx" or "${pageName}.jsx" in ${this.config.srcPath}`
+      );
+    }
+    return entryPath;
+  }
+
   private getPublicHydrationPath(page: string): string {
+    // Mirror formOutputFiles' js naming (issue #8): normalised name + hash
+    // of the source path — resolve the source file to learn that path.
+    const entryPath = this.findEntryPath(page);
+    const relPath = path.relative(this.config.srcPath, entryPath);
+    const hash = FileUtils.pathHash(relPath);
+
     const outPath = this.config.outPath;
     const subpaths = outPath.split('/').map(s => s.trim()).filter(s => s != '' && s != '.');
     subpaths.shift(); // remove first element
     const urlPath = subpaths.join('/');
-    const fp = FileUtils.normaliseName(`${page}.js`);
+    const fp = `${FileUtils.normaliseName(page)}.${hash}.js`;
     const finalPath = urlPath === '' ? '' : `/${urlPath}`;
     const result = `${finalPath}/${fp}`;
     return result;
@@ -293,6 +303,14 @@ export class FileUtils {
     return true;
   }
 
+  /** Deterministic 6-hex hash of a source-relative path (issue #8). */
+  static pathHash(relPath: string): string {
+    return createHash("sha1")
+      .update(relPath.split(path.sep).join("/"))
+      .digest("hex")
+      .slice(0, 6);
+  }
+
   static formOutputFiles(srcPath: string, outPath: string, flatten: boolean = false): TOutputFile[] {
     const files = fg.sync("**/*.{tsx,jsx}", {
       cwd: srcPath,
@@ -303,20 +321,26 @@ export class FileUtils {
     return files.map((absPath: string) => {
       const component = path.basename(absPath, path.extname(absPath));
       const normalised = FileUtils.normaliseName(component);
-      const js = `${normalised}.js`;
-      const html = `${normalised}.html`;
-      const mjs = `${normalised}.mjs`;
-
       const relPath = path.relative(srcPath, absPath);
       const relDir = path.dirname(relPath);
-
       const writePath = flatten === true ? outPath : (relDir === "." ? outPath : path.join(outPath, relDir));
+
+      // Issue #8: js/mjs outputs always carry a deterministic hash of the
+      // source path, so two sources can never share an output name — any
+      // deduplication scenario is guarded, not just same-name collisions —
+      // and rebuilds stay reproducible. html keeps its plain name: page
+      // URLs are public.
+      const hash = FileUtils.pathHash(relPath);
 
       return {
         absPath,
         relPath: relDir,
         component,
-        name: { js, html, mjs },
+        name: {
+          js: `${normalised}.${hash}.js`,
+          html: `${normalised}.html`,
+          mjs: `${normalised}.${hash}.mjs`,
+        },
         writePath,
       };
     });

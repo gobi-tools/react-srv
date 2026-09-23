@@ -6,7 +6,7 @@
   "author": "",
   "main": "server.js",
   "scripts": {
-    "bundle": "react-srv bundle -f src/react-srv.config.ts",
+    "bundle": "rm -rf public && react-srv bundle -f src/react-srv.config.ts",
     "build": "tsc && npm run bundle",
     "dev": "tsx src/server.ts",
     "start": "NODE_ENV=production node dist/server.js"
@@ -15,7 +15,7 @@
     "express": "^5.2.1",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
-    "react-srv": "file:../../lib/react-srv-0.0.61.tgz"
+    "react-srv": "file:../../lib/react-srv-0.0.62.tgz"
   },
   "devDependencies": {
     "@types/express": "^5.0.6",
