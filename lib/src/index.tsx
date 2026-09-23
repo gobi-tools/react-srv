@@ -224,9 +224,17 @@ export default class ReactSrv {
       const tempFile = path.join(tempDir, file.name.mjs);
       fs.mkdirSync(tempDir, { recursive: true });
       fs.writeFileSync(tempFile, js);
+      // Issue #14: the ESM loader caches modules by URL and offers no
+      // eviction API, while the temp filename is derived from the source
+      // *path* (deterministic, survives edits) — a second import in the
+      // same process would silently serve the stale module. Key the URL on
+      // the bundled content instead: edited source -> new bytes -> new URL
+      // -> fresh module; unchanged content -> cache hit, which is correct
+      // (identical source evaluates to an identical module) and free.
+      const contentKey = createHash("sha1").update(js).digest("hex");
       let Page: any;
       try {
-        ({ default: Page } = await import(`file://${tempFile}`));
+        ({ default: Page } = await import(`file://${tempFile}?v=${contentKey}`));
       } finally {
         fs.unlinkSync(tempFile);
       }
