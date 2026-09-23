@@ -71,9 +71,9 @@ export default class ReactSrv {
       const pageName = file.component;
       const rootId = 'root';
       const code = this.bundle({ pageName, rootId });
-      const path = file.writePath;
-      const fp = `${path}/${file.name.js}`;
-      fs.mkdirSync(path, { recursive: true });
+      const writePath = file.writePath;
+      const fp = `${writePath}/${file.name.js}`;
+      fs.mkdirSync(writePath, { recursive: true });
       fs.writeFileSync(fp, code, 'utf8');
       console.log('✅ Wrote', fp);
     }
@@ -227,9 +227,9 @@ export default class ReactSrv {
     const outPath = this.config.outPath;
     const subpaths = outPath.split('/').map(s => s.trim()).filter(s => s != '' && s != '.');
     subpaths.shift(); // remove first element
-    const path = subpaths.join('/');
+    const urlPath = subpaths.join('/');
     const fp = FileUtils.normaliseName(`${page}.js`);
-    const finalPath = path === '' ? '' : `/${path}`;
+    const finalPath = urlPath === '' ? '' : `/${urlPath}`;
     const result = `${finalPath}/${fp}`;
     return result;
   }
