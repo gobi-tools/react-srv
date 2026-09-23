@@ -83,4 +83,43 @@ describe("FileUtils", () => {
       }
     });
   });
+
+  describe("validateDir", () => {
+    const tmpRoot = fs.mkdtempSync(path.join(os.tmpdir(), "react-srv-validate-"));
+
+    afterAll(() => {
+      fs.rmSync(tmpRoot, { recursive: true, force: true });
+    });
+
+    it("returns true for an existing directory", () => {
+      const result = FileUtils.validateDir(tmpRoot);
+      expect(result).toBe(true);
+    });
+
+    it("throws with the exact message when the directory does not exist", () => {
+      const missing = path.join(tmpRoot, "does-not-exist");
+      expect(() => FileUtils.validateDir(missing)).toThrow(
+        new Error(`${missing} must be a folder`),
+      );
+    });
+
+    it("throws when the path is a file, not a directory", () => {
+      const filePath = path.join(tmpRoot, "not-a-dir.txt");
+      fs.writeFileSync(filePath, "hello");
+      expect(() => FileUtils.validateDir(filePath)).toThrow(
+        new Error(`${filePath} must be a folder`),
+      );
+    });
+
+    it("includes the offending path in the error message", () => {
+      const missing = path.join(tmpRoot, "nope");
+      let message = "";
+      try {
+        FileUtils.validateDir(missing);
+      } catch (e) {
+        message = e.message;
+      }
+      expect(message).toContain(missing);
+    });
+  });
 });

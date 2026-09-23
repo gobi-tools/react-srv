@@ -254,7 +254,7 @@ type TOutputFile = {
 export class FileUtils {
   static validateDir(dir: string): boolean {
     if (!this.dirExists(dir)) {
-      throw new Error(`D ${dir} must be a folder`);
+      throw new Error(`${dir} must be a folder`);
     }
 
     return true;
