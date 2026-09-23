@@ -173,4 +173,115 @@ describe("FileUtils", () => {
       expect(FileUtils.findFileRecursive(srcDir, "home.tsx")).toBeNull();
     });
   });
+
+  describe("formOutputFiles", () => {
+    const tmpRoot = fs.mkdtempSync(path.join(os.tmpdir(), "react-srv-form-"));
+    const srcDir = path.join(tmpRoot, "src");
+    const dupDir = path.join(tmpRoot, "dup-src");
+    const emptyDir = path.join(tmpRoot, "empty-src");
+    const outPath = "./public/hydrate";
+
+    beforeAll(() => {
+      fs.mkdirSync(path.join(srcDir, "components"), { recursive: true });
+      fs.mkdirSync(path.join(srcDir, "deep", "nested"), { recursive: true });
+      fs.mkdirSync(path.join(dupDir, "app"), { recursive: true });
+      fs.mkdirSync(path.join(dupDir, "admin"), { recursive: true });
+      fs.mkdirSync(emptyDir, { recursive: true });
+
+      fs.writeFileSync(path.join(srcDir, "Home.tsx"), "// Home");
+      fs.writeFileSync(path.join(srcDir, "HomePage.jsx"), "// HomePage");
+      fs.writeFileSync(path.join(srcDir, "README.md"), "# ignored");
+      fs.writeFileSync(path.join(srcDir, "components", "Button.tsx"), "// Button");
+      fs.writeFileSync(path.join(srcDir, "deep", "nested", "Page.tsx"), "// Page");
+
+      // two components with the same name in different folders
+      fs.writeFileSync(path.join(dupDir, "app", "Home.tsx"), "// app/Home");
+      fs.writeFileSync(path.join(dupDir, "admin", "Home.tsx"), "// admin/Home");
+    });
+
+    afterAll(() => {
+      fs.rmSync(tmpRoot, { recursive: true, force: true });
+    });
+
+    it("picks up only .tsx/.jsx files", () => {
+      const files = FileUtils.formOutputFiles(srcDir, outPath);
+      const components = files.map((f) => f.component);
+      expect(components).toHaveLength(4);
+      expect(components).not.toContain("README");
+    });
+
+    it("returns absolute paths", () => {
+      const files = FileUtils.formOutputFiles(srcDir, outPath);
+      for (const file of files) {
+        expect(path.isAbsolute(file.absPath)).toBe(true);
+      }
+    });
+
+    it("sets component to the basename without extension", () => {
+      const files = FileUtils.formOutputFiles(srcDir, outPath);
+      const button = files.find((f) => f.component === "Button");
+      expect(button).toBeDefined();
+    });
+
+    it("normalises the js/html/mjs output names", () => {
+      const files = FileUtils.formOutputFiles(srcDir, outPath);
+      const homePage = files.find((f) => f.component === "HomePage");
+      expect(homePage?.name).toEqual({
+        js: "home_page.js",
+        html: "home_page.html",
+        mjs: "home_page.mjs",
+      });
+    });
+
+    it("keeps top-level files directly at outPath (flatten=false)", () => {
+      const files = FileUtils.formOutputFiles(srcDir, outPath);
+      const home = files.find((f) => f.component === "Home");
+      expect(home?.writePath).toBe(outPath);
+    });
+
+    it("preserves folder structure for nested files (flatten=false)", () => {
+      const files = FileUtils.formOutputFiles(srcDir, outPath);
+      const button = files.find((f) => f.component === "Button");
+      const page = files.find((f) => f.component === "Page");
+      expect(button?.writePath).toBe(path.join(outPath, "components"));
+      expect(page?.writePath).toBe(path.join(outPath, "deep", "nested"));
+    });
+
+    it("flattens every writePath into outPath when flatten=true", () => {
+      const files = FileUtils.formOutputFiles(srcDir, outPath, true);
+      expect(files.length).toBeGreaterThan(0);
+      for (const file of files) {
+        expect(file.writePath).toBe(outPath);
+      }
+    });
+
+    it("reports relPath as the relative directory", () => {
+      const files = FileUtils.formOutputFiles(srcDir, outPath);
+      const home = files.find((f) => f.component === "Home");
+      const button = files.find((f) => f.component === "Button");
+      expect(home?.relPath).toBe(".");
+      expect(button?.relPath).toBe("components");
+    });
+
+    it("returns an empty array for an empty source dir", () => {
+      expect(FileUtils.formOutputFiles(emptyDir, outPath)).toEqual([]);
+    });
+
+    it("keeps duplicate component names apart when flatten=false", () => {
+      const files = FileUtils.formOutputFiles(dupDir, outPath);
+      const outputs = files.map((f) => path.join(f.writePath, f.name.js));
+      expect(outputs).toHaveLength(2);
+      expect(new Set(outputs).size).toBe(2);
+    });
+
+    // Known issue #8: prebundle() flattens, so same-named components in
+    // different folders produce identical output paths and overwrite
+    // each other. Expected to FAIL until #8 is fixed.
+    it("keeps duplicate component names apart when flatten=true (issue #8)", () => {
+      const files = FileUtils.formOutputFiles(dupDir, outPath, true);
+      const outputs = files.map((f) => path.join(f.writePath, f.name.js));
+      expect(outputs).toHaveLength(2);
+      expect(new Set(outputs).size).toBe(2);
+    });
+  });
 });
