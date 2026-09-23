@@ -204,8 +204,12 @@ export default class ReactSrv {
       const __dirname = path.dirname(fileURLToPath(import.meta.url));
       const tempFile = path.join(__dirname, file.name.mjs);
       fs.writeFileSync(tempFile, js);
-      const { default: Page } = await import(`file://${tempFile}`);
-      fs.unlinkSync(tempFile);
+      let Page: any;
+      try {
+        ({ default: Page } = await import(`file://${tempFile}`));
+      } finally {
+        fs.unlinkSync(tempFile);
+      }
 
       // 3️⃣ Render to static HTML
       const rootId = 'root';
