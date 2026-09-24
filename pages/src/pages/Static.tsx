@@ -1,5 +1,6 @@
 import { RouteMaster } from "../common/routes";
 import { useRoute } from "../common/useRoute";
+import Code from "../components/Code";
 import Header from "./../components/Header";
 import SettingsIcon from "./../components/SettingsIcon";
 import { DEMO_STATIC_URL, PRODUCT_NAME, SSG_URL } from "./../constants";
@@ -25,21 +26,21 @@ export default function Static() {
           or disable it completely for a pure static experiece, in the config file:
         </p>
         <figure>
-          <pre><code>{`export default {
+          <Code lang={'javascript'}>{`export default {
   Document,
   srcPath: './src',
   outPath: './public',
   hydrate: true, // or false
-}`}</code></pre>
+}`}</Code>
         </figure>
         <p>
           Then you can add the following step to your build pipeline in <code>package.json</code>:
         </p>
         <figure>
-          <pre><code>{`...
+          <Code lang={'json'}>{`...
 "scripts": {
   "render": "react-srv render -f src/react-srv.config.ts && ... other build steps"
-},`}</code></pre>
+},`}</Code>
         </figure>
         <p>
           The last thing you need to do is to make sure the <code>/public</code> folder is

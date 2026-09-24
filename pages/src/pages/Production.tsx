@@ -1,3 +1,4 @@
+import Code from "../components/Code";
 import Header from "../components/Header";
 import SettingsIcon from "../components/SettingsIcon";
 import { DEMO_PROD_URL, PRODUCT_NAME } from "../constants";
@@ -17,12 +18,12 @@ export default function Production() {
           </p>
         </hgroup>
         <figure>
-          <pre><code>{`<html>
+          <Code lang={'xml'}>{`<html>
   <head><title>Page</title></head>
   <body>...</body>
   <script>... set initial props ...</script>
   <script type="module">... hydration script ... </script>
-</html>`}</code></pre>
+</html>`}</Code>
         </figure>
         <p>
           The markup is created from the component itself and the hydration script is
@@ -42,22 +43,22 @@ export default function Production() {
           You can change these locations, as well as whether you're in dev or prod mode, in the config file:
         </p>
         <figure>
-          <pre><code>{`export default {
+          <Code lang={'javascript'}>{`export default {
   Document,
   srcPath: './src', // default
   outPath: './public/hydrate', // default
   isProd: process.env.NODE_ENV === 'production',
-}`}</code></pre>
+}`}</Code>
         </figure>
         <p>
           You can reference the config file in the <code>bundle</code> command in <code>package.json</code>
         </p>
         <figure>
-          <pre><code>{`...
+          <Code lang={'json'}>{`...
 "scripts": {
   "build": "react-srv bundle -f src/react-srv.config.ts && ... other build steps",
   "start": "NODE_ENV=production node dist/server.js"
-},`}</code></pre>
+},`}</Code>
         </figure>
         <p>
           The last thing you need to do is to make sure the <code>/public</code> folder is

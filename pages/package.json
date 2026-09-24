@@ -13,12 +13,14 @@
     "express": "^5.2.1",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
-    "react-srv": "file:../lib/react-srv-0.0.65.tgz"
+    "react-srv": "file:../lib/react-srv-0.0.65.tgz",
+    "react-syntax-highlighter": "^16.1.1"
   },
   "devDependencies": {
     "@types/express": "^5.0.6",
     "@types/react": "^19.2.0",
     "@types/react-dom": "^19.2.0",
+    "@types/react-syntax-highlighter": "^15.5.13",
     "tsx": "^4.20.6",
     "typescript": "^5.9.3"
   }

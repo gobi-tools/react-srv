@@ -3,6 +3,7 @@ import { useState } from "react";
 import SettingsIcon from "./SettingsIcon";
 import { useRoute } from "../common/useRoute";
 import { RouteMaster } from "../common/routes";
+import Code from "./Code";
 
 type TEnvironment = 'ts' | 'js-esm' | 'js-cjs';
 
@@ -14,7 +15,7 @@ function TypescriptSetup() {
       First, install the latest versions of <a href={RouteMaster.home(route)}>react-srv</a> and <a href={REACT_URL} target="_blank">React</a>.
     </p>
     <figure>
-      <pre><code>{`npm i react-srv
+      <Code lang={'bash'}>{`npm i react-srv
     
 # install react & react-dom
 npm i react@19.2.0
@@ -22,19 +23,19 @@ npm i react-dom@19.2.0
 
 # optionally install the associated types
 npm i @types/react@19.2.0 --save-dev
-npm i @types/react-dom@19.2.0 --save-dev`}</code></pre>
+npm i @types/react-dom@19.2.0 --save-dev`}</Code>
     </figure>
     <p>
       Then, to make sure React is defined correctly at runtime, add the following entries to your <code>tsconfig.json</code> file.
     </p>
     <figure>
-      <pre><code>{`{
+      <Code lang={'json'}>{`{
   "compilerOptions: {
     ...
     "jsx": "react-jsx",
     "jsxImportSource": "react"
   }
-}`}</code></pre>
+}`}</Code>
     </figure>
     <article className="success">
       <p role="group">
@@ -56,32 +57,32 @@ function JSESMSetup() {
       First, install the latest versions of <a href={RouteMaster.home(route)}>react-srv</a>, <a href={REACT_URL} target="_blank">React</a> and <a href={TSX_URL} target="_blank">tsx</a>.
     </p>
     <figure>
-      <pre><code>{`npm i react-srv
+      <Code lang={'bash'}>{`npm i react-srv
     
 # install react & react-dom
 npm i react@19.2.0
 npm i react-dom@19.2.0
 
 # install tsx as a dev dependency
-npm i tsx --save-dev`}</code></pre>
+npm i tsx --save-dev`}</Code>
     </figure>
     <p>
       Then, to make sure React is defined correctly at runtime, you'll need to add a <code>tsconfig.json</code> file.
     </p>
     <figure>
-      <pre><code>{`{
+      <Code lang={'json'}>{`{
   "compilerOptions": {
     "jsx": "react-jsx",
     "jsxImportSource": "react", // optional
     "allowJs": true
   }
-}`}</code></pre>
+}`}</Code>
     </figure>
     <p>
       Finally, you'll need to run your app with <code>tsx</code> so you avoid the <code className="error">Unknown file extension ".jsx"</code> error.
     </p>
     <figure>
-      <pre><code>{`tsx src/server.js`}</code></pre>
+      <Code lang={'bash'}>{`tsx src/server.js`}</Code>
     </figure>
     <article className="success">
       <p role="group">
@@ -103,7 +104,7 @@ function JSCJSSetup() {
       First, install the latest versions of <a href={RouteMaster.home(route)}>react-srv</a>, <a href={REACT_URL} target="_blank">React</a> and <a href={BABEL_URL} target="_blank">babel</a>.
     </p>
     <figure>
-      <pre><code>{`npm i react-srv
+      <Code lang={'bash'}>{`npm i react-srv
     
 # install react & react-dom
 npm i react@19.2.0
@@ -111,28 +112,28 @@ npm i react-dom@19.2.0
 
 # install a few babel dependencies
 npm i @babel/preset-react --save-dev
-npm i @babel/register --save-dev`}</code></pre>
+npm i @babel/register --save-dev`}</Code>
     </figure>
     <p>
       Then, add a <code>.babelrc</code> file where we'll setup the react preset so the server recognises JSX syntax.
     </p>
     <figure>
-      <pre><code>{`{
+      <Code lang={'json'}>{`{
   "presets": ["@babel/preset-react"]
 }
-`}</code></pre>
+`}</Code>
     </figure>
     <p>
       Then, in the same file where you setup <code>ReactSrv</code>, make sure you add the following line.
     </p>
     <figure>
-      <pre><code>{`require('@babel/register')({ extensions: ['.js', '.jsx'] });`}</code></pre>
+      <Code lang={'javascript'}>{`require('@babel/register')({ extensions: ['.js', '.jsx'] });`}</Code>
     </figure>
     <p>
       This will allow other files to <code>require</code> files with the <code>.jsx</code> extension:
     </p>
     <figure>
-      <pre><code>{`const Page = require('./pages/Page.jsx').default;`}</code></pre>
+      <Code lang={'javascript'}>{`const Page = require('./pages/Page.jsx').default;`}</Code>
     </figure>
     <article className="success">
       <p role="group">

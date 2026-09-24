@@ -1,5 +1,6 @@
 import { RouteMaster } from "./common/routes";
 import { useRoute } from "./common/useRoute";
+import Code from "./components/Code";
 import GitHubIcon from "./components/GitHubIcon";
 import SetupSection from "./components/SetupSection";
 import { PRODUCT_NAME, REACT_COMPONENTS_URL, REACT_HOOKS_URL, REACT_PROPS_URL, SSG_URL, SSR_URL } from "./constants";
@@ -37,23 +38,23 @@ export default function Index() {
           All you need to do is define a React component as a default export of a <code>.tsx</code> or <code>.jsx</code> file of the same name:
         </p>
         <figure>
-          <pre><code>{`export default function Page() {
+          <Code lang={'javascript'}>{`export default function Page() {
   return <>
     <h1>Hello, world!</h1>
   </>
-}`}</code></pre>
+}`}</Code>
         </figure>
         <p>
           Optionally add a <code>react-srv.config.ts</code> or <code>.js</code> file:
         </p>
         <figure>
-          <pre><code>{`export default {}`}</code></pre>
+          <Code lang={'javascript'}>{`export default {}`}</Code>
         </figure>
         <p>
           And {PRODUCT_NAME} will render it as static HTML you can send down the wire:
         </p>
         <figure>
-          <pre><code>{`import config from './react-srv.config';
+          <Code lang={'javascript'}>{`import config from './react-srv.config';
 
 const app = express();
 const react = new ReactSrv(config);
@@ -61,7 +62,7 @@ const react = new ReactSrv(config);
 app.get('/', (_, res) => {
   return res.status(200).send(react.render(Page));
 });
-`}</code></pre>
+`}</Code>
         </figure>
       </section>
 
@@ -74,7 +75,7 @@ app.get('/', (_, res) => {
           </p>
         </hgroup>
         <figure>
-          <pre><code>{`export default function Document({ children }) {
+          <Code lang={'javascript'}>{`export default function Document({ children }) {
   return <html lang="en">
     <head>
       <title>Title</title>
@@ -84,15 +85,15 @@ app.get('/', (_, res) => {
       {children}
     </body>
   </html>
-}`}</code></pre>
+}`}</Code>
         </figure>
         <p>
           You can reference it in the config file:
         </p>
         <figure>
-          <pre><code>{`import Document from './Document';
+          <Code lang={'javascript'}>{`import Document from './Document';
 
-export default { Document };`}</code></pre>
+export default { Document };`}</Code>
         </figure>
       </section>
 
@@ -105,7 +106,7 @@ export default { Document };`}</code></pre>
           </p>
         </hgroup>
         <figure>
-          <pre><code>{`function Greeting() { 
+          <Code lang={'javascript'}>{`function Greeting() { 
   return <p>Today is a fine day!</p>
 }
 
@@ -114,7 +115,7 @@ export default function Page() {
     <h1>Hello, world!</h1>
     <Greeting/>
   </>
-}`}</code></pre>
+}`}</Code>
         </figure>
       </section>
 
@@ -126,21 +127,21 @@ export default function Page() {
           </p>
         </hgroup>
         <figure>
-          <pre><code>{`export default function Page(props) {
+          <Code lang={'javascript'}>{`export default function Page(props) {
   return <>
     <h1>Hello, {props.name}!</h1>
     <Greeting/>
   </>
-}`}</code></pre>
+}`}</Code>
         </figure>
         <p>
           ... and pass them to the rendering function.
         </p>
         <figure>
-          <pre><code>{`app.get('/', (req, res) => {
+          <Code lang={'javascript'}>{`app.get('/', (req, res) => {
   const name = req.query['name'];
   return res.status(200).send(react.render(Page, { name }));
-});`}</code></pre>
+});`}</Code>
         </figure>
       </section>
 
@@ -152,7 +153,7 @@ export default function Page() {
           </p>
         </hgroup>
         <figure>
-          <pre><code>{`function Button () {
+          <Code lang={'javascript'}>{`function Button () {
   const [clicks, setClicks] = useState(0);
 
   return <p>
@@ -168,7 +169,7 @@ export default function Page(props) {
     <Greeting/>
     <Button/>
   </>
-}`}</code></pre>
+}`}</Code>
         </figure>
       </section>
 
