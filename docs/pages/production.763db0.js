@@ -149,7 +149,7 @@ function Production() {
         ". You can change these locations, as well as whether you're in dev or prod mode, in the config file:"
       ] }),
       /* @__PURE__ */ jsx4("figure", { children: /* @__PURE__ */ jsx4("pre", { children: /* @__PURE__ */ jsx4("code", { children: `export default {
-  document: Document,
+  Document,
   srcPath: './src', // default
   outPath: './public/hydrate', // default
   isProd: process.env.NODE_ENV === 'production',

@@ -317,7 +317,9 @@ function Index() {
           PRODUCT_NAME,
           " will render it as static HTML you can send down the wire:"
         ] }),
-        /* @__PURE__ */ jsx4("figure", { children: /* @__PURE__ */ jsx4("pre", { children: /* @__PURE__ */ jsx4("code", { children: `const app = express();
+        /* @__PURE__ */ jsx4("figure", { children: /* @__PURE__ */ jsx4("pre", { children: /* @__PURE__ */ jsx4("code", { children: `import config from './react-srv.config';
+
+const app = express();
 const react = new ReactSrv(config);
 
 app.get('/', (_, res) => {
@@ -330,7 +332,7 @@ app.get('/', (_, res) => {
           /* @__PURE__ */ jsx4("h2", { children: "Documents" }),
           /* @__PURE__ */ jsxs4("p", { children: [
             PRODUCT_NAME,
-            " will wrap all components in a default HTML document. You may create a custom one to specify titles, stylesheets, scaling, etc."
+            " will wrap all components in a default HTML document. You can create a custom one to specify titles, stylesheets, scaling, etc."
           ] })
         ] }),
         /* @__PURE__ */ jsx4("figure", { children: /* @__PURE__ */ jsx4("pre", { children: /* @__PURE__ */ jsx4("code", { children: `export default function Document({ children }) {
@@ -345,7 +347,9 @@ app.get('/', (_, res) => {
   </html>
 }` }) }) }),
         /* @__PURE__ */ jsx4("p", { children: "You can reference it in the config file:" }),
-        /* @__PURE__ */ jsx4("figure", { children: /* @__PURE__ */ jsx4("pre", { children: /* @__PURE__ */ jsx4("code", { children: `export default { Document };` }) }) })
+        /* @__PURE__ */ jsx4("figure", { children: /* @__PURE__ */ jsx4("pre", { children: /* @__PURE__ */ jsx4("code", { children: `import Document from './Document';
+
+export default { Document };` }) }) })
       ] }),
       /* @__PURE__ */ jsxs4("section", { children: [
         /* @__PURE__ */ jsxs4("hgroup", { children: [
@@ -396,9 +400,9 @@ export default function Page() {
             /* @__PURE__ */ jsx4("a", { href: REACT_HOOKS_URL, target: "_blank", children: "React hooks" }),
             ", like ",
             /* @__PURE__ */ jsx4("code", { children: "useState" }),
-            " or ",
+            ", ",
             /* @__PURE__ */ jsx4("code", { children: "useEffect" }),
-            "."
+            ", etc."
           ] })
         ] }),
         /* @__PURE__ */ jsx4("figure", { children: /* @__PURE__ */ jsx4("pre", { children: /* @__PURE__ */ jsx4("code", { children: `function Button () {
@@ -407,16 +411,16 @@ export default function Page() {
   return <p>
     <button onClick={() => setClicks(clicks+1)}>Clicks {clicks}</button>
   </p>
+}
 
-  ...
+...
 
-  export default function Page(props) {
-    return <>
-      <h1>Hello, {props.name}!</h1>
-      <Greeting/>
-      <Button/>
-    </>
-  }
+export default function Page(props) {
+  return <>
+    <h1>Hello, {props.name}!</h1>
+    <Greeting/>
+    <Button/>
+  </>
 }` }) }) })
       ] }),
       /* @__PURE__ */ jsxs4("section", { children: [

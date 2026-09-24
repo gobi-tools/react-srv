@@ -3,13 +3,15 @@
   return &lt;&gt;
     &lt;h1&gt;Hello, world!&lt;/h1&gt;
   &lt;/&gt;
-}</code></pre></figure><p>Optionally add a <code>react-srv.config.ts</code> or <code>.js</code> file:</p><figure><pre><code>export default {}</code></pre></figure><p>And <!-- -->React Srv<!-- --> will render it as static HTML you can send down the wire:</p><figure><pre><code>const app = express();
+}</code></pre></figure><p>Optionally add a <code>react-srv.config.ts</code> or <code>.js</code> file:</p><figure><pre><code>export default {}</code></pre></figure><p>And <!-- -->React Srv<!-- --> will render it as static HTML you can send down the wire:</p><figure><pre><code>import config from &#x27;./react-srv.config&#x27;;
+
+const app = express();
 const react = new ReactSrv(config);
 
 app.get(&#x27;/&#x27;, (_, res) =&gt; {
   return res.status(200).send(react.render(Page));
 });
-</code></pre></figure></section><section><hgroup><h2>Documents</h2><p>React Srv<!-- --> will wrap all components in a default HTML document. You may create a custom one to specify titles, stylesheets, scaling, etc.</p></hgroup><figure><pre><code>export default function Document({ children }) {
+</code></pre></figure></section><section><hgroup><h2>Documents</h2><p>React Srv<!-- --> will wrap all components in a default HTML document. You can create a custom one to specify titles, stylesheets, scaling, etc.</p></hgroup><figure><pre><code>export default function Document({ children }) {
   return &lt;html lang=&quot;en&quot;&gt;
     &lt;head&gt;
       &lt;title&gt;Title&lt;/title&gt;
@@ -19,7 +21,9 @@ app.get(&#x27;/&#x27;, (_, res) =&gt; {
       {children}
     &lt;/body&gt;
   &lt;/html&gt;
-}</code></pre></figure><p>You can reference it in the config file:</p><figure><pre><code>export default { Document };</code></pre></figure></section><section><hgroup><h2>Components</h2><p>Just like in <a href="https://react.dev/learn#components" target="_blanl">any React app</a>, you can split a large page into multiple components.</p></hgroup><figure><pre><code>function Greeting() { 
+}</code></pre></figure><p>You can reference it in the config file:</p><figure><pre><code>import Document from &#x27;./Document&#x27;;
+
+export default { Document };</code></pre></figure></section><section><hgroup><h2>Components</h2><p>Just like in <a href="https://react.dev/learn#components" target="_blanl">any React app</a>, you can split a large page into multiple components.</p></hgroup><figure><pre><code>function Greeting() { 
   return &lt;p&gt;Today is a fine day!&lt;/p&gt;
 }
 
@@ -36,22 +40,22 @@ export default function Page() {
 }</code></pre></figure><p>... and pass them to the rendering function.</p><figure><pre><code>app.get(&#x27;/&#x27;, (req, res) =&gt; {
   const name = req.query[&#x27;name&#x27;];
   return res.status(200).send(react.render(Page, { name }));
-});</code></pre></figure></section><section><hgroup><h2>Hooks</h2><p>For interactivity you can use all types of <a href="https://react.dev/reference/react/hooks" target="_blank">React hooks</a>, like <code>useState</code> or <code>useEffect</code>.</p></hgroup><figure><pre><code>function Button () {
+});</code></pre></figure></section><section><hgroup><h2>Hooks</h2><p>For interactivity you can use all types of <a href="https://react.dev/reference/react/hooks" target="_blank">React hooks</a>, like <code>useState</code>, <code>useEffect</code>, etc.</p></hgroup><figure><pre><code>function Button () {
   const [clicks, setClicks] = useState(0);
 
   return &lt;p&gt;
     &lt;button onClick={() =&gt; setClicks(clicks+1)}&gt;Clicks {clicks}&lt;/button&gt;
   &lt;/p&gt;
+}
 
-  ...
+...
 
-  export default function Page(props) {
-    return &lt;&gt;
-      &lt;h1&gt;Hello, {props.name}!&lt;/h1&gt;
-      &lt;Greeting/&gt;
-      &lt;Button/&gt;
-    &lt;/&gt;
-  }
+export default function Page(props) {
+  return &lt;&gt;
+    &lt;h1&gt;Hello, {props.name}!&lt;/h1&gt;
+    &lt;Greeting/&gt;
+    &lt;Button/&gt;
+  &lt;/&gt;
 }</code></pre></figure></section><section><hgroup><h2>Setup</h2><p>Setup is slightly different based on the platform you&#x27;re running:</p></hgroup><menu><li aria-selected="true"><a>Typescript</a></li><li aria-selected="false"><a>Javascript (ESM)</a></li><li aria-selected="false"><a>Javascript (CJS)</a></li></menu><br/><p>First, install the latest versions of <a href="/index.html">react-srv</a> and <a href="https://react.dev/" target="_blank">React</a>.</p><figure><pre><code>npm i react-srv
     
 # install react &amp; react-dom

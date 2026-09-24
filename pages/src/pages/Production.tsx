@@ -43,7 +43,7 @@ export default function Production() {
         </p>
         <figure>
           <pre><code>{`export default {
-  document: Document,
+  Document,
   srcPath: './src', // default
   outPath: './public/hydrate', // default
   isProd: process.env.NODE_ENV === 'production',

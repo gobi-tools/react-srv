@@ -129,7 +129,7 @@ function Static() {
       ] }),
       /* @__PURE__ */ jsx4("p", { children: "You can specify the source and output destinations and whether you want to keep javascript hydration (default) or disable it completely for a pure static experiece, in the config file:" }),
       /* @__PURE__ */ jsx4("figure", { children: /* @__PURE__ */ jsx4("pre", { children: /* @__PURE__ */ jsx4("code", { children: `export default {
-  document: Document,
+  Document,
   srcPath: './src',
   outPath: './public',
   hydrate: true, // or false
@@ -158,6 +158,10 @@ function Static() {
           /* @__PURE__ */ jsx4("a", { href: DEMO_STATIC_URL, target: "_blank", children: "here" }),
           "."
         ] })
+      ] }),
+      /* @__PURE__ */ jsxs4("article", { children: [
+        /* @__PURE__ */ jsx4("p", { role: "group", children: /* @__PURE__ */ jsx4("b", { children: "Note" }) }),
+        /* @__PURE__ */ jsx4("p", { children: "If you turn off hydration, only HTML will be generated. Any interactivity that's due to React will not work." })
       ] })
     ] }) })
   ] });

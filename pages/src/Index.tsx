@@ -53,7 +53,9 @@ export default function Index() {
           And {PRODUCT_NAME} will render it as static HTML you can send down the wire:
         </p>
         <figure>
-          <pre><code>{`const app = express();
+          <pre><code>{`import config from './react-srv.config';
+
+const app = express();
 const react = new ReactSrv(config);
 
 app.get('/', (_, res) => {
@@ -67,7 +69,7 @@ app.get('/', (_, res) => {
         <hgroup>
           <h2>Documents</h2>
           <p>
-            {PRODUCT_NAME} will wrap all components in a default HTML document. You may create a custom one to
+            {PRODUCT_NAME} will wrap all components in a default HTML document. You can create a custom one to
             specify titles, stylesheets, scaling, etc.
           </p>
         </hgroup>
@@ -88,7 +90,9 @@ app.get('/', (_, res) => {
           You can reference it in the config file:
         </p>
         <figure>
-          <pre><code>{`export default { Document };`}</code></pre>
+          <pre><code>{`import Document from './Document';
+
+export default { Document };`}</code></pre>
         </figure>
       </section>
 
@@ -144,7 +148,7 @@ export default function Page() {
         <hgroup>
           <h2>Hooks</h2>
           <p>
-            For interactivity you can use all types of <a href={REACT_HOOKS_URL} target="_blank">React hooks</a>, like <code>useState</code> or <code>useEffect</code>.
+            For interactivity you can use all types of <a href={REACT_HOOKS_URL} target="_blank">React hooks</a>, like <code>useState</code>, <code>useEffect</code>, etc.
           </p>
         </hgroup>
         <figure>
@@ -154,16 +158,16 @@ export default function Page() {
   return <p>
     <button onClick={() => setClicks(clicks+1)}>Clicks {clicks}</button>
   </p>
+}
 
-  ...
+...
 
-  export default function Page(props) {
-    return <>
-      <h1>Hello, {props.name}!</h1>
-      <Greeting/>
-      <Button/>
-    </>
-  }
+export default function Page(props) {
+  return <>
+    <h1>Hello, {props.name}!</h1>
+    <Greeting/>
+    <Button/>
+  </>
 }`}</code></pre>
         </figure>
       </section>

@@ -26,7 +26,7 @@ export default function Static() {
         </p>
         <figure>
           <pre><code>{`export default {
-  document: Document,
+  Document,
   srcPath: './src',
   outPath: './public',
   hydrate: true, // or false
@@ -53,6 +53,14 @@ export default function Static() {
           </p>
           <p>
             The source for this documentation is a statically generated site. Check it out <a href={DEMO_STATIC_URL} target="_blank">here</a>.
+          </p>
+        </article>
+        <article>
+          <p role="group">
+            <b>Note</b>
+          </p>
+          <p>
+            If you turn off hydration, only HTML will be generated. Any interactivity that's due to React will not work.
           </p>
         </article>
       </section>
