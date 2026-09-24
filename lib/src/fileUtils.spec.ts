@@ -43,6 +43,34 @@ describe("FileUtils", () => {
     });
   });
 
+  describe("pathHash", () => {
+    it("returns a 6-character lowercase hex string", () => {
+      expect(FileUtils.pathHash("Home.tsx")).toMatch(/^[0-9a-f]{6}$/);
+    });
+
+    it("is deterministic: the same path always hashes the same", () => {
+      expect(FileUtils.pathHash("deep/nested/Page.tsx")).toBe(
+        FileUtils.pathHash("deep/nested/Page.tsx")
+      );
+    });
+
+    it("gives different hashes to different source paths", () => {
+      expect(FileUtils.pathHash("app/Home.tsx")).not.toBe(
+        FileUtils.pathHash("admin/Home.tsx")
+      );
+    });
+
+    it("distinguishes paths that differ only in the extension", () => {
+      expect(FileUtils.pathHash("Home.tsx")).not.toBe(FileUtils.pathHash("Home.jsx"));
+    });
+
+    it("hashes platform-joined paths like forward-slash paths", () => {
+      expect(FileUtils.pathHash(["app", "Home.tsx"].join(path.sep))).toBe(
+        FileUtils.pathHash("app/Home.tsx")
+      );
+    });
+  });
+
   describe("dirExists", () => {
     const tmpRoot = fs.mkdtempSync(path.join(os.tmpdir(), "react-srv-spec-"));
 
@@ -275,9 +303,6 @@ describe("FileUtils", () => {
       expect(new Set(outputs).size).toBe(2);
     });
 
-    // Known issue #8: prebundle() flattens, so same-named components in
-    // different folders produce identical output paths and overwrite
-    // each other. Expected to FAIL until #8 is fixed.
     it("keeps duplicate component names apart when flatten=true (issue #8)", () => {
       const files = FileUtils.formOutputFiles(dupDir, outPath, true);
       const outputs = files.map((f) => path.join(f.writePath, f.name.js));

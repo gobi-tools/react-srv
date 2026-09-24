@@ -72,8 +72,6 @@ export default class ReactSrv {
     for (const file of files) {
       const pageName = file.component;
       const rootId = 'root';
-      // pass the exact source file: name-only lookup is ambiguous when two
-      // folders hold same-named components (issue #7)
       const code = this.bundle({ pageName, rootId, entryPath: file.absPath });
       const writePath = file.writePath;
       const fp = `${writePath}/${file.name.js}`;
@@ -86,8 +84,6 @@ export default class ReactSrv {
   private bundle(params: { pageName: string; rootId: string; entryPath?: string }): string {
     const { pageName, rootId } = params;
 
-    // callers that know the source file pass it directly; render() only has
-    // Component.name, so it falls back to resolving by name (issue #7)
     const entryPath = params.entryPath ?? this.findEntryPath(pageName);
     const entryDir = path.dirname(entryPath);
     const entryBase = path.basename(entryPath);
@@ -125,11 +121,7 @@ export default class ReactSrv {
       jsx: "automatic",
       jsxImportSource: "react",
       mainFields: this.config.mainFields ?? [],
-      // Resolve react* imports to their CDN URLs at build time (issue #11):
-      // alias rewrites the specifier, external keeps it out of the bundle.
-      // Unlike the old output-text regexes this catches every import form
-      // (side-effect imports, bare react-dom, future minified output) and
-      // works in the sync API (esbuild plugins do not).
+      // Resolve react* imports to their CDN URLs at build time
       alias: {
         "react": `${reactLocation}/react@${reactVersion}`,
         "react-dom": `${reactLocation}/react-dom@${reactVersion}`,
@@ -188,11 +180,8 @@ export default class ReactSrv {
     const props = this.config.initProps;
     const safeProps = serialize(props, { isJSON: true });
 
-    // The temp module lives outside the project (OS temp dir), where bare
-    // specifiers like "react" cannot be resolved — there is no node_modules
-    // above it. Resolve react* to absolute paths instead (via the library's
-    // own location, so the same React instance the library renders with is
-    // reused) and keep them external so they resolve from anywhere.
+    // Dynamically rewrite all react* paths to have absolute paths via the library's own location
+    // so the same React instance the library renders with is reused
     const requireFromLib = createRequire(import.meta.url);
     const externalsToAbsolute: esbuild.Plugin = {
       name: "externals-to-absolute",
@@ -217,20 +206,14 @@ export default class ReactSrv {
 
       const js = result.outputFiles[0].text;
 
-      // 2️⃣ Load the compiled module dynamically
-      // under the OS temp dir (not next to the library's dist/), in a
+      // Load the compiled module dynamically under the OS temp dir in a
       // per-process folder so concurrent runs can't clobber each other
       const tempDir = path.join(os.tmpdir(), "react-srv", String(process.pid));
       const tempFile = path.join(tempDir, file.name.mjs);
       fs.mkdirSync(tempDir, { recursive: true });
       fs.writeFileSync(tempFile, js);
-      // Issue #14: the ESM loader caches modules by URL and offers no
-      // eviction API, while the temp filename is derived from the source
-      // *path* (deterministic, survives edits) — a second import in the
-      // same process would silently serve the stale module. Key the URL on
-      // the bundled content instead: edited source -> new bytes -> new URL
-      // -> fresh module; unchanged content -> cache hit, which is correct
-      // (identical source evaluates to an identical module) and free.
+      // Make sure we import the temp file using a changing content key, so we 
+      // don't get stale info by mistake
       const contentKey = createHash("sha1").update(js).digest("hex");
       let Page: any;
       try {
@@ -239,7 +222,7 @@ export default class ReactSrv {
         fs.unlinkSync(tempFile);
       }
 
-      // 3️⃣ Render to static HTML
+      // Render to static HTML
       const rootId = 'root';
       const document = (
         <this.config.Document {...props} >
@@ -273,7 +256,7 @@ export default class ReactSrv {
   }
 
   private getPublicHydrationPath(page: string): string {
-    // Mirror formOutputFiles' js naming (issue #8): normalised name + hash
+    // Mirror formOutputFiles' js naming: normalised name + hash
     // of the source path — resolve the source file to learn that path.
     const entryPath = this.findEntryPath(page);
     const relPath = path.relative(this.config.srcPath, entryPath);
@@ -336,7 +319,6 @@ export class FileUtils {
     return true;
   }
 
-  /** Deterministic 6-hex hash of a source-relative path (issue #8). */
   static pathHash(relPath: string): string {
     return createHash("sha1")
       .update(relPath.split(path.sep).join("/"))
@@ -353,16 +335,10 @@ export class FileUtils {
 
     return files.map((absPath: string) => {
       const component = path.basename(absPath, path.extname(absPath));
-      const normalised = FileUtils.normaliseName(component);
       const relPath = path.relative(srcPath, absPath);
       const relDir = path.dirname(relPath);
       const writePath = flatten === true ? outPath : (relDir === "." ? outPath : path.join(outPath, relDir));
-
-      // Issue #8: js/mjs outputs always carry a deterministic hash of the
-      // source path, so two sources can never share an output name — any
-      // deduplication scenario is guarded, not just same-name collisions —
-      // and rebuilds stay reproducible. html keeps its plain name: page
-      // URLs are public.
+      const normalised = FileUtils.normaliseName(component);
       const hash = FileUtils.pathHash(relPath);
 
       return {
