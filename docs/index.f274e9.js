@@ -35327,6 +35327,9 @@ function useRoute() {
   return route;
 }
 
+// src/components/Code.tsx
+import { useEffect as useEffect2, useState as useState2 } from "https://esm.sh/react@19.2.0";
+
 // node_modules/@babel/runtime/helpers/esm/objectWithoutPropertiesLoose.js
 function _objectWithoutPropertiesLoose(r, e) {
   if (null == r) return {};
@@ -35996,6 +35999,122 @@ var highlighter = highlight_default(import_lowlight.default, default_style_defau
 highlighter.supportedLanguages = supported_languages_default;
 var default_highlight_default = highlighter;
 
+// node_modules/react-syntax-highlighter/dist/esm/styles/hljs/atom-one-dark.js
+var atom_one_dark_default = {
+  "hljs": {
+    "display": "block",
+    "overflowX": "auto",
+    "padding": "0.5em",
+    "color": "#abb2bf",
+    "background": "#282c34"
+  },
+  "hljs-comment": {
+    "color": "#5c6370",
+    "fontStyle": "italic"
+  },
+  "hljs-quote": {
+    "color": "#5c6370",
+    "fontStyle": "italic"
+  },
+  "hljs-doctag": {
+    "color": "#c678dd"
+  },
+  "hljs-keyword": {
+    "color": "#c678dd"
+  },
+  "hljs-formula": {
+    "color": "#c678dd"
+  },
+  "hljs-section": {
+    "color": "#e06c75"
+  },
+  "hljs-name": {
+    "color": "#e06c75"
+  },
+  "hljs-selector-tag": {
+    "color": "#e06c75"
+  },
+  "hljs-deletion": {
+    "color": "#e06c75"
+  },
+  "hljs-subst": {
+    "color": "#e06c75"
+  },
+  "hljs-literal": {
+    "color": "#56b6c2"
+  },
+  "hljs-string": {
+    "color": "#98c379"
+  },
+  "hljs-regexp": {
+    "color": "#98c379"
+  },
+  "hljs-addition": {
+    "color": "#98c379"
+  },
+  "hljs-attribute": {
+    "color": "#98c379"
+  },
+  "hljs-meta-string": {
+    "color": "#98c379"
+  },
+  "hljs-built_in": {
+    "color": "#e6c07b"
+  },
+  "hljs-class .hljs-title": {
+    "color": "#e6c07b"
+  },
+  "hljs-attr": {
+    "color": "#d19a66"
+  },
+  "hljs-variable": {
+    "color": "#d19a66"
+  },
+  "hljs-template-variable": {
+    "color": "#d19a66"
+  },
+  "hljs-type": {
+    "color": "#d19a66"
+  },
+  "hljs-selector-class": {
+    "color": "#d19a66"
+  },
+  "hljs-selector-attr": {
+    "color": "#d19a66"
+  },
+  "hljs-selector-pseudo": {
+    "color": "#d19a66"
+  },
+  "hljs-number": {
+    "color": "#d19a66"
+  },
+  "hljs-symbol": {
+    "color": "#61aeee"
+  },
+  "hljs-bullet": {
+    "color": "#61aeee"
+  },
+  "hljs-link": {
+    "color": "#61aeee",
+    "textDecoration": "underline"
+  },
+  "hljs-meta": {
+    "color": "#61aeee"
+  },
+  "hljs-selector-id": {
+    "color": "#61aeee"
+  },
+  "hljs-title": {
+    "color": "#61aeee"
+  },
+  "hljs-emphasis": {
+    "fontStyle": "italic"
+  },
+  "hljs-strong": {
+    "fontWeight": "bold"
+  }
+};
+
 // node_modules/react-syntax-highlighter/dist/esm/styles/hljs/docco.js
 var docco_default = {
   "hljs": {
@@ -36109,8 +36228,17 @@ var docco_default = {
 
 // src/components/Code.tsx
 import { jsx } from "https://esm.sh/react@19.2.0/jsx-runtime";
+var query = "(prefers-color-scheme: dark)";
 function Code(props) {
-  return /* @__PURE__ */ jsx(default_highlight_default, { language: props.lang, style: docco_default, children: props.children });
+  const [dark, setDark] = useState2(false);
+  useEffect2(() => {
+    const mql = window.matchMedia(query);
+    const sync = () => setDark(mql.matches);
+    sync();
+    mql.addEventListener("change", sync);
+    return () => mql.removeEventListener("change", sync);
+  }, []);
+  return /* @__PURE__ */ jsx(default_highlight_default, { language: props.lang, style: dark ? atom_one_dark_default : docco_default, children: props.children });
 }
 
 // src/components/GitHubIcon.tsx
@@ -36123,7 +36251,7 @@ function GitHubIcon() {
 }
 
 // src/components/SetupSection.tsx
-import { useState as useState2 } from "https://esm.sh/react@19.2.0";
+import { useState as useState3 } from "https://esm.sh/react@19.2.0";
 
 // src/components/SettingsIcon.tsx
 import { jsx as jsx3, jsxs as jsxs2 } from "https://esm.sh/react@19.2.0/jsx-runtime";
@@ -36174,7 +36302,7 @@ npm i @types/react-dom@19.2.0 --save-dev` }) }),
       /* @__PURE__ */ jsx4("code", { children: "tsconfig.json" }),
       " file."
     ] }),
-    /* @__PURE__ */ jsx4("figure", { children: /* @__PURE__ */ jsx4(Code, { lang: "javascript", children: `{
+    /* @__PURE__ */ jsx4("figure", { children: /* @__PURE__ */ jsx4(Code, { lang: "json", children: `{
   "compilerOptions: {
     ...
     "jsx": "react-jsx",
@@ -36305,7 +36433,7 @@ npm i @babel/register --save-dev` }) }),
   ] });
 }
 function SetupSection() {
-  const [environment, selectEnvironment] = useState2("ts");
+  const [environment, selectEnvironment] = useState3("ts");
   return /* @__PURE__ */ jsxs3(Fragment, { children: [
     /* @__PURE__ */ jsxs3("hgroup", { children: [
       /* @__PURE__ */ jsx4("h2", { children: "Setup" }),
