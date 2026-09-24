@@ -19,6 +19,7 @@ type TReactSrvConfig = {
   outPath?: string,
   hydrate?: boolean;
   isProd?: boolean,
+  minify?: boolean,
   mainFields?: string[],
   Document?: React.FC<any>,
   initProps?: any,
@@ -42,6 +43,7 @@ export const DefaultReactSrvConfig: TReactSrvConfig = {
   outPath: './public/hydrate',
   hydrate: true,
   isProd: false,
+  minify: false,
   Document: DefaultDocument,
   initProps: {},
   mainFields: ["module", "main"],
@@ -117,6 +119,7 @@ export default class ReactSrv {
       bundle: true,
       format: "esm",
       platform: "browser",
+      minify: this.config.minify === true,
       write: false,
       jsx: "automatic",
       jsxImportSource: "react",

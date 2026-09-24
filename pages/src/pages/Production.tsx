@@ -22,7 +22,7 @@ export default function Production() {
   <head><title>Page</title></head>
   <body>...</body>
   <script>... set initial props ...</script>
-  <script type="module">... hydration script ... </script>
+  <script type="module">... inline hydration script ... </script>
 </html>`}</Code>
         </figure>
         <p>
@@ -35,19 +35,25 @@ export default function Production() {
           every time is not very efficient.
         </p>
         <p>
-          So, for production we can precompile the necessary javascript and have it ready to go.
+          So, for production we can <b>precompile</b> the necessary javascript and have it ready to go.
         </p>
         <p>
           By default, {PRODUCT_NAME} looks in the <code>./src</code> folder to find React files and outputs
           compiled javascript in <code>./public/hydrate</code>.
+        </p>
+        <p>
           You can change these locations, as well as whether you're in dev or prod mode, in the config file:
+        </p>
+        <p>
+          You can also, separately, choose to minify the code or not.
         </p>
         <figure>
           <Code lang={'javascript'}>{`export default {
   Document,
   srcPath: './src', // default
   outPath: './public/hydrate', // default
-  isProd: process.env.NODE_ENV === 'production',
+  isProd: process.env.NODE_ENV === 'production', // serve inline or precompiled code
+  minify: true, // minify JS or not
 }`}</Code>
         </figure>
         <p>

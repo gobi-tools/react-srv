@@ -154,6 +154,25 @@ describe("ReactSrv", () => {
         const jsFiles = readOutFiles().filter((f) => f.endsWith(".js"));
         expect(jsFiles).toHaveLength(2);
       });
+
+      it("minifies the shipped hydration script (issue #15)", () => {
+        // a distinctive local identifier survives unminified output verbatim;
+        // minification renames it to a short symbol. The marker string is
+        // asserted present so the test cannot pass by the code merely vanishing.
+        fs.writeFileSync(
+          path.join(srcPath, "Home.tsx"),
+          `export default function Home() {\n` +
+            `  const definitelyNotMinifiedPlaceholder = "used-content-marker";\n` +
+            `  return <div>{definitelyNotMinifiedPlaceholder}</div>;\n` +
+            `}\n`,
+          "utf8"
+        );
+        const srv = new ReactSrv({ srcPath, outPath, minify: true });
+        srv.prebundle();
+        const code = readOutFile(hashedJs("Home.tsx"));
+        expect(code).not.toContain("definitelyNotMinifiedPlaceholder");
+        expect(code).toContain("used-content-marker");
+      });
     });
   });
 

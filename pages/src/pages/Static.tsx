@@ -22,7 +22,7 @@ export default function Static() {
           </p>
         </hgroup>
         <p>
-          You can specify the source and output destinations and whether you want to keep javascript hydration (default)
+          You can specify the source and output destinations and whether you want to keep <b>javascript hydration</b> (default)
           or disable it completely for a pure static experiece, in the config file:
         </p>
         <figure>
@@ -31,6 +31,7 @@ export default function Static() {
   srcPath: './src',
   outPath: './public',
   hydrate: true, // or false
+  minify: true, // // minify JS or not
 }`}</Code>
         </figure>
         <p>
@@ -61,7 +62,7 @@ export default function Static() {
             <b>Note</b>
           </p>
           <p>
-            If you turn off hydration, only HTML will be generated. Any interactivity that's due to React will not work.
+            If you turn off hydration, only HTML will be generated. Any interactivity that needs React will not work.
           </p>
         </article>
       </section>
