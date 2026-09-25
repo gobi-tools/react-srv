@@ -1,4 +1,5 @@
 import { RouteMaster } from "./common/routes";
+import pkg from '../../lib/package.json';
 import { useRoute } from "./common/useRoute";
 import CodeHighlight from "./components/CodeHighlight";
 import GitHubIcon from "./components/GitHubIcon";
@@ -21,7 +22,7 @@ export default function Index() {
           <a href="https://github.com/gobi-tools/react-srv" target="_blank">
             <button>
               <GitHubIcon />
-              <span>Source</span>
+              <span>Source (v{pkg.version})</span>
             </button>
           </a>
           <a href={RouteMaster.demo(route)} target="_blank">
