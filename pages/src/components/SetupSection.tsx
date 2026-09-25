@@ -112,14 +112,17 @@ npm i react-dom@19.2.0
 
 # install a few babel dependencies
 npm i @babel/preset-react --save-dev
-npm i @babel/register --save-dev`}</Code>
+npm i @babel/register --save-dev
+npm i @babel/plugin-transform-modules-commonjs --save-dev`}</Code>
     </figure>
     <p>
-      Then, add a <code>.babelrc</code> file where we'll setup the react preset so the server recognises JSX syntax.
+      Then, add a <code>.babelrc</code> file where we'll setup the react preset so the server recognises JSX syntax and a plugin 
+      for module resolution inside <code>.jsx</code> files.
     </p>
     <figure>
       <Code lang={'json'}>{`{
-  "presets": ["@babel/preset-react"]
+  "presets": ["@babel/preset-react"],
+  "plugins": ["@babel/plugin-transform-modules-commonjs"]
 }
 `}</Code>
     </figure>

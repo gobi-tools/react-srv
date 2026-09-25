@@ -1,3 +1,5 @@
+import Info from "../../components/Info";
+
 export default function About() {
   return <>
     <h2>About</h2>
@@ -5,5 +7,6 @@ export default function About() {
     <p>
       <a href="/">Home</a>
     </p>
+    <Info/>
   </>
 }

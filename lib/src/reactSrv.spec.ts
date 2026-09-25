@@ -173,6 +173,84 @@ describe("ReactSrv", () => {
         expect(code).not.toContain("definitelyNotMinifiedPlaceholder");
         expect(code).toContain("used-content-marker");
       });
+
+      it("extracts code shared between entries into a common chunk (issue #16)", () => {
+        // three entries: Home and About both import the shared module, so its
+        // code must be lifted into a chunk both reference instead of being
+        // copied into every entry
+        fs.writeFileSync(
+          path.join(srcPath, "shared.tsx"),
+          `export default function Shared() {\n  return <div>shared-module-marker-xyz</div>;\n}\n`,
+          "utf8"
+        );
+        for (const name of ["Home", "About"]) {
+          fs.writeFileSync(
+            path.join(srcPath, `${name}.tsx`),
+            `import Shared from "./shared";\nexport default function ${name}() {\n  return <div><Shared /></div>;\n}\n`,
+            "utf8"
+          );
+        }
+        const srv = new ReactSrv({ srcPath, outPath });
+        srv.prebundle();
+
+        const jsFiles = readOutFiles().filter((f) => f.endsWith(".js"));
+        // 3 hydration entries + at least one shared chunk
+        expect(jsFiles.length).toBeGreaterThanOrEqual(4);
+
+        const chunks = jsFiles.filter((f) => path.basename(f).startsWith("chunk-"));
+        expect(chunks.length).toBeGreaterThan(0);
+
+        // the shared module's code lives in a chunk
+        const chunk = chunks.find((f) => readOutFile(f).includes("shared-module-marker-xyz"));
+        expect(chunk).toBeDefined();
+
+        // every entry references that chunk instead of carrying the code itself,
+        // and the reference resolves to a file that actually exists
+        const entries = jsFiles.filter((f) => !path.basename(f).startsWith("chunk-"));
+        expect(entries).toHaveLength(3);
+        for (const entry of entries) {
+          const code = readOutFile(entry);
+          expect(code).not.toContain("shared-module-marker-xyz");
+          const spec = code.match(/["'](\.{1,2}\/[^"']*chunk-[^"']*)["']/)?.[1];
+          expect(spec).toBeTruthy();
+          expect(fs.existsSync(path.join(outPath, spec!))).toBe(true);
+        }
+
+        // the temp wrappers that drove the build are cleaned up afterwards
+        expect(fs.existsSync(path.join(os.tmpdir(), "react-srv", String(process.pid), "wrappers"))).toBe(false);
+      });
+
+      it("emits no shared chunks when splitting is disabled", () => {
+        // same shared-module setup as the issue #16 test, but with the opt-out:
+        // entries must be self-contained and no chunk-* file may exist
+        fs.writeFileSync(
+          path.join(srcPath, "shared.tsx"),
+          `export default function Shared() {\n  return <div>shared-module-marker-xyz</div>;\n}\n`,
+          "utf8"
+        );
+        for (const name of ["Home", "About"]) {
+          fs.writeFileSync(
+            path.join(srcPath, `${name}.tsx`),
+            `import Shared from "./shared";\nexport default function ${name}() {\n  return <div><Shared /></div>;\n}\n`,
+            "utf8"
+          );
+        }
+        const srv = new ReactSrv({ srcPath, outPath, splitting: false });
+        srv.prebundle();
+
+        const jsFiles = readOutFiles().filter((f) => f.endsWith(".js"));
+        const chunks = jsFiles.filter((f) => path.basename(f).startsWith("chunk-"));
+        expect(chunks).toHaveLength(0);
+
+        // exactly the entries, each carrying its own copy of the shared code
+        expect(jsFiles).toHaveLength(3);
+        for (const entry of jsFiles) {
+          const code = readOutFile(entry);
+          expect(code).not.toMatch(/["']\.{1,2}\/[^"']*chunk-[^"']*["']/);
+        }
+        expect(readOutFile(hashedJs("Home.tsx"))).toContain("shared-module-marker-xyz");
+        expect(readOutFile(hashedJs("About.tsx"))).toContain("shared-module-marker-xyz");
+      });
     });
   });
 
@@ -303,6 +381,48 @@ describe("ReactSrv", () => {
         // files get bundled from whichever Widget.tsx is found first:
         expect(readOutFile(path.join("a", hashedJs("a/Widget.tsx")))).toContain("ALPHA-MARKER");
         expect(readOutFile(path.join("b", hashedJs("b/Widget.tsx")))).toContain("BETA-MARKER");
+      });
+
+      it("resolves shared chunks from nested hydration entries (issue #16)", async () => {
+        // two nested pages share one module — if the chunk sits outside their
+        // folder, their relative import must still resolve from the entry's
+        // own directory (React import mirrors the writePage convention: the
+        // prerender node build uses the classic JSX transform)
+        fs.writeFileSync(
+          path.join(srcPath, "shared.tsx"),
+          `import React from "react";\nexport default function Shared() {\n  return <div>shared-module-marker-xyz</div>;\n}\n`,
+          "utf8"
+        );
+        for (const name of ["Home", "About"]) {
+          const fp = path.join(srcPath, "pages", `${name}.tsx`);
+          fs.mkdirSync(path.dirname(fp), { recursive: true });
+          fs.writeFileSync(
+            fp,
+            `import React from "react";\nimport Shared from "../shared";\nexport default function ${name}() {\n  return <div><Shared /></div>;\n}\n`,
+            "utf8"
+          );
+        }
+        const srv = new ReactSrv({ srcPath, outPath });
+        await srv.prerender();
+
+        const entries = [
+          path.join("pages", hashedJs("pages/Home.tsx")),
+          path.join("pages", hashedJs("pages/About.tsx")),
+        ];
+        for (const entry of entries) {
+          const code = readOutFile(entry);
+          expect(code).not.toContain("shared-module-marker-xyz");
+          const spec = code.match(/["'](\.{1,2}\/[^"']*chunk-[^"']*)["']/)?.[1];
+          expect(spec).toBeTruthy();
+          // resolve the specifier relative to the entry's own directory
+          expect(fs.existsSync(path.resolve(outPath, path.dirname(entry), spec!))).toBe(true);
+        }
+
+        // ...and the shared code really does live in a chunk
+        const chunkWithCode = readOutFiles()
+          .filter((f) => path.basename(f).startsWith("chunk-"))
+          .find((f) => readOutFile(f).includes("shared-module-marker-xyz"));
+        expect(chunkWithCode).toBeDefined();
       });
     });
 

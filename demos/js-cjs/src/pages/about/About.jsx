@@ -1,4 +1,4 @@
-import React from 'react';
+import Info from '../../components/Info';
 
 export default function About() {
   return <>
@@ -7,5 +7,6 @@ export default function About() {
     <p>
       <a href="/">Home</a>
     </p>
+    <Info/>
   </>
 }

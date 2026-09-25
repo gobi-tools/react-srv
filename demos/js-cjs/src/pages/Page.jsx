@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
+import Info from '../components/Info';
 
 function Greeting () {
   return <p>
@@ -22,5 +23,6 @@ export default function Page(props) {
     <p>
       <a href="/about">About</a>
     </p>
+    <Info/>
   </>
 }

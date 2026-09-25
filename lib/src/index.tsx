@@ -20,6 +20,7 @@ type TReactSrvConfig = {
   hydrate?: boolean;
   isProd?: boolean,
   minify?: boolean,
+  splitting?: boolean,
   mainFields?: string[],
   Document?: React.FC<any>,
   initProps?: any,
@@ -44,6 +45,7 @@ export const DefaultReactSrvConfig: TReactSrvConfig = {
   hydrate: true,
   isProd: false,
   minify: false,
+  splitting: true,
   Document: DefaultDocument,
   initProps: {},
   mainFields: ["module", "main"],
@@ -71,18 +73,91 @@ export default class ReactSrv {
   }
 
   private prepbundle(files: TOutputFile[]) {
-    for (const file of files) {
-      const pageName = file.component;
-      const rootId = 'root';
-      const code = this.bundle({ pageName, rootId, entryPath: file.absPath });
-      const writePath = file.writePath;
-      const fp = `${writePath}/${file.name.js}`;
-      fs.mkdirSync(writePath, { recursive: true });
-      fs.writeFileSync(fp, code, 'utf8');
-      console.log('✅ Wrote', fp);
+    if (files.length === 0) {
+      return; // esbuild rejects an empty entryPoints list
+    }
+
+    const rootId = 'root';
+    const wrapperRoot = path.join(os.tmpdir(), "react-srv", String(process.pid), "wrappers");
+
+    // Bundle every entry in ONE build with code splitting, so any
+    // module shared between entries (a big library or a local file) lands in a
+    // single content-hashed chunk instead of being copied into each entry.
+    // Each entry is driven by a temp wrapper whose basename and folder already
+    // match the final output name and writePath, so esbuild's entry
+    // naming emits files exactly where the HTML expects them and relative
+    // chunk imports are correct as emitted — nothing is renamed or moved.
+    try {
+      const entryPoints = files.map((file) => {
+        const relDir = path.relative(this.config.outPath, file.writePath);
+        const wrapperPath = path.join(wrapperRoot, relDir, file.name.js);
+        fs.mkdirSync(path.dirname(wrapperPath), { recursive: true });
+        fs.writeFileSync(
+          wrapperPath,
+          [
+            `import React from "react";`,
+            `import { hydrateRoot } from "react-dom/client";`,
+            `import Page from ${JSON.stringify(file.absPath)};`,
+            ``,
+            `const root = document.getElementById(${JSON.stringify(rootId)});`,
+            `if (!root) {`,
+            `  throw new Error("react-srv: Could not find hydration root.");`,
+            `}`,
+            `if (!globalThis.__REACT_SRV_HYDRATED__) {`,
+            `  globalThis.__REACT_SRV_HYDRATED__ = true;`,
+            `  hydrateRoot(root, React.createElement(Page, globalThis.__INITIAL_PROPS__ || {}));`,
+            `}`,
+            ``,
+          ].join("\n"),
+          "utf8"
+        );
+        return wrapperPath;
+      });
+
+      const result = esbuild.buildSync({
+        ...this.browserBuildOptions(),
+        entryPoints,
+        outbase: wrapperRoot,
+        outdir: this.config.outPath,
+        entryNames: "[dir]/[name]",
+        chunkNames: "chunk-[hash]",
+        splitting: this.config.splitting !== false,
+        write: false,
+      });
+
+      for (const outputFile of result.outputFiles) {
+        fs.mkdirSync(path.dirname(outputFile.path), { recursive: true });
+        fs.writeFileSync(outputFile.path, outputFile.text, "utf8");
+        console.log('✅ Wrote', path.relative(process.cwd(), outputFile.path));
+      }
+    } finally {
+      fs.rmSync(wrapperRoot, { recursive: true, force: true });
     }
   }
 
+  private browserBuildOptions(): esbuild.BuildOptions {
+    const { reactLocation, reactVersion } = this.config;
+    return {
+      bundle: true,
+      format: "esm",
+      platform: "browser",
+      minify: this.config.minify === true,
+      jsx: "automatic",
+      jsxImportSource: "react",
+      mainFields: this.config.mainFields ?? [],
+      // Resolve react* imports to their CDN URLs at build time
+      alias: {
+        "react": `${reactLocation}/react@${reactVersion}`,
+        "react-dom": `${reactLocation}/react-dom@${reactVersion}`,
+        "react-dom/client": `${reactLocation}/react-dom@${reactVersion}/client`,
+        "react/jsx-runtime": `${reactLocation}/react@${reactVersion}/jsx-runtime`,
+        "react/jsx-dev-runtime": `${reactLocation}/react@${reactVersion}/jsx-dev-runtime`,
+      },
+      external: [`${reactLocation}/*`],
+    };
+  }
+
+  // @note: only used in dev mode really
   private bundle(params: { pageName: string; rootId: string; entryPath?: string }): string {
     const { pageName, rootId } = params;
 
@@ -90,8 +165,8 @@ export default class ReactSrv {
     const entryDir = path.dirname(entryPath);
     const entryBase = path.basename(entryPath);
 
-    const { reactLocation, reactVersion } = this.config;
     const result = esbuild.buildSync({
+      ...this.browserBuildOptions(),
       stdin: {
         contents: `
         import React from "react";
@@ -116,23 +191,7 @@ export default class ReactSrv {
         sourcefile: `react-srv-hydrate-${pageName}.jsx`,
         loader: "jsx",
       },
-      bundle: true,
-      format: "esm",
-      platform: "browser",
-      minify: this.config.minify === true,
       write: false,
-      jsx: "automatic",
-      jsxImportSource: "react",
-      mainFields: this.config.mainFields ?? [],
-      // Resolve react* imports to their CDN URLs at build time
-      alias: {
-        "react": `${reactLocation}/react@${reactVersion}`,
-        "react-dom": `${reactLocation}/react-dom@${reactVersion}`,
-        "react-dom/client": `${reactLocation}/react-dom@${reactVersion}/client`,
-        "react/jsx-runtime": `${reactLocation}/react@${reactVersion}/jsx-runtime`,
-        "react/jsx-dev-runtime": `${reactLocation}/react@${reactVersion}/jsx-dev-runtime`,
-      },
-      external: [`${reactLocation}/*`],
     });
 
     return result.outputFiles[0].text;

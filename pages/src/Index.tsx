@@ -175,6 +175,7 @@ export default function Page(props) {
 
       <section>
         <SetupSection />
+        <hr/>
         <article>
           <p>
             <b>Production</b>
