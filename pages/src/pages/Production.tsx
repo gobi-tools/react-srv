@@ -1,4 +1,4 @@
-import Code from "../components/Code";
+import CodeHighlight from "../components/CodeHighlight";
 import Header from "../components/Header";
 import SettingsIcon from "../components/SettingsIcon";
 import { DEMO_PROD_URL, PRODUCT_NAME } from "../constants";
@@ -18,12 +18,12 @@ export default function Production() {
           </p>
         </hgroup>
         <figure>
-          <Code lang={'xml'}>{`<html>
+          <CodeHighlight lang={'xml'}>{`<html>
   <head><title>Page</title></head>
   <body>...</body>
   <script>... set initial props ...</script>
   <script type="module">... inline hydration script ... </script>
-</html>`}</Code>
+</html>`}</CodeHighlight>
         </figure>
         <p>
           The markup is created from the component itself and the hydration script is
@@ -48,23 +48,23 @@ export default function Production() {
           You can also, separately, choose to minify the code or not.
         </p>
         <figure>
-          <Code lang={'javascript'}>{`export default {
+          <CodeHighlight lang={'javascript'}>{`export default {
   Document,
   srcPath: './src', // default
   outPath: './public/hydrate', // default
   isProd: process.env.NODE_ENV === 'production', // serve inline or precompiled code
   minify: true, // minify JS or not
-}`}</Code>
+}`}</CodeHighlight>
         </figure>
         <p>
           You can reference the config file in the <code>bundle</code> command in <code>package.json</code>
         </p>
         <figure>
-          <Code lang={'json'}>{`...
+          <CodeHighlight lang={'json'}>{`...
 "scripts": {
   "build": "react-srv bundle -f src/react-srv.config.ts && ... other build steps",
   "start": "NODE_ENV=production node dist/server.js"
-},`}</Code>
+},`}</CodeHighlight>
         </figure>
         <p>
           The last thing you need to do is to make sure the <code>/public</code> folder is

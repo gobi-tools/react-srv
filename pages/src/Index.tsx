@@ -1,6 +1,6 @@
 import { RouteMaster } from "./common/routes";
 import { useRoute } from "./common/useRoute";
-import Code from "./components/Code";
+import CodeHighlight from "./components/CodeHighlight";
 import GitHubIcon from "./components/GitHubIcon";
 import SetupSection from "./components/SetupSection";
 import { PRODUCT_NAME, REACT_COMPONENTS_URL, REACT_HOOKS_URL, REACT_PROPS_URL, SSG_URL, SSR_URL } from "./constants";
@@ -38,23 +38,23 @@ export default function Index() {
           All you need to do is define a React component as a default export of a <code>.tsx</code> or <code>.jsx</code> file of the same name:
         </p>
         <figure>
-          <Code lang={'javascript'}>{`export default function Page() {
+          <CodeHighlight lang={'javascript'}>{`export default function Page() {
   return <>
     <h1>Hello, world!</h1>
   </>
-}`}</Code>
+}`}</CodeHighlight>
         </figure>
         <p>
           Optionally add a <code>react-srv.config.ts</code> or <code>.js</code> file:
         </p>
         <figure>
-          <Code lang={'javascript'}>{`export default {}`}</Code>
+          <CodeHighlight lang={'javascript'}>{`export default {}`}</CodeHighlight>
         </figure>
         <p>
           And {PRODUCT_NAME} will render it as static HTML you can send down the wire:
         </p>
         <figure>
-          <Code lang={'javascript'}>{`import config from './react-srv.config';
+          <CodeHighlight lang={'javascript'}>{`import config from './react-srv.config';
 
 const app = express();
 const react = new ReactSrv(config);
@@ -62,7 +62,7 @@ const react = new ReactSrv(config);
 app.get('/', (_, res) => {
   return res.status(200).send(react.render(Page));
 });
-`}</Code>
+`}</CodeHighlight>
         </figure>
       </section>
 
@@ -75,7 +75,7 @@ app.get('/', (_, res) => {
           </p>
         </hgroup>
         <figure>
-          <Code lang={'javascript'}>{`export default function Document({ children }) {
+          <CodeHighlight lang={'javascript'}>{`export default function Document({ children }) {
   return <html lang="en">
     <head>
       <title>Title</title>
@@ -85,15 +85,15 @@ app.get('/', (_, res) => {
       {children}
     </body>
   </html>
-}`}</Code>
+}`}</CodeHighlight>
         </figure>
         <p>
           You can reference it in the config file:
         </p>
         <figure>
-          <Code lang={'javascript'}>{`import Document from './Document';
+          <CodeHighlight lang={'javascript'}>{`import Document from './Document';
 
-export default { Document };`}</Code>
+export default { Document };`}</CodeHighlight>
         </figure>
       </section>
 
@@ -106,7 +106,7 @@ export default { Document };`}</Code>
           </p>
         </hgroup>
         <figure>
-          <Code lang={'javascript'}>{`function Greeting() { 
+          <CodeHighlight lang={'javascript'}>{`function Greeting() { 
   return <p>Today is a fine day!</p>
 }
 
@@ -115,7 +115,7 @@ export default function Page() {
     <h1>Hello, world!</h1>
     <Greeting/>
   </>
-}`}</Code>
+}`}</CodeHighlight>
         </figure>
       </section>
 
@@ -127,21 +127,21 @@ export default function Page() {
           </p>
         </hgroup>
         <figure>
-          <Code lang={'javascript'}>{`export default function Page(props) {
+          <CodeHighlight lang={'javascript'}>{`export default function Page(props) {
   return <>
     <h1>Hello, {props.name}!</h1>
     <Greeting/>
   </>
-}`}</Code>
+}`}</CodeHighlight>
         </figure>
         <p>
           ... and pass them to the rendering function.
         </p>
         <figure>
-          <Code lang={'javascript'}>{`app.get('/', (req, res) => {
+          <CodeHighlight lang={'javascript'}>{`app.get('/', (req, res) => {
   const name = req.query['name'];
   return res.status(200).send(react.render(Page, { name }));
-});`}</Code>
+});`}</CodeHighlight>
         </figure>
       </section>
 
@@ -153,7 +153,7 @@ export default function Page() {
           </p>
         </hgroup>
         <figure>
-          <Code lang={'javascript'}>{`function Button () {
+          <CodeHighlight lang={'javascript'}>{`function Button () {
   const [clicks, setClicks] = useState(0);
 
   return <p>
@@ -169,7 +169,7 @@ export default function Page(props) {
     <Greeting/>
     <Button/>
   </>
-}`}</Code>
+}`}</CodeHighlight>
         </figure>
       </section>
 

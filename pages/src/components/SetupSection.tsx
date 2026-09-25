@@ -3,7 +3,7 @@ import { useState } from "react";
 import SettingsIcon from "./SettingsIcon";
 import { useRoute } from "../common/useRoute";
 import { RouteMaster } from "../common/routes";
-import Code from "./Code";
+import CodeHighlight from "./CodeHighlight";
 
 type TEnvironment = 'ts' | 'js-esm' | 'js-cjs';
 
@@ -15,7 +15,7 @@ function TypescriptSetup() {
       First, install the latest versions of <a href={RouteMaster.home(route)}>react-srv</a> and <a href={REACT_URL} target="_blank">React</a>.
     </p>
     <figure>
-      <Code lang={'bash'}>{`npm i react-srv
+      <CodeHighlight lang={'bash'}>{`npm i react-srv
     
 # install react & react-dom
 npm i react@19.2.0
@@ -23,19 +23,19 @@ npm i react-dom@19.2.0
 
 # optionally install the associated types
 npm i @types/react@19.2.0 --save-dev
-npm i @types/react-dom@19.2.0 --save-dev`}</Code>
+npm i @types/react-dom@19.2.0 --save-dev`}</CodeHighlight>
     </figure>
     <p>
       Then, to make sure React is defined correctly at runtime, add the following entries to your <code>tsconfig.json</code> file.
     </p>
     <figure>
-      <Code lang={'json'}>{`{
+      <CodeHighlight lang={'json'}>{`{
   "compilerOptions: {
     ...
     "jsx": "react-jsx",
     "jsxImportSource": "react"
   }
-}`}</Code>
+}`}</CodeHighlight>
     </figure>
     <article className="success">
       <p role="group">
@@ -57,32 +57,32 @@ function JSESMSetup() {
       First, install the latest versions of <a href={RouteMaster.home(route)}>react-srv</a>, <a href={REACT_URL} target="_blank">React</a> and <a href={TSX_URL} target="_blank">tsx</a>.
     </p>
     <figure>
-      <Code lang={'bash'}>{`npm i react-srv
+      <CodeHighlight lang={'bash'}>{`npm i react-srv
     
 # install react & react-dom
 npm i react@19.2.0
 npm i react-dom@19.2.0
 
 # install tsx as a dev dependency
-npm i tsx --save-dev`}</Code>
+npm i tsx --save-dev`}</CodeHighlight>
     </figure>
     <p>
       Then, to make sure React is defined correctly at runtime, you'll need to add a <code>tsconfig.json</code> file.
     </p>
     <figure>
-      <Code lang={'json'}>{`{
+      <CodeHighlight lang={'json'}>{`{
   "compilerOptions": {
     "jsx": "react-jsx",
     "jsxImportSource": "react", // optional
     "allowJs": true
   }
-}`}</Code>
+}`}</CodeHighlight>
     </figure>
     <p>
       Finally, you'll need to run your app with <code>tsx</code> so you avoid the <code className="error">Unknown file extension ".jsx"</code> error.
     </p>
     <figure>
-      <Code lang={'bash'}>{`tsx src/server.js`}</Code>
+      <CodeHighlight lang={'bash'}>{`tsx src/server.js`}</CodeHighlight>
     </figure>
     <article className="success">
       <p role="group">
@@ -104,7 +104,7 @@ function JSCJSSetup() {
       First, install the latest versions of <a href={RouteMaster.home(route)}>react-srv</a>, <a href={REACT_URL} target="_blank">React</a> and <a href={BABEL_URL} target="_blank">babel</a>.
     </p>
     <figure>
-      <Code lang={'bash'}>{`npm i react-srv
+      <CodeHighlight lang={'bash'}>{`npm i react-srv
     
 # install react & react-dom
 npm i react@19.2.0
@@ -113,30 +113,30 @@ npm i react-dom@19.2.0
 # install a few babel dependencies
 npm i @babel/preset-react --save-dev
 npm i @babel/register --save-dev
-npm i @babel/plugin-transform-modules-commonjs --save-dev`}</Code>
+npm i @babel/plugin-transform-modules-commonjs --save-dev`}</CodeHighlight>
     </figure>
     <p>
       Then, add a <code>.babelrc</code> file where we'll setup the react preset so the server recognises JSX syntax and a plugin 
       for module resolution inside <code>.jsx</code> files.
     </p>
     <figure>
-      <Code lang={'json'}>{`{
+      <CodeHighlight lang={'json'}>{`{
   "presets": ["@babel/preset-react"],
   "plugins": ["@babel/plugin-transform-modules-commonjs"]
 }
-`}</Code>
+`}</CodeHighlight>
     </figure>
     <p>
       Then, in the same file where you setup <code>ReactSrv</code>, make sure you add the following line.
     </p>
     <figure>
-      <Code lang={'javascript'}>{`require('@babel/register')({ extensions: ['.js', '.jsx'] });`}</Code>
+      <CodeHighlight lang={'javascript'}>{`require('@babel/register')({ extensions: ['.js', '.jsx'] });`}</CodeHighlight>
     </figure>
     <p>
       This will allow other files to <code>require</code> files with the <code>.jsx</code> extension:
     </p>
     <figure>
-      <Code lang={'javascript'}>{`const Page = require('./pages/Page.jsx').default;`}</Code>
+      <CodeHighlight lang={'javascript'}>{`const Page = require('./pages/Page.jsx').default;`}</CodeHighlight>
     </figure>
     <article className="success">
       <p role="group">
