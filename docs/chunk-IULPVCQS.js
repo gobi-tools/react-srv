@@ -1,0 +1,1 @@
+import{a as r}from"./chunk-2SCBEDV4.js";import{a}from"./chunk-J4G74NCR.js";e.displayName="t4-vb";e.aliases=[];function e(t){t.register(a),t.register(r),t.languages["t4-vb"]=t.languages["t4-templating"].createT4("vbnet")}export{e as a};

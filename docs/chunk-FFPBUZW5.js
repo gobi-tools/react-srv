@@ -1,0 +1,1 @@
+import{a as t}from"./chunk-DWVGG35Z.js";import{a as e,b as r}from"./chunk-EJXGEMZ5.js";import{jsx as o,jsxs as n}from"https://esm.sh/react@19.2.0/jsx-runtime";function m(){let a=r();return o("nav",{children:o("ul",{children:o("li",{children:n("a",{href:e.home(a),children:[o(t,{}),o("span",{children:"Home"})]})})})})}export{m as a};

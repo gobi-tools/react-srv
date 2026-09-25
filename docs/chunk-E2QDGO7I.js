@@ -1,0 +1,1 @@
+import{a as c}from"./chunk-CP2ETEC5.js";a.displayName="cilkcpp";a.aliases=["cilk","cilk-cpp"];function a(p){p.register(c),p.languages.cilkcpp=p.languages.insertBefore("cpp","function",{"parallel-keyword":{pattern:/\bcilk_(?:for|reducer|s(?:cope|pawn|ync))\b/,alias:"keyword"}}),p.languages["cilk-cpp"]=p.languages.cilkcpp,p.languages.cilk=p.languages.cilkcpp}export{a};

@@ -1,0 +1,1 @@
+import{a as e}from"./chunk-5TBO732O.js";var l=e((t,a)=>{function s(n){return{name:"Julia REPL",contains:[{className:"meta",begin:/^julia>/,relevance:10,starts:{end:/^(?![ ]{6})/,subLanguage:"julia"},aliases:["jldoctest"]}]}}a.exports=s});export{l as a};

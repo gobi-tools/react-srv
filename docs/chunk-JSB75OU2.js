@@ -1,0 +1,1 @@
+import{a as u}from"./chunk-5TBO732O.js";var a=u((g,e)=>{function r(n){return{name:"ERB",subLanguage:"xml",contains:[n.COMMENT("<%#","%>"),{begin:"<%[%=-]?",end:"[%-]?%>",subLanguage:"ruby",excludeBegin:!0,excludeEnd:!0}]}}e.exports=r});export{a};

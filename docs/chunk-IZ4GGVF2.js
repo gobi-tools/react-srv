@@ -1,0 +1,1 @@
+import{a as e}from"./chunk-EXG26PRP.js";a.displayName="jsonp";a.aliases=[];function a(n){n.register(e),n.languages.jsonp=n.languages.extend("json",{punctuation:/[{}[\]();,.]/}),n.languages.insertBefore("jsonp","punctuation",{function:/(?!\s)[_$a-zA-Z\xA0-\uFFFF](?:(?!\s)[$\w\xA0-\uFFFF])*(?=\s*\()/})}export{a};

@@ -1,0 +1,1 @@
+import{jsx as t,jsxs as a}from"https://esm.sh/react@19.2.0/jsx-runtime";function o(){return t("p",{children:a("span",{children:["Lear more at\xA0",t("a",{href:"https://gobi-tools.github.io/react-srv/",target:"_blank",children:"https://gobi-tools.github.io/react-srv/"})]})})}export{o as a};
