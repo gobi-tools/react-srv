@@ -1,0 +1,1 @@
+import{a as t}from"./chunk-EI7MMDWY.js";import{jsx as o,jsxs as r}from"https://esm.sh/react@19.2.0/jsx-runtime";function a(){return o("p",{children:r("span",{children:["Lear more at\xA0",o("a",{href:"https://gobi-tools.github.io/react-srv/",target:"_blank",children:"https://gobi-tools.github.io/react-srv/"})]})})}t(a,"Info");export{a};

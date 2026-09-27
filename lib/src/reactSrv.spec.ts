@@ -251,6 +251,44 @@ describe("ReactSrv", () => {
         expect(readOutFile(hashedJs("Home.tsx"))).toContain("shared-module-marker-xyz");
         expect(readOutFile(hashedJs("About.tsx"))).toContain("shared-module-marker-xyz");
       });
+
+      it("preserves component function names when minifying, by default", () => {
+        // minification renames declarations, so user code that reflects on
+        // Function.prototype.name (e.g. deriving route slugs from components)
+        // breaks unless keepNames restores the original name at runtime —
+        // which is why keepNames defaults to true
+        fs.writeFileSync(
+          path.join(srcPath, "Home.tsx"),
+          `export default function PreservedNameMarkerComponent() {\n` +
+            `  return <div>used-content-marker</div>;\n` +
+            `}\n`,
+          "utf8"
+        );
+
+        // default: the original name survives minification
+        const defaultSrv = new ReactSrv({ srcPath, outPath, minify: true });
+        defaultSrv.prebundle();
+        expect(readOutFile(hashedJs("Home.tsx"))).toContain("PreservedNameMarkerComponent");
+
+        // explicit opt-out: the name is mangled away
+        const optOutSrv = new ReactSrv({ srcPath, outPath, minify: true, keepNames: false });
+        optOutSrv.prebundle();
+        expect(readOutFile(hashedJs("Home.tsx"))).not.toContain("PreservedNameMarkerComponent");
+      });
+
+      it("does not inject the keepNames helper into unminified bundles", () => {
+        // keepNames is only meaningful under minification; when minify is off
+        // esbuild would still emit a __name helper that can never do anything,
+        // so the option must not apply to unminified output
+        fs.writeFileSync(
+          path.join(srcPath, "Home.tsx"),
+          `export default function Home() {\n  return <div>used-content-marker</div>;\n}\n`,
+          "utf8"
+        );
+        const srv = new ReactSrv({ srcPath, outPath });
+        srv.prebundle();
+        expect(readOutFile(hashedJs("Home.tsx"))).not.toContain("__name");
+      });
     });
   });
 
