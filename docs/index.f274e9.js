@@ -35263,7 +35263,7 @@ var require_lowlight = __commonJS({
   }
 });
 
-// ../../../../../tmp/react-srv/1026264/wrappers/index.f274e9.js
+// ../../../../../tmp/react-srv/1043135/wrappers/index.f274e9.js
 import React3 from "https://esm.sh/react@19.2.0";
 import { hydrateRoot } from "https://esm.sh/react-dom@19.2.0/client";
 
@@ -35367,6 +35367,7 @@ function useRoute() {
       const path = window.location.pathname;
       const baseRoute = path.includes(PUB_SUBDOMAIN) ? PUB_SUBDOMAIN : "";
       setRoute(baseRoute);
+      console.log("Test", "setting route to", baseRoute);
     }
   }, []);
   return route;
@@ -36511,6 +36512,7 @@ function SetupSection() {
 import { Fragment as Fragment2, jsx as jsx5, jsxs as jsxs4 } from "https://esm.sh/react@19.2.0/jsx-runtime";
 function Index() {
   const route = useRoute();
+  console.log("Test", "current route is", route);
   return /* @__PURE__ */ jsxs4(Fragment2, { children: [
     /* @__PURE__ */ jsx5("header", { children: /* @__PURE__ */ jsxs4("div", { className: "align-center", children: [
       /* @__PURE__ */ jsxs4("hgroup", { children: [
@@ -36689,7 +36691,7 @@ export default function Page(props) {
   ] });
 }
 
-// ../../../../../tmp/react-srv/1026264/wrappers/index.f274e9.js
+// ../../../../../tmp/react-srv/1043135/wrappers/index.f274e9.js
 var root = document.getElementById("root");
 if (!root) {
   throw new Error("react-srv: Could not find hydration root.");

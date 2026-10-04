@@ -35263,7 +35263,7 @@ var require_lowlight = __commonJS({
   }
 });
 
-// ../../../../../tmp/react-srv/1026264/wrappers/components/setup_section.69d08a.js
+// ../../../../../tmp/react-srv/1043135/wrappers/components/setup_section.69d08a.js
 import React3 from "https://esm.sh/react@19.2.0";
 import { hydrateRoot } from "https://esm.sh/react-dom@19.2.0/client";
 
@@ -35311,6 +35311,7 @@ function useRoute() {
       const path = window.location.pathname;
       const baseRoute = path.includes(PUB_SUBDOMAIN) ? PUB_SUBDOMAIN : "";
       setRoute(baseRoute);
+      console.log("Test", "setting route to", baseRoute);
     }
   }, []);
   return route;
@@ -36445,7 +36446,7 @@ function SetupSection() {
   ] });
 }
 
-// ../../../../../tmp/react-srv/1026264/wrappers/components/setup_section.69d08a.js
+// ../../../../../tmp/react-srv/1043135/wrappers/components/setup_section.69d08a.js
 var root = document.getElementById("root");
 if (!root) {
   throw new Error("react-srv: Could not find hydration root.");

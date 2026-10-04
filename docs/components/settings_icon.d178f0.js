@@ -1,4 +1,4 @@
-// ../../../../../tmp/react-srv/1026264/wrappers/components/settings_icon.d178f0.js
+// ../../../../../tmp/react-srv/1043135/wrappers/components/settings_icon.d178f0.js
 import React from "https://esm.sh/react@19.2.0";
 import { hydrateRoot } from "https://esm.sh/react-dom@19.2.0/client";
 
@@ -25,7 +25,7 @@ function SettingsIcon() {
   );
 }
 
-// ../../../../../tmp/react-srv/1026264/wrappers/components/settings_icon.d178f0.js
+// ../../../../../tmp/react-srv/1043135/wrappers/components/settings_icon.d178f0.js
 var root = document.getElementById("root");
 if (!root) {
   throw new Error("react-srv: Could not find hydration root.");

@@ -35263,7 +35263,7 @@ var require_lowlight = __commonJS({
   }
 });
 
-// ../../../../../tmp/react-srv/1026264/wrappers/components/code_highlight.f8f815.js
+// ../../../../../tmp/react-srv/1043135/wrappers/components/code_highlight.f8f815.js
 import React3 from "https://esm.sh/react@19.2.0";
 import { hydrateRoot } from "https://esm.sh/react-dom@19.2.0/client";
 
@@ -36188,7 +36188,7 @@ function CodeHighlight(props) {
   return /* @__PURE__ */ jsx(default_highlight_default, { language: props.lang, style: isDark ? atom_one_dark_default : docco_default, children: props.children });
 }
 
-// ../../../../../tmp/react-srv/1026264/wrappers/components/code_highlight.f8f815.js
+// ../../../../../tmp/react-srv/1043135/wrappers/components/code_highlight.f8f815.js
 var root = document.getElementById("root");
 if (!root) {
   throw new Error("react-srv: Could not find hydration root.");
