@@ -1,1 +1,0 @@
-import{a as o}from"./chunk-7OBQS7ON.js";import{a as e}from"./chunk-3SPXEKH7.js";a.displayName="jsonp";a.aliases=[];function a(n){n.register(o),n.languages.jsonp=n.languages.extend("json",{punctuation:/[{}[\]();,.]/}),n.languages.insertBefore("jsonp","punctuation",{function:/(?!\s)[_$a-zA-Z\xA0-\uFFFF](?:(?!\s)[$\w\xA0-\uFFFF])*(?=\s*\()/})}e(a,"jsonp");export{a};

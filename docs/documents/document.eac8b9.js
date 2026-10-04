@@ -1,1 +1,32 @@
-import{a as o}from"../chunk-3SPXEKH7.js";import m from"https://esm.sh/react@19.2.0";import{hydrateRoot as l}from"https://esm.sh/react-dom@19.2.0/client";import{jsx as t,jsxs as a}from"https://esm.sh/react@19.2.0/jsx-runtime";function e({title:n,children:i}){return a("html",{lang:"en",children:[a("head",{children:[t("meta",{charSet:"UTF-8"}),t("title",{children:n}),t("meta",{name:"description",content:"React Srv Official Page"}),t("meta",{name:"author",content:"Gabriel Coman"}),t("meta",{name:"viewport",content:"width=device-width, initial-scale=1.0"}),t("meta",{name:"color-scheme",content:"light dark"}),t("link",{rel:"stylesheet",href:"https://cdn.jsdelivr.net/gh/gobi-tools/css-theme@refs/heads/main/dist/theme.app.min.css"})]}),t("body",{children:i})]})}o(e,"Document");var r=document.getElementById("root");if(!r)throw new Error("react-srv: Could not find hydration root.");globalThis.__REACT_SRV_HYDRATED__||(globalThis.__REACT_SRV_HYDRATED__=!0,l(r,m.createElement(e,globalThis.__INITIAL_PROPS__||{})));
+import "../chunk-U67V476Y.js";
+
+// ../../../../../tmp/react-srv/1015348/wrappers/documents/document.eac8b9.js
+import React from "https://esm.sh/react@19.2.0";
+import { hydrateRoot } from "https://esm.sh/react-dom@19.2.0/client";
+
+// src/documents/Document.tsx
+import { jsx, jsxs } from "https://esm.sh/react@19.2.0/jsx-runtime";
+function Document({ title, children }) {
+  return /* @__PURE__ */ jsxs("html", { lang: "en", children: [
+    /* @__PURE__ */ jsxs("head", { children: [
+      /* @__PURE__ */ jsx("meta", { charSet: "UTF-8" }),
+      /* @__PURE__ */ jsx("title", { children: title }),
+      /* @__PURE__ */ jsx("meta", { name: "description", content: "React Srv Official Page" }),
+      /* @__PURE__ */ jsx("meta", { name: "author", content: "Gabriel Coman" }),
+      /* @__PURE__ */ jsx("meta", { name: "viewport", content: "width=device-width, initial-scale=1.0" }),
+      /* @__PURE__ */ jsx("meta", { name: "color-scheme", content: "light dark" }),
+      /* @__PURE__ */ jsx("link", { rel: "stylesheet", href: "https://cdn.jsdelivr.net/gh/gobi-tools/css-theme@refs/heads/main/dist/theme.app.min.css" })
+    ] }),
+    /* @__PURE__ */ jsx("body", { children })
+  ] });
+}
+
+// ../../../../../tmp/react-srv/1015348/wrappers/documents/document.eac8b9.js
+var root = document.getElementById("root");
+if (!root) {
+  throw new Error("react-srv: Could not find hydration root.");
+}
+if (!globalThis.__REACT_SRV_HYDRATED__) {
+  globalThis.__REACT_SRV_HYDRATED__ = true;
+  hydrateRoot(root, React.createElement(Document, globalThis.__INITIAL_PROPS__ || {}));
+}
