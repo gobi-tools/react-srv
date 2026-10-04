@@ -1,0 +1,1 @@
+import{a as e,b as s}from"./chunk-3SPXEKH7.js";var r=s((u,n)=>{function a(t){return{name:"Clojure REPL",contains:[{className:"meta",begin:/^([\w.-]+|\s*#_)?=>/,starts:{end:/$/,subLanguage:"clojure"}}]}}e(a,"clojureRepl");n.exports=a});export{r as a};
