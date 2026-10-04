@@ -9,8 +9,6 @@ import { PRODUCT_NAME, REACT_COMPONENTS_URL, REACT_HOOKS_URL, REACT_PROPS_URL, S
 export default function Index() {
   const route = useRoute();
 
-  console.log('Test', 'current route is', route);
-
   return <>
     <header>
       <div className="align-center">
