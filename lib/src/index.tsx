@@ -130,9 +130,8 @@ export default class ReactSrv {
         write: false,
       });
  
-      const reachable = result.metafile
-        ? FileUtils.reachableOutputs(result.metafile, files.map((file) => path.join(file.writePath, file.name.js)))
-        : null;
+      const entries = files.map((file) => path.join(file.writePath, file.name.js));
+      const reachable = result.metafile ? FileUtils.reachableOutputs(result.metafile, entries): null;
       let skipped = 0;
 
       for (const outputFile of result.outputFiles) {
