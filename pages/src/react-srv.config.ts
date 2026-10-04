@@ -6,4 +6,6 @@ export default {
   srcPath: './src',
   outPath: '../docs',
   minify: false,
+  splitting: false,
+  keepNames: true,
 };

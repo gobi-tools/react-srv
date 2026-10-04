@@ -1,5 +1,3 @@
-import { PUB_SUBDOMAIN } from "../constants";
-
 export default function Document({ title, children }) {
   return (
     <html lang="en">
