@@ -252,6 +252,43 @@ describe("ReactSrv", () => {
         expect(readOutFile(hashedJs("About.tsx"))).toContain("shared-module-marker-xyz");
       });
 
+      it("does not write chunks that no entry imports (issue: unreferenced dynamic import targets)", () => {
+        // a package whose entry re-exports an async variant: the re-export is
+        // unused and gets tree-shaken, but esbuild still emits a chunk for the
+        // variant's dynamic import() target — referenced by nothing
+        const pkgDir = path.join(tmpRoot, "node_modules", "fake-hljs");
+        fs.mkdirSync(pkgDir, { recursive: true });
+        fs.writeFileSync(
+          path.join(pkgDir, "package.json"),
+          JSON.stringify({ name: "fake-hljs", version: "1.0.0", main: "index.js", sideEffects: false }),
+          "utf8"
+        );
+        fs.writeFileSync(path.join(pkgDir, "index.js"), `export { default as Async } from "./async.js";\nexport { default } from "./sync.js";\n`, "utf8");
+        fs.writeFileSync(path.join(pkgDir, "sync.js"), `export default "SYNC-MARKER";\n`, "utf8");
+        fs.writeFileSync(path.join(pkgDir, "async.js"), `export default function Async(lang) {\n  return import("./lang.js");\n}\n`, "utf8");
+        fs.writeFileSync(path.join(pkgDir, "lang.js"), `export default "LANG-MARKER";\n`, "utf8");
+        fs.writeFileSync(
+          path.join(srcPath, "Home.tsx"),
+          `import HL from "fake-hljs";\nexport default function Home() {\n  return <div>{String(HL)}</div>;\n}\n`,
+          "utf8"
+        );
+
+        const logSpy = vi.spyOn(console, "log");
+        const srv = new ReactSrv({ srcPath, outPath });
+        srv.prebundle();
+
+        // the code the entry actually uses ships as usual
+        expect(readOutFile(hashedJs("Home.tsx"))).toContain("SYNC-MARKER");
+
+        // the dead dynamic import() target is skipped instead of written
+        const chunks = readOutFiles().filter((f) => path.basename(f).startsWith("chunk-"));
+        expect(chunks).toEqual([]);
+        expect(readOutFiles().some((f) => readOutFile(f).includes("LANG-MARKER"))).toBe(false);
+        expect(
+          logSpy.mock.calls.some(([msg]) => typeof msg === "string" && /Skipped \d+ unreferenced chunk/.test(msg))
+        ).toBe(true);
+      });
+
       it("preserves component function names when minifying, by default", () => {
         // minification renames declarations, so user code that reflects on
         // Function.prototype.name (e.g. deriving route slugs from components)
@@ -722,5 +759,43 @@ describe("ReactSrv", () => {
         expect(html).toContain("HOME-CONTENT");
       });
     });
+  });
+});
+
+describe("FileUtils.reachableOutputs", () => {
+  it("returns null when none of the expected entry outputs are in the metafile", () => {
+    // without a known root there is nothing to compute reachability from, so
+    // pruning must fall back to writing everything instead of pruning it all
+    const metafile = {
+      outputs: {
+        "chunk-a.js": { entryPoint: "node_modules/pkg/lang.js", imports: [], bytes: 0 },
+      },
+    } as any;
+    expect(FileUtils.reachableOutputs(metafile, ["/tmp/wrappers/Home.js"])).toBeNull();
+  });
+
+  it("follows the import graph from the build's entries and ignores externals", () => {
+    const entry = path.join(os.tmpdir(), "react-srv-wrapper.js");
+    const metafile = {
+      outputs: {
+        [entry]: {
+          entryPoint: entry,
+          imports: [
+            { path: "chunk-live.js", kind: "import-statement" },
+            { path: "https://esm.sh/react@19.2.0", kind: "import-statement", external: true },
+          ],
+        },
+        "chunk-live.js": { imports: [{ path: "chunk-deep.js", kind: "import-statement" }] },
+        "chunk-deep.js": { imports: [] },
+        "chunk-dead.js": { entryPoint: "node_modules/pkg/lang.js", imports: [] },
+      },
+    } as any;
+
+    const reachable = FileUtils.reachableOutputs(metafile, [entry])!;
+    expect(reachable.has(path.resolve(entry))).toBe(true);
+    expect(reachable.has(path.resolve("chunk-live.js"))).toBe(true);
+    expect(reachable.has(path.resolve("chunk-deep.js"))).toBe(true);
+    // only reachable from a dynamic target nobody imports anymore
+    expect(reachable.has(path.resolve("chunk-dead.js"))).toBe(false);
   });
 });

@@ -118,6 +118,9 @@ export default class ReactSrv {
 
       const result = esbuild.buildSync({
         ...this.browserBuildOptions(),
+        // pin working dir so metafile relative paths are resolved
+        absWorkingDir: process.cwd(),
+        metafile: true,
         entryPoints,
         outbase: wrapperRoot,
         outdir: this.config.outPath,
@@ -126,11 +129,25 @@ export default class ReactSrv {
         splitting: this.config.splitting !== false,
         write: false,
       });
+ 
+      const reachable = result.metafile
+        ? FileUtils.reachableOutputs(result.metafile, files.map((file) => path.join(file.writePath, file.name.js)))
+        : null;
+      let skipped = 0;
 
       for (const outputFile of result.outputFiles) {
+        const isChunk = path.basename(outputFile.path).startsWith("chunk-");
+        if (reachable !== null && isChunk && !reachable.has(path.resolve(outputFile.path))) {
+          skipped += 1;
+          continue;
+        }
         fs.mkdirSync(path.dirname(outputFile.path), { recursive: true });
         fs.writeFileSync(outputFile.path, outputFile.text, "utf8");
         console.log('✅ Wrote', path.relative(process.cwd(), outputFile.path));
+      }
+
+      if (skipped > 0) {
+        console.log(`🗑  Skipped ${skipped} unreferenced chunk(s)`);
       }
     } finally {
       fs.rmSync(wrapperRoot, { recursive: true, force: true });
@@ -389,6 +406,53 @@ export class FileUtils {
       .update(relPath.split(path.sep).join("/"))
       .digest("hex")
       .slice(0, 6);
+  }
+
+  /**
+   * Absolute paths of every output file reachable from this build's own
+   * entries, following the metafile's import graph. `entryOutputs` are the
+   * exact output paths the entries are expected to produce. Returns null when
+   * none of them produced an output, so callers fall back to writing
+   * everything instead of pruning it all.
+   *
+   * NOTE: esbuild tags dynamic import() targets with an `entryPoint` of their
+   * own — even when the import() that referenced them has been tree-shaken
+   * away — and the string form of those fields has proven unreliable across
+   * path shapes, so roots are passed in by the caller instead of inferred.
+   */
+  static reachableOutputs(metafile: esbuild.Metafile, entryOutputs: string[]): Set<string> | null {
+    const outputs = metafile.outputs;
+    const roots = new Set(entryOutputs.map((entry) => path.resolve(entry)));
+    const reachable = new Set<string>();
+    const queue: string[] = [];
+
+    for (const file of Object.keys(outputs)) {
+      if (roots.has(path.resolve(file))) {
+        reachable.add(file);
+        queue.push(file);
+      }
+    }
+
+    if (queue.length === 0) {
+      return null;
+    }
+
+    while (queue.length > 0) {
+      const current = queue.pop()!;
+      // external imports (e.g. CDN URLs) are referenced but have no output
+      const node = outputs[current];
+      if (!node) {
+        continue;
+      }
+      for (const imported of node.imports ?? []) {
+        if (!reachable.has(imported.path)) {
+          reachable.add(imported.path);
+          queue.push(imported.path);
+        }
+      }
+    }
+
+    return new Set([...reachable].map((file) => path.resolve(file)));
   }
 
   static formOutputFiles(srcPath: string, outPath: string, flatten: boolean = false): TOutputFile[] {
