@@ -110,9 +110,9 @@ describe("ReactSrv", () => {
         const srv = new ReactSrv({ srcPath, outPath });
         srv.prebundle();
         const code = readOutFile(hashedJs("Home.tsx"));
-        expect(code).toContain('from "https://esm.sh/react@19.2.0"');
-        expect(code).toContain('from "https://esm.sh/react-dom@19.2.0/client"');
-        expect(code).toContain('from "https://esm.sh/react@19.2.0/jsx-runtime"');
+        expect(code).toContain('from "https://esm.sh/react@latest"');
+        expect(code).toContain('from "https://esm.sh/react-dom@latest/client"');
+        expect(code).toContain('from "https://esm.sh/react@latest/jsx-runtime"');
         expect(code).not.toContain('from "react"');
         expect(code).not.toContain('from "react-dom/client"');
         expect(code).not.toContain('from "react/jsx-runtime"');
@@ -132,7 +132,7 @@ describe("ReactSrv", () => {
         // no bare package specifier may survive into the browser bundle:
         expect(code).not.toMatch(/["']react(-dom)?(["'/])/);
         // and bare react-dom must point at esm.sh like everything else:
-        expect(code).toContain('from "https://esm.sh/react-dom@19.2.0"');
+        expect(code).toContain('from "https://esm.sh/react-dom@latest"');
       });
 
       it("bundles straight from the scanned source path, without a name re-lookup (issue #7)", () => {
@@ -658,7 +658,7 @@ describe("ReactSrv", () => {
         expect(html).toContain('type="module"');
         expect(html).toContain("hydrateRoot(");
         expect(html).toContain("__REACT_SRV_HYDRATED__");
-        expect(html).toContain("https://esm.sh/react@19.2.0");
+        expect(html).toContain("https://esm.sh/react@latest");
       });
 
       it("throws a clear error when the component has no source file", () => {
@@ -782,7 +782,7 @@ describe("FileUtils.reachableOutputs", () => {
           entryPoint: entry,
           imports: [
             { path: "chunk-live.js", kind: "import-statement" },
-            { path: "https://esm.sh/react@19.2.0", kind: "import-statement", external: true },
+            { path: "https://esm.sh/react@latest", kind: "import-statement", external: true },
           ],
         },
         "chunk-live.js": { imports: [{ path: "chunk-deep.js", kind: "import-statement" }] },

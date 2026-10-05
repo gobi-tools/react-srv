@@ -1,6 +1,6 @@
 {
   "name": "react-srv",
-  "version": "0.0.70",
+  "version": "0.0.73",
   "description": "Lightweight JSX renderer for Node",
   "scripts": {
     "build": "tsc",

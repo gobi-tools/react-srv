@@ -1,6 +1,7 @@
 const PAGE_HOME_URL = 'index.html';
 const PAGE_PRODUCTION_URL = 'pages/production.html';
 const PAGE_STATIC_URL = 'pages/static.html';
+const PAGE_VERSIONS_URL = 'pages/versions.html';
 const PAGE_DEMO_URL = 'pages/demo.html';
 
 export class RouteMaster {
@@ -19,6 +20,11 @@ export class RouteMaster {
   static stat(domain: string): string {
     const base = RouteMaster.getBase(domain);
     return `${base}${PAGE_STATIC_URL}`;
+  }
+
+  static versions(domain: string): string {
+    const base = RouteMaster.getBase(domain);
+    return `${base}${PAGE_VERSIONS_URL}`;
   }
 
   static demo(domain: string): string {

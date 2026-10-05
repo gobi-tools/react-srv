@@ -199,6 +199,17 @@ export default function Page(props) {
             <a href={RouteMaster.stat(route)}>Learn more</a>
           </p>
         </article>
+        <article>
+          <p>
+            <b>React Support</b>
+          </p>
+          <p>
+            Check version support and more advanced Reavt setup.
+          </p>
+          <p>
+            <a href={RouteMaster.versions(route)}>Learn more</a>
+          </p>
+        </article>
       </section>
     </main>
   </>

@@ -10,6 +10,7 @@
 </span><span>  </span><span class="hljs-attr">outPath</span><span>: </span><span style="color:#219161">&#x27;./public/hydrate&#x27;</span><span>, </span><span style="color:#408080;font-style:italic">// default</span><span>
 </span><span>  </span><span class="hljs-attr">isProd</span><span>: process.env.NODE_ENV === </span><span style="color:#219161">&#x27;production&#x27;</span><span>, </span><span style="color:#408080;font-style:italic">// serve inline or precompiled code</span><span>
 </span><span>  </span><span class="hljs-attr">minify</span><span>: </span><span style="color:#954121">true</span><span>, </span><span style="color:#408080;font-style:italic">// minify JS or not</span><span>
+</span><span>  </span><span class="hljs-attr">splitting</span><span>: </span><span style="color:#954121">true</span><span>, </span><span style="color:#408080;font-style:italic">// split large JS files into small ones that can be reused and cached</span><span>
 </span>}</code></pre></figure><p>You can reference the config file in the <code>bundle</code> command in <code>package.json</code></p><figure><pre style="display:block;overflow-x:auto;padding:0.5em;color:#000;background:#f8f8ff"><code class="language-json" style="white-space:pre"><span>...
 </span><span></span><span style="color:#219161">&quot;scripts&quot;</span><span>: {
 </span><span>  </span><span class="hljs-attr">&quot;build&quot;</span><span>: </span><span style="color:#219161">&quot;react-srv bundle -f src/react-srv.config.ts &amp;&amp; ... other build steps&quot;</span><span>,

@@ -12,18 +12,10 @@ function TypescriptSetup() {
 
   return <>
     <p>
-      First, install the latest versions of <a href={RouteMaster.home(route)}>react-srv</a> and <a href={REACT_URL} target="_blank">React</a>.
+      First, install the latest versions of <a href={RouteMaster.home(route)}>react-srv</a>.
     </p>
     <figure>
-      <CodeHighlight lang={'bash'}>{`npm i react-srv
-    
-# install react & react-dom
-npm i react@19.2.0
-npm i react-dom@19.2.0
-
-# optionally install the associated types
-npm i @types/react@19.2.0 --save-dev
-npm i @types/react-dom@19.2.0 --save-dev`}</CodeHighlight>
+      <CodeHighlight lang={'bash'}>{`npm i react-srv`}</CodeHighlight>
     </figure>
     <p>
       Then, to make sure React is defined correctly at runtime, add the following entries to your <code>tsconfig.json</code> file.
@@ -54,14 +46,10 @@ function JSESMSetup() {
 
   return <>
     <p>
-      First, install the latest versions of <a href={RouteMaster.home(route)}>react-srv</a>, <a href={REACT_URL} target="_blank">React</a> and <a href={TSX_URL} target="_blank">tsx</a>.
+      First, install the latest versions of <a href={RouteMaster.home(route)}>react-srv</a> and <a href={TSX_URL} target="_blank">tsx</a>.
     </p>
     <figure>
       <CodeHighlight lang={'bash'}>{`npm i react-srv
-    
-# install react & react-dom
-npm i react@19.2.0
-npm i react-dom@19.2.0
 
 # install tsx as a dev dependency
 npm i tsx --save-dev`}</CodeHighlight>
@@ -101,14 +89,10 @@ function JSCJSSetup() {
 
   return <>
     <p>
-      First, install the latest versions of <a href={RouteMaster.home(route)}>react-srv</a>, <a href={REACT_URL} target="_blank">React</a> and <a href={BABEL_URL} target="_blank">babel</a>.
+      First, install the latest versions of <a href={RouteMaster.home(route)}>react-srv</a> and <a href={BABEL_URL} target="_blank">babel</a>.
     </p>
     <figure>
       <CodeHighlight lang={'bash'}>{`npm i react-srv
-    
-# install react & react-dom
-npm i react@19.2.0
-npm i react-dom@19.2.0
 
 # install a few babel dependencies
 npm i @babel/preset-react --save-dev

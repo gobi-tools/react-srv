@@ -39,7 +39,7 @@ export function DefaultDocument({ children }) {
 };
 
 export const DefaultReactSrvConfig: TReactSrvConfig = {
-  reactVersion: '19.2.0',
+  reactVersion: 'latest',
   reactLocation: 'https://esm.sh',
   srcPath: './src',
   outPath: './public/hydrate',

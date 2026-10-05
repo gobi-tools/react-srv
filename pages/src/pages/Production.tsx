@@ -54,6 +54,7 @@ export default function Production() {
   outPath: './public/hydrate', // default
   isProd: process.env.NODE_ENV === 'production', // serve inline or precompiled code
   minify: true, // minify JS or not
+  splitting: true, // split large JS files into small ones that can be reused and cached
 }`}</CodeHighlight>
         </figure>
         <p>
