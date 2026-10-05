@@ -204,7 +204,7 @@ export default function Page(props) {
             <b>React Support</b>
           </p>
           <p>
-            Check version support and more advanced Reavt setup.
+            Check version support and more advanced React setup.
           </p>
           <p>
             <a href={RouteMaster.versions(route)}>Learn more</a>

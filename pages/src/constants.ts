@@ -16,6 +16,7 @@ export const TSX_URL = 'https://github.com/privatenumber/tsx';
 export const BABEL_URL = 'https://babeljs.io/';
 export const ESM_URL = 'https://esm.sh/';
 export const NGINX_URL = 'https://nginx.org/';
+export const NODE_NPM_PEER_DEPS = 'https://nodejs.org/en/blog/npm/peer-dependencies';
 
 export const DEMO_TS_URL = 'https://github.com/gobi-tools/react-srv/tree/main/demos/ts';
 export const DEMO_JS_ESM_URL = 'https://github.com/gobi-tools/react-srv/tree/main/demos/js-esm';

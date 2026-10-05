@@ -1,10 +1,18 @@
 import fs from "fs";
 import os from "os";
 import path from "path";
+import { createRequire } from "module";
 import { fileURLToPath } from "url";
 import React from "react";
 import { afterAll, afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import ReactSrv, { FileUtils } from "./index.js";
+import ReactSrv, { DefaultReactSrvConfig, FileUtils } from "./index.js";
+
+// The React version actually installed for this package. Builds must emit CDN
+// URLs pinned to *this* version, which is what keeps the markup the server
+// rendered and the markup the browser hydrates on the same React build.
+const installedReactVersion: string = JSON.parse(
+  fs.readFileSync(createRequire(import.meta.url).resolve("react/package.json"), "utf8")
+).version;
 
 describe("ReactSrv", () => {
   // js/mjs outputs are `<normalised-name>.<6-hex hash of source path>.js`
@@ -105,14 +113,14 @@ describe("ReactSrv", () => {
         expect(code).toContain("__REACT_SRV_HYDRATED__");
       });
 
-      it("rewrites bare react imports to esm.sh URLs", () => {
+      it("rewrites bare react imports to esm.sh URLs pinned to the installed React", () => {
         writeComponent("Home.tsx");
         const srv = new ReactSrv({ srcPath, outPath });
         srv.prebundle();
         const code = readOutFile(hashedJs("Home.tsx"));
-        expect(code).toContain('from "https://esm.sh/react@latest"');
-        expect(code).toContain('from "https://esm.sh/react-dom@latest/client"');
-        expect(code).toContain('from "https://esm.sh/react@latest/jsx-runtime"');
+        expect(code).toContain(`from "https://esm.sh/react@${installedReactVersion}"`);
+        expect(code).toContain(`from "https://esm.sh/react-dom@${installedReactVersion}/client"`);
+        expect(code).toContain(`from "https://esm.sh/react@${installedReactVersion}/jsx-runtime"`);
         expect(code).not.toContain('from "react"');
         expect(code).not.toContain('from "react-dom/client"');
         expect(code).not.toContain('from "react/jsx-runtime"');
@@ -132,7 +140,7 @@ describe("ReactSrv", () => {
         // no bare package specifier may survive into the browser bundle:
         expect(code).not.toMatch(/["']react(-dom)?(["'/])/);
         // and bare react-dom must point at esm.sh like everything else:
-        expect(code).toContain('from "https://esm.sh/react-dom@latest"');
+        expect(code).toContain(`from "https://esm.sh/react-dom@${installedReactVersion}"`);
       });
 
       it("bundles straight from the scanned source path, without a name re-lookup (issue #7)", () => {
@@ -658,7 +666,7 @@ describe("ReactSrv", () => {
         expect(html).toContain('type="module"');
         expect(html).toContain("hydrateRoot(");
         expect(html).toContain("__REACT_SRV_HYDRATED__");
-        expect(html).toContain("https://esm.sh/react@latest");
+        expect(html).toContain(`https://esm.sh/react@${installedReactVersion}`);
       });
 
       it("throws a clear error when the component has no source file", () => {
@@ -782,7 +790,7 @@ describe("FileUtils.reachableOutputs", () => {
           entryPoint: entry,
           imports: [
             { path: "chunk-live.js", kind: "import-statement" },
-            { path: "https://esm.sh/react@latest", kind: "import-statement", external: true },
+            { path: "https://esm.sh/react@19.3.0", kind: "import-statement", external: true },
           ],
         },
         "chunk-live.js": { imports: [{ path: "chunk-deep.js", kind: "import-statement" }] },
@@ -797,5 +805,23 @@ describe("FileUtils.reachableOutputs", () => {
     expect(reachable.has(path.resolve("chunk-deep.js"))).toBe(true);
     // only reachable from a dynamic target nobody imports anymore
     expect(reachable.has(path.resolve("chunk-dead.js"))).toBe(false);
+  });
+});
+
+describe("DefaultReactSrvConfig.reactVersion", () => {
+  // Pinning the CDN to the installed version is what keeps the server-rendered
+  // markup and the browser's hydration on the same React build, and keeps the
+  // CDN URLs immutable so they can be cached indefinitely.
+  it("defaults to the locally installed React version, not 'latest'", () => {
+    expect(DefaultReactSrvConfig.reactVersion).toBe(installedReactVersion);
+    expect(DefaultReactSrvConfig.reactVersion).not.toBe("latest");
+  });
+
+  it("still honours an explicit override", () => {
+    const srv = new ReactSrv({
+      srcPath: path.dirname(fileURLToPath(import.meta.url)),
+      reactVersion: "18.3.0",
+    });
+    expect((srv as any).config.reactVersion).toBe("18.3.0");
   });
 });

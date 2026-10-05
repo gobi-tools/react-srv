@@ -13,6 +13,8 @@ import serialize from "serialize-javascript";
 import fg from "fast-glob";
 
 type TReactSrvConfig = {
+  /** CDN React version. Defaults to the locally installed React version, so the
+   * browser hydrates with the same build the server rendered with. */
   reactVersion?: string;
   reactLocation?: string;
   srcPath?: string;
@@ -38,8 +40,22 @@ export function DefaultDocument({ children }) {
   );
 };
 
+const FALLBACK_REACT_VERSION = 'latest';
+
+function resolveInstalledReactVersion(): string {
+  try {
+    const pkgPath = createRequire(import.meta.url).resolve('react/package.json');
+    const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf8'));
+    const version = typeof pkg.version === 'string' ? pkg.version.trim() : '';
+    console.log('gabbox', version);
+    return version === '' ? FALLBACK_REACT_VERSION : version;
+  } catch {
+    return FALLBACK_REACT_VERSION;
+  }
+}
+
 export const DefaultReactSrvConfig: TReactSrvConfig = {
-  reactVersion: 'latest',
+  reactVersion: resolveInstalledReactVersion(),
   reactLocation: 'https://esm.sh',
   srcPath: './src',
   outPath: './public/hydrate',

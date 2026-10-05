@@ -8,5 +8,4 @@ export default {
   minify: true,
   splitting: true,
   keepNames: true,
-  reactVersion: '19.3.0',
 };

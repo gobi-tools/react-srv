@@ -13,9 +13,9 @@
   },
   "dependencies": {
     "express": "^5.2.1",
-    "react": "^18.0.0",
-    "react-dom": "^18.0.0",
-    "react-srv": "file:../../lib/react-srv-0.0.74.tgz"
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0",
+    "react-srv": "file:../../lib/react-srv-0.0.76.tgz"
   },
   "devDependencies": {
     "@types/express": "^5.0.6",
