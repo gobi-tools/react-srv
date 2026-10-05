@@ -15,7 +15,7 @@
     "express": "^5.2.1",
     "react": "^18.0.0",
     "react-dom": "^18.0.0",
-    "react-srv": "file:../../lib/react-srv-0.0.71.tgz"
+    "react-srv": "file:../../lib/react-srv-0.0.74.tgz"
   },
   "devDependencies": {
     "@types/express": "^5.0.6",

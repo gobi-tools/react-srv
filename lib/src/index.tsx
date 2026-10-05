@@ -11,7 +11,7 @@ import { renderToString, renderToStaticMarkup } from "react-dom/server";
 import * as esbuild from "esbuild";
 import serialize from "serialize-javascript";
 import fg from "fast-glob";
-      
+
 type TReactSrvConfig = {
   reactVersion?: string;
   reactLocation?: string;
@@ -64,195 +64,16 @@ export default class ReactSrv {
     FileUtils.validateDir(this.config.srcPath);
   }
 
-  prebundle() {
-    if (!this.config.hydrate) {
-      console.log(`Skipping pre-bundling hydration scripts since hydrate === ${this.config.hydrate}`);
-      return;
-    }
+  ////////////////////////////////////////////////
+  // Expose to CLI interface (for SSG)
+  ////////////////////////////////////////////////
 
-    const files = FileUtils.formOutputFiles(this.config.srcPath, this.config.outPath, true);
-    this.prepbundle(files);
-  }
-
-  private prepbundle(files: TOutputFile[]) {
-    if (files.length === 0) {
-      return; // esbuild rejects an empty entryPoints list
-    }
-
-    const rootId = 'root';
-    const wrapperRoot = path.join(os.tmpdir(), "react-srv", String(process.pid), "wrappers");
-
-    // Bundle every entry in ONE build with code splitting, so any
-    // module shared between entries (a big library or a local file) lands in a
-    // single content-hashed chunk instead of being copied into each entry.
-    // Each entry is driven by a temp wrapper whose basename and folder already
-    // match the final output name and writePath, so esbuild's entry
-    // naming emits files exactly where the HTML expects them and relative
-    // chunk imports are correct as emitted — nothing is renamed or moved.
-    try {
-      const entryPoints = files.map((file) => {
-        const relDir = path.relative(this.config.outPath, file.writePath);
-        const wrapperPath = path.join(wrapperRoot, relDir, file.name.js);
-        fs.mkdirSync(path.dirname(wrapperPath), { recursive: true });
-        fs.writeFileSync(
-          wrapperPath,
-          [
-            `import React from "react";`,
-            `import { hydrateRoot } from "react-dom/client";`,
-            `import Page from ${JSON.stringify(file.absPath)};`,
-            ``,
-            `const root = document.getElementById(${JSON.stringify(rootId)});`,
-            `if (!root) {`,
-            `  throw new Error("react-srv: Could not find hydration root.");`,
-            `}`,
-            `if (!globalThis.__REACT_SRV_HYDRATED__) {`,
-            `  globalThis.__REACT_SRV_HYDRATED__ = true;`,
-            `  hydrateRoot(root, React.createElement(Page, globalThis.__INITIAL_PROPS__ || {}));`,
-            `}`,
-            ``,
-          ].join("\n"),
-          "utf8"
-        );
-        return wrapperPath;
-      });
-
-      const result = esbuild.buildSync({
-        ...this.browserBuildOptions(),
-        // pin working dir so metafile relative paths are resolved
-        absWorkingDir: process.cwd(),
-        metafile: true,
-        entryPoints,
-        outbase: wrapperRoot,
-        outdir: this.config.outPath,
-        entryNames: "[dir]/[name]",
-        chunkNames: "chunk-[hash]",
-        splitting: this.config.splitting !== false,
-        write: false,
-      });
- 
-      const entries = files.map((file) => path.join(file.writePath, file.name.js));
-      const reachable = result.metafile ? FileUtils.reachableOutputs(result.metafile, entries): null;
-      let skipped = 0;
-
-      for (const outputFile of result.outputFiles) {
-        const isChunk = path.basename(outputFile.path).startsWith("chunk-");
-        if (reachable !== null && isChunk && !reachable.has(path.resolve(outputFile.path))) {
-          skipped += 1;
-          continue;
-        }
-        fs.mkdirSync(path.dirname(outputFile.path), { recursive: true });
-        fs.writeFileSync(outputFile.path, outputFile.text, "utf8");
-        console.log('✅ Wrote', path.relative(process.cwd(), outputFile.path));
-      }
-
-      if (skipped > 0) {
-        console.log(`🗑  Skipped ${skipped} unreferenced chunk(s)`);
-      }
-    } finally {
-      fs.rmSync(wrapperRoot, { recursive: true, force: true });
-    }
-  }
-
-  private browserBuildOptions(): esbuild.BuildOptions {
-    const { reactLocation, reactVersion } = this.config;
-    return {
-      bundle: true,
-      format: "esm",
-      platform: "browser",
-      minify: this.config.minify === true,
-      keepNames: this.config.keepNames !== false && this.config.minify === true,
-      jsx: "automatic",
-      jsxImportSource: "react",
-      mainFields: this.config.mainFields ?? [],
-      // Resolve react* imports to their CDN URLs at build time
-      alias: {
-        "react": `${reactLocation}/react@${reactVersion}`,
-        "react-dom": `${reactLocation}/react-dom@${reactVersion}`,
-        "react-dom/client": `${reactLocation}/react-dom@${reactVersion}/client`,
-        "react/jsx-runtime": `${reactLocation}/react@${reactVersion}/jsx-runtime`,
-        "react/jsx-dev-runtime": `${reactLocation}/react@${reactVersion}/jsx-dev-runtime`,
-      },
-      external: [`${reactLocation}/*`],
-    };
-  }
-
-  // @note: only used in dev mode really
-  private bundle(params: { pageName: string; rootId: string; entryPath?: string }): string {
-    const { pageName, rootId } = params;
-
-    const entryPath = params.entryPath ?? this.findEntryPath(pageName);
-    const entryDir = path.dirname(entryPath);
-    const entryBase = path.basename(entryPath);
-
-    const result = esbuild.buildSync({
-      ...this.browserBuildOptions(),
-      stdin: {
-        contents: `
-        import React from "react";
-        import { hydrateRoot } from "react-dom/client";
-        import Page from "./${entryBase}";
-
-        const root = document.getElementById(${JSON.stringify(rootId)});
-        if (!root) {
-          throw new Error("react-srv: Could not find hydration root.");
-        }
-
-        if (!globalThis.__REACT_SRV_HYDRATED__) {
-          globalThis.__REACT_SRV_HYDRATED__ = true;
-
-          hydrateRoot(
-            root,
-            React.createElement(Page, globalThis.__INITIAL_PROPS__ || {})
-          );
-        }
-      `,
-        resolveDir: entryDir,
-        sourcefile: `react-srv-hydrate-${pageName}.jsx`,
-        loader: "jsx",
-      },
-      write: false,
-    });
-
-    return result.outputFiles[0].text;
-  }
-
-  private resolvePageName(Component: React.FC<any>): string {
-    const pageName = Component.name;
-    if (!pageName) {
-      throw new Error(
-        "react-srv: Component.name is empty. Please use a named component export."
-      );
-    }
-
-    return pageName;
-  }
-
-  render(Component: React.FC<any>, props: any = {}): string {
-    const rootId = "root";
-    const safeProps = serialize(props, { isJSON: true });
-    const pageName = this.resolvePageName(Component);
-    const hydrate = this.config.hydrate === true;
-    const isProd = this.config.isProd === true;
-
-    const document = (
-      <this.config.Document {...props}>
-        <div id={rootId}>
-          <Component {...props} />
-        </div>
-        <script dangerouslySetInnerHTML={{ __html: `globalThis.__INITIAL_PROPS__ = ${safeProps};` }} />
-        {(isProd && hydrate) && <script type="module" src={this.getPublicHydrationPath(pageName)}></script>}
-        {(!isProd && hydrate) && <script type="module" dangerouslySetInnerHTML={{ __html: this.bundle({ pageName, rootId }) }} />}
-      </this.config.Document>
-    );
-
-    const html = hydrate ? renderToString(document) : renderToStaticMarkup(document);
-
-    return `<!DOCTYPE html>\n${html}`;
-  }
-
+  /**
+   * Transforms all JSX/TSX files in config.srcPath to JS & HTML files 
+   */
   async prerender() {
     const files = FileUtils.formOutputFiles(this.config.srcPath, this.config.outPath);
-    
+
     const hydrate = this.config.hydrate === true;
     if (hydrate) {
       this.prepbundle(files);
@@ -322,6 +143,233 @@ export default class ReactSrv {
       fs.writeFileSync(htmlFp, fullHtml);
       console.log(`✅ Wrote ${htmlFp}`);
     }
+  }
+
+  ////////////////////////////////////////////////
+  // Expose to SSR interface
+  ////////////////////////////////////////////////
+
+  /**
+   * Transforms a React component & associated props into a HTML string that also 
+   * references a JS hydration script, either inline (dev mode) or from disk (prod mode).
+   *
+   * If from disk, then {@link ReactSrv.prebundle} must be called beforehand.
+   * 
+   * @param Component a React component
+   * @param props any props associated with it 
+   * @returns a HTML string
+   */
+  render(Component: React.FC<any>, props: any = {}): string {
+    const rootId = "root";
+    const safeProps = serialize(props, { isJSON: true });
+    const pageName = this.resolvePageName(Component);
+    const hydrate = this.config.hydrate === true;
+    const isProd = this.config.isProd === true;
+
+    const document = (
+      <this.config.Document {...props}>
+        <div id={rootId}>
+          <Component {...props} />
+        </div>
+        <script dangerouslySetInnerHTML={{ __html: `globalThis.__INITIAL_PROPS__ = ${safeProps};` }} />
+        {(isProd && hydrate) && <script type="module" src={this.getPublicHydrationPath(pageName)}></script>}
+        {(!isProd && hydrate) && <script type="module" dangerouslySetInnerHTML={{ __html: this.bundle({ pageName, rootId }) }} />}
+      </this.config.Document>
+    );
+
+    const html = hydrate ? renderToString(document) : renderToStaticMarkup(document);
+
+    return `<!DOCTYPE html>\n${html}`;
+  }
+
+  /**
+   * Transforms all JSX/TSX files in config.srcPath to JS files
+   */
+  prebundle() {
+    if (!this.config.hydrate) {
+      console.log(`Skipping pre-bundling hydration scripts since hydrate === ${this.config.hydrate}`);
+      return;
+    }
+
+    const files = FileUtils.formOutputFiles(this.config.srcPath, this.config.outPath, true);
+    this.prepbundle(files);
+  }
+
+  ////////////////////////////////////////////////
+  // Private bundling (hydration) methods
+  ////////////////////////////////////////////////
+
+  /**
+   * Transforms a series of JSX/TSX files (e.g. a codebase) files into JS hydration scripts
+   * and stores them on disk;
+   * 
+   * This step is needed by {@link ReactSrv.render} in prod mode as well as {@link ReactSrv.prerender}.
+   * 
+   * @param files an array of {@link TOutputFile}, which stores JSX/TSX source file 
+   * absulte path, output paths, relative paths, etc
+   */
+  private prepbundle(files: TOutputFile[]) {
+    if (files.length === 0) {
+      return; // esbuild rejects an empty entryPoints list
+    }
+
+    const rootId = 'root';
+    const wrapperRoot = path.join(os.tmpdir(), "react-srv", String(process.pid), "wrappers");
+
+    // Bundle every entry in ONE build with code splitting, so any
+    // module shared between entries (a big library or a local file) lands in a
+    // single content-hashed chunk instead of being copied into each entry.
+    // Each entry is driven by a temp wrapper whose basename and folder already
+    // match the final output name and writePath, so esbuild's entry
+    // naming emits files exactly where the HTML expects them and relative
+    // chunk imports are correct as emitted — nothing is renamed or moved.
+    try {
+      const entryPoints = files.map((file) => {
+        const relDir = path.relative(this.config.outPath, file.writePath);
+        const wrapperPath = path.join(wrapperRoot, relDir, file.name.js);
+        fs.mkdirSync(path.dirname(wrapperPath), { recursive: true });
+        fs.writeFileSync(
+          wrapperPath,
+          [
+            `import React from "react";`,
+            `import { hydrateRoot } from "react-dom/client";`,
+            `import Page from ${JSON.stringify(file.absPath)};`,
+            ``,
+            `const root = document.getElementById(${JSON.stringify(rootId)});`,
+            `if (!root) {`,
+            `  throw new Error("react-srv: Could not find hydration root.");`,
+            `}`,
+            `if (!globalThis.__REACT_SRV_HYDRATED__) {`,
+            `  globalThis.__REACT_SRV_HYDRATED__ = true;`,
+            `  hydrateRoot(root, React.createElement(Page, globalThis.__INITIAL_PROPS__ || {}));`,
+            `}`,
+            ``,
+          ].join("\n"),
+          "utf8"
+        );
+        return wrapperPath;
+      });
+
+      const result = esbuild.buildSync({
+        ...this.browserBuildOptions(),
+        // pin working dir so metafile relative paths are resolved
+        absWorkingDir: process.cwd(),
+        metafile: true,
+        entryPoints,
+        outbase: wrapperRoot,
+        outdir: this.config.outPath,
+        entryNames: "[dir]/[name]",
+        chunkNames: "chunk-[hash]",
+        splitting: this.config.splitting !== false,
+        write: false,
+      });
+
+      const entries = files.map((file) => path.join(file.writePath, file.name.js));
+      const reachable = result.metafile ? FileUtils.reachableOutputs(result.metafile, entries) : null;
+      let skipped = 0;
+
+      for (const outputFile of result.outputFiles) {
+        const isChunk = path.basename(outputFile.path).startsWith("chunk-");
+        if (reachable !== null && isChunk && !reachable.has(path.resolve(outputFile.path))) {
+          skipped += 1;
+          continue;
+        }
+        fs.mkdirSync(path.dirname(outputFile.path), { recursive: true });
+        fs.writeFileSync(outputFile.path, outputFile.text, "utf8");
+        console.log('✅ Wrote', path.relative(process.cwd(), outputFile.path));
+      }
+
+      if (skipped > 0) {
+        console.log(`🗑  Skipped ${skipped} unreferenced chunk(s)`);
+      }
+    } finally {
+      fs.rmSync(wrapperRoot, { recursive: true, force: true });
+    }
+  }
+
+  /**
+   * Transforms a JSX/TSX component (referenced by name) into a JS hydration script.
+   * 
+   * This is needed by {@link ReactSrv.render} in dev mode.
+   * 
+   * @param params an object containing pageName, rootId and an optional entry apth
+   * @returns a string containing the JS hydration script for the page 
+   */
+  private bundle(params: { pageName: string; rootId: string; entryPath?: string }): string {
+    const { pageName, rootId } = params;
+
+    const entryPath = params.entryPath ?? this.findEntryPath(pageName);
+    const entryDir = path.dirname(entryPath);
+    const entryBase = path.basename(entryPath);
+
+    const result = esbuild.buildSync({
+      ...this.browserBuildOptions(),
+      stdin: {
+        contents: `
+        import React from "react";
+        import { hydrateRoot } from "react-dom/client";
+        import Page from "./${entryBase}";
+
+        const root = document.getElementById(${JSON.stringify(rootId)});
+        if (!root) {
+          throw new Error("react-srv: Could not find hydration root.");
+        }
+
+        if (!globalThis.__REACT_SRV_HYDRATED__) {
+          globalThis.__REACT_SRV_HYDRATED__ = true;
+
+          hydrateRoot(
+            root,
+            React.createElement(Page, globalThis.__INITIAL_PROPS__ || {})
+          );
+        }
+      `,
+        resolveDir: entryDir,
+        sourcefile: `react-srv-hydrate-${pageName}.jsx`,
+        loader: "jsx",
+      },
+      write: false,
+    });
+
+    return result.outputFiles[0].text;
+  }
+
+  ////////////////////////////////////////////////
+  // Other private utility methods
+  ////////////////////////////////////////////////
+
+  private browserBuildOptions(): esbuild.BuildOptions {
+    const { reactLocation, reactVersion } = this.config;
+    return {
+      bundle: true,
+      format: "esm",
+      platform: "browser",
+      minify: this.config.minify === true,
+      keepNames: this.config.keepNames !== false && this.config.minify === true,
+      jsx: "automatic",
+      jsxImportSource: "react",
+      mainFields: this.config.mainFields ?? [],
+      // Resolve react* imports to their CDN URLs at build time
+      alias: {
+        "react": `${reactLocation}/react@${reactVersion}`,
+        "react-dom": `${reactLocation}/react-dom@${reactVersion}`,
+        "react-dom/client": `${reactLocation}/react-dom@${reactVersion}/client`,
+        "react/jsx-runtime": `${reactLocation}/react@${reactVersion}/jsx-runtime`,
+        "react/jsx-dev-runtime": `${reactLocation}/react@${reactVersion}/jsx-dev-runtime`,
+      },
+      external: [`${reactLocation}/*`],
+    };
+  }
+
+  private resolvePageName(Component: React.FC<any>): string {
+    const pageName = Component.name;
+    if (!pageName) {
+      throw new Error(
+        "react-srv: Component.name is empty. Please use a named component export."
+      );
+    }
+
+    return pageName;
   }
 
   private findEntryPath(pageName: string): string {
