@@ -92,24 +92,11 @@ export default class ReactSrv {
 
     const hydrate = this.config.hydrate === true;
     if (hydrate) {
-      this.prepbundle(files);
+      await this.prepbundle(files);
     }
 
     const props = this.config.initProps;
     const safeProps = serialize(props, { isJSON: true });
-
-    // Dynamically rewrite all react* paths to have absolute paths via the library's own location
-    // so the same React instance the library renders with is reused
-    const requireFromLib = createRequire(import.meta.url);
-    const externalsToAbsolute: esbuild.Plugin = {
-      name: "externals-to-absolute",
-      setup(build) {
-        build.onResolve({ filter: /^react(-dom)?($|\/)/ }, (args) => ({
-          path: requireFromLib.resolve(args.path),
-          external: true,
-        }));
-      },
-    };
 
     for (const file of files) {
       const result = await esbuild.build({
@@ -119,7 +106,7 @@ export default class ReactSrv {
         format: "esm",
         write: false,
         mainFields: this.config.mainFields ?? [],
-        plugins: [externalsToAbsolute],
+        plugins: [ReactSrv.rewriteReactPathsPlugin()],
       });
 
       const js = result.outputFiles[0].text;
@@ -201,14 +188,14 @@ export default class ReactSrv {
   /**
    * Transforms all JSX/TSX files in config.srcPath to JS files
    */
-  prebundle() {
+  prebundle(): Promise<void> {
     if (!this.config.hydrate) {
       console.log(`Skipping pre-bundling hydration scripts since hydrate === ${this.config.hydrate}`);
       return;
     }
 
     const files = FileUtils.formOutputFiles(this.config.srcPath, this.config.outPath, true);
-    this.prepbundle(files);
+    return this.prepbundle(files);
   }
 
   ////////////////////////////////////////////////
@@ -217,20 +204,22 @@ export default class ReactSrv {
 
   /**
    * Transforms a series of JSX/TSX files (e.g. a codebase) files into JS hydration scripts
-   * and stores them on disk;
+   * in one pass to compile and another to remove dead code, and stores them on disk;
    * 
    * This step is needed by {@link ReactSrv.render} in prod mode as well as {@link ReactSrv.prerender}.
-   * 
+   *
    * @param files an array of {@link TOutputFile}, which stores JSX/TSX source file 
    * absulte path, output paths, relative paths, etc
    */
-  private prepbundle(files: TOutputFile[]) {
+  private async prepbundle(files: TOutputFile[]): Promise<void> {
     if (files.length === 0) {
       return; // esbuild rejects an empty entryPoints list
     }
 
     const rootId = 'root';
-    const wrapperRoot = path.join(os.tmpdir(), "react-srv", String(process.pid), "wrappers");
+    const tempRoot = path.join(os.tmpdir(), "react-srv", String(process.pid));
+    fs.mkdirSync(tempRoot, { recursive: true });
+    const wrapperRoot = fs.mkdtempSync(path.join(tempRoot, "wrappers-"));
 
     // Bundle every entry in ONE build with code splitting, so any
     // module shared between entries (a big library or a local file) lands in a
@@ -266,7 +255,7 @@ export default class ReactSrv {
         return wrapperPath;
       });
 
-      const result = esbuild.buildSync({
+      const buildOptions: esbuild.BuildOptions = {
         ...this.browserBuildOptions(),
         // pin working dir so metafile relative paths are resolved
         absWorkingDir: process.cwd(),
@@ -278,8 +267,24 @@ export default class ReactSrv {
         chunkNames: "chunk-[hash]",
         splitting: this.config.splitting !== false,
         write: false,
-      });
+      };
 
+      // Pass 1: initial build 
+      let result: esbuild.BuildResult = esbuild.buildSync(buildOptions);
+
+      const deadImporters = buildOptions.splitting
+        ? FileUtils.deadDynamicImporters(result.metafile, process.cwd())
+        : [];
+      // Pass 2: remove dead imports
+      if (deadImporters.length > 0) {
+        console.log(`Rebuilding without ${deadImporters.length} dead dynamic import() call(s)`);
+        result = await esbuild.build({
+          ...buildOptions,
+          plugins: [ReactSrv.dropDeadDynamicImportsPlugin(deadImporters)],
+        });
+      }
+
+      // Only after dead imports are removed do we chunk, so we can potentially skip more
       const entries = files.map((file) => path.join(file.writePath, file.name.js));
       const reachable = result.metafile ? FileUtils.reachableOutputs(result.metafile, entries) : null;
       let skipped = 0;
@@ -348,6 +353,51 @@ export default class ReactSrv {
     });
 
     return result.outputFiles[0].text;
+  }
+
+  ////////////////////////////////////////////////
+  // Esbuild plugins
+  ////////////////////////////////////////////////
+
+  /**
+   * @returns a plugin that dynamically rewrites all react* paths to have absolute paths 
+   * via the library's own location so the same React instance the library renders with is reused 
+   */
+  private static rewriteReactPathsPlugin(): esbuild.Plugin {
+    const requireFromLib = createRequire(import.meta.url);
+    return {
+      name: "externals-to-absolute",
+      setup(build) {
+        build.onResolve({ filter: /^react(-dom)?($|\/)/ }, (args) => ({
+          path: requireFromLib.resolve(args.path),
+          external: true,
+        }));
+      },
+    };
+  }
+
+  /**
+   * @param deadImporters absolute paths of inputs that hold no output and contain a dynamic import()
+   * @returns a plugin that replaces dead dynamic imports with placeholders 
+   */
+  private static dropDeadDynamicImportsPlugin(deadImporters: string[]): esbuild.Plugin {
+    const dead = new Set(deadImporters);
+    const placeholder = "react-srv:dropped-dynamic-import";
+
+    return {
+      name: "react-srv-drop-dead-dynamic-imports",
+      setup: (build) => {
+        build.onResolve({ filter: /.*/ }, (args) => {
+          if (args.kind !== "dynamic-import") return null;
+          if (!dead.has(path.resolve(args.importer))) return null;
+          return { path: placeholder, namespace: placeholder };
+        });
+        build.onLoad({ filter: /.*/, namespace: placeholder }, () => ({
+          contents: `export default {};`,
+          loader: "js",
+        }));
+      },
+    };
   }
 
   ////////////////////////////////////////////////
@@ -472,16 +522,30 @@ export class FileUtils {
   }
 
   /**
-   * Absolute paths of every output file reachable from this build's own
+   * @returns the absolute paths of files that produced no output yet still contain
+   * a dynamic `import()` e.g. dead importers;
+   */
+  static deadDynamicImporters(metafile: esbuild.Metafile | undefined, cwd: string): string[] {
+    if (!metafile) {
+      return [];
+    }
+
+    const live = new Set<string>();
+    for (const node of Object.values(metafile.outputs)) {
+      for (const input of Object.keys(node.inputs ?? {})) {
+        live.add(input);
+      }
+    }
+
+    return Object.entries(metafile.inputs)
+      .filter(([file, node]) => !live.has(file) && (node.imports ?? []).some((i) => i.kind === "dynamic-import"))
+      .map(([file]) => path.resolve(cwd, file));
+  }
+
+  /**
+   * @returns the absolute paths of every output file reachable from this build's own
    * entries, following the metafile's import graph. `entryOutputs` are the
-   * exact output paths the entries are expected to produce. Returns null when
-   * none of them produced an output, so callers fall back to writing
-   * everything instead of pruning it all.
-   *
-   * NOTE: esbuild tags dynamic import() targets with an `entryPoint` of their
-   * own — even when the import() that referenced them has been tree-shaken
-   * away — and the string form of those fields has proven unreliable across
-   * path shapes, so roots are passed in by the caller instead of inferred.
+   * exact output paths the entries are expected to produce.
    */
   static reachableOutputs(metafile: esbuild.Metafile, entryOutputs: string[]): Set<string> | null {
     const outputs = metafile.outputs;

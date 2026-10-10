@@ -225,7 +225,11 @@ describe("ReactSrv", () => {
         }
 
         // the temp wrappers that drove the build are cleaned up afterwards
-        expect(fs.existsSync(path.join(os.tmpdir(), "react-srv", String(process.pid), "wrappers"))).toBe(false);
+        const tempRoot = path.join(os.tmpdir(), "react-srv", String(process.pid));
+        const leftovers = fs.existsSync(tempRoot)
+          ? fs.readdirSync(tempRoot).filter((d) => d.startsWith("wrappers"))
+          : [];
+        expect(leftovers).toEqual([]);
       });
 
       it("emits no shared chunks when splitting is disabled", () => {
@@ -260,7 +264,7 @@ describe("ReactSrv", () => {
         expect(readOutFile(hashedJs("About.tsx"))).toContain("shared-module-marker-xyz");
       });
 
-      it("does not write chunks that no entry imports (issue: unreferenced dynamic import targets)", () => {
+      it("does not write chunks that no entry imports (issue: unreferenced dynamic import targets)", async () => {
         // a package whose entry re-exports an async variant: the re-export is
         // unused and gets tree-shaken, but esbuild still emits a chunk for the
         // variant's dynamic import() target — referenced by nothing
@@ -283,10 +287,16 @@ describe("ReactSrv", () => {
 
         const logSpy = vi.spyOn(console, "log");
         const srv = new ReactSrv({ srcPath, outPath });
-        srv.prebundle();
+        await srv.prebundle();
 
         // the code the entry actually uses ships as usual
         expect(readOutFile(hashedJs("Home.tsx"))).toContain("SYNC-MARKER");
+
+        // the dead module's import() was dropped by the second pass, so the
+        // target stops asking for a chunk of its own
+        expect(
+          logSpy.mock.calls.some(([msg]) => typeof msg === "string" && /dead dynamic import\(\) call/.test(msg))
+        ).toBe(true);
 
         // the dead dynamic import() target is skipped instead of written
         const chunks = readOutFiles().filter((f) => path.basename(f).startsWith("chunk-"));
@@ -295,6 +305,134 @@ describe("ReactSrv", () => {
         expect(
           logSpy.mock.calls.some(([msg]) => typeof msg === "string" && /Skipped \d+ unreferenced chunk/.test(msg))
         ).toBe(true);
+      });
+
+      it("merges code that one-chunk-per-target splitting had torn apart (dead import() calls)", async () => {
+        // mirrors react-syntax-highlighter: a package entry re-exports an async
+        // variant nobody imports, and that variant holds one import() per
+        // language, so esbuild isolates every target in a chunk of its own —
+        // even though the very same modules are also required (statically) by
+        // the sync half of the package that the app does use
+        const pkgDir = path.join(tmpRoot, "node_modules", "fake-langs");
+        fs.mkdirSync(pkgDir, { recursive: true });
+        fs.writeFileSync(
+          path.join(pkgDir, "package.json"),
+          JSON.stringify({ name: "fake-langs", version: "1.0.0", main: "entry.js", sideEffects: false }),
+          "utf8"
+        );
+
+        const LANGS = 6;
+        for (let i = 0; i < LANGS; i++) {
+          fs.writeFileSync(path.join(pkgDir, `lang${i}.js`), `module.exports = "LANG-${i}-MARKER";\n`, "utf8");
+        }
+        fs.writeFileSync(
+          path.join(pkgDir, "index.js"),
+          Array.from({ length: LANGS }, (_, i) => `const l${i} = require("./lang${i}.js");`).join("\n") +
+            `\nmodule.exports = "SYNC-MARKER " + [${Array.from({ length: LANGS }, (_, i) => `l${i}`).join(",")}].join(" ");\n`,
+          "utf8"
+        );
+        fs.writeFileSync(
+          path.join(pkgDir, "async.js"),
+          `export default {\n` +
+            Array.from({ length: LANGS }, (_, i) => `  l${i}: () => import("./lang${i}.js"),`).join("\n") +
+            `\n};\n`,
+          "utf8"
+        );
+        fs.writeFileSync(
+          path.join(pkgDir, "entry.js"),
+          `export { default as Async } from "./async.js";\nexport { default } from "./index.js";\n`,
+          "utf8"
+        );
+        for (const name of ["Home", "About"]) {
+          fs.writeFileSync(
+            path.join(srcPath, `${name}.tsx`),
+            `import HL from "fake-langs";\nexport default function ${name}() {\n  return <div>{String(HL)}</div>;\n}\n`,
+            "utf8"
+          );
+        }
+
+        const logSpy = vi.spyOn(console, "log");
+        await new ReactSrv({ srcPath, outPath }).prebundle();
+
+        // pass 2 ran: the dead import() calls were dropped before chunking
+        expect(
+          logSpy.mock.calls.some(([msg]) => typeof msg === "string" && /dead dynamic import\(\) call/.test(msg))
+        ).toBe(true);
+
+        const jsFiles = readOutFiles().filter((f) => f.endsWith(".js"));
+        const chunks = jsFiles.filter((f) => path.basename(f).startsWith("chunk-"));
+        // the first pass alone isolates each dynamic target: one chunk per
+        // language; after the consolidation the languages share a single chunk
+        expect(chunks.length).toBeLessThan(LANGS);
+
+        // nothing was lost by rebuilding: every language still ships
+        const all = jsFiles.map((f) => readOutFile(f)).join("\n");
+        expect(all).toContain("SYNC-MARKER");
+        for (let i = 0; i < LANGS; i++) {
+          expect(all).toContain(`LANG-${i}-MARKER`);
+        }
+
+        // and every reference between the shipped files resolves
+        const spec = /["'](\.{1,2}\/[^"']*chunk-[^"']*)["']/g;
+        for (const entry of jsFiles.filter((f) => !path.basename(f).startsWith("chunk-"))) {
+          for (const [, rel] of readOutFile(entry).matchAll(spec)) {
+            expect(fs.existsSync(path.join(path.dirname(path.join(outPath, entry)), rel!))).toBe(true);
+          }
+        }
+      });
+
+      it("still chunks an import() the app really performs, while pass 2 runs", async () => {
+        // pass 2 only rewrites import() calls that sit in modules the first
+        // pass proved dead; a live one must keep its own chunk, or lazy
+        // loading would silently stop code splitting
+        const pkgDir = path.join(tmpRoot, "node_modules", "fake-langs");
+        fs.mkdirSync(pkgDir, { recursive: true });
+        fs.writeFileSync(
+          path.join(pkgDir, "package.json"),
+          JSON.stringify({ name: "fake-langs", version: "1.0.0", main: "entry.js", sideEffects: false }),
+          "utf8"
+        );
+        fs.writeFileSync(path.join(pkgDir, "index.js"), `module.exports = "SYNC-MARKER";\n`, "utf8");
+        fs.writeFileSync(path.join(pkgDir, "async.js"), `export default () => import("./unused.js");\n`, "utf8");
+        fs.writeFileSync(path.join(pkgDir, "unused.js"), `module.exports = "UNUSED-MARKER";\n`, "utf8");
+        fs.writeFileSync(
+          path.join(pkgDir, "entry.js"),
+          `export { default as Async } from "./async.js";\nexport { default } from "./index.js";\n`,
+          "utf8"
+        );
+
+        // outside srcPath on purpose: pages under src are entries of their own,
+        // this one can only reach the browser as a dynamic import target
+        const lazyDir = path.join(tmpRoot, "extra");
+        fs.mkdirSync(lazyDir, { recursive: true });
+        fs.writeFileSync(path.join(lazyDir, "Lazy.jsx"), `export default function Lazy() {\n  return <div>LAZY-MARKER</div>;\n}\n`, "utf8");
+        fs.writeFileSync(
+          path.join(srcPath, "Home.tsx"),
+          `import HL from "fake-langs";\n` +
+            `export default function Home() {\n` +
+            `  const load = () => import("../extra/Lazy");\n` +
+            `  return <div onClick={load}>{String(HL)}</div>;\n` +
+            `}\n`,
+          "utf8"
+        );
+
+        const logSpy = vi.spyOn(console, "log");
+        await new ReactSrv({ srcPath, outPath }).prebundle();
+        expect(
+          logSpy.mock.calls.some(([msg]) => typeof msg === "string" && /dead dynamic import\(\) call/.test(msg))
+        ).toBe(true);
+
+        const entry = readOutFile(hashedJs("Home.tsx"));
+        expect(entry).toContain("SYNC-MARKER");
+
+        // the dead chain's target is gone...
+        expect(readOutFiles().some((f) => readOutFile(f).includes("UNUSED-MARKER"))).toBe(false);
+
+        // ...but the live import() still resolves to a shipped chunk
+        const chunks = readOutFiles().filter((f) => path.basename(f).startsWith("chunk-"));
+        const lazyChunk = chunks.find((f) => readOutFile(f).includes("LAZY-MARKER"));
+        expect(lazyChunk).toBeDefined();
+        expect(entry).toContain(path.basename(lazyChunk!));
       });
 
       it("preserves component function names when minifying, by default", () => {
@@ -805,6 +943,35 @@ describe("FileUtils.reachableOutputs", () => {
     expect(reachable.has(path.resolve("chunk-deep.js"))).toBe(true);
     // only reachable from a dynamic target nobody imports anymore
     expect(reachable.has(path.resolve("chunk-dead.js"))).toBe(false);
+  });
+});
+
+describe("FileUtils.deadDynamicImporters", () => {
+  it("returns the inputs that produced no output and hold a dynamic import()", () => {
+    const metafile = {
+      inputs: {
+        // used, but no import() to give away
+        "node_modules/pkg/index.js": { bytes: 1, imports: [{ path: "node_modules/pkg/lang.js", kind: "require-call" }] },
+        // used, and does lazy-load: pass 2 must leave it alone
+        "node_modules/pkg/live.js": { bytes: 1, imports: [{ path: "node_modules/pkg/heavy.js", kind: "dynamic-import" }] },
+        // dead, and its import() is what forces a chunk per target
+        "node_modules/pkg/async.js": { bytes: 1, imports: [{ path: "node_modules/pkg/lang.js", kind: "dynamic-import" }] },
+        // dead, but static: it never asked esbuild for a chunk, so it is
+        // irrelevant to pass 2 even though it is dead
+        "node_modules/pkg/unused.js": { bytes: 1, imports: [] },
+      },
+      outputs: {
+        "entry.js": { bytes: 1, inputs: { "node_modules/pkg/index.js": { bytesInOutput: 1 }, "node_modules/pkg/live.js": { bytesInOutput: 1 } } },
+      },
+    } as any;
+
+    expect(FileUtils.deadDynamicImporters(metafile, "/app")).toEqual([
+      path.resolve("/app", "node_modules/pkg/async.js"),
+    ]);
+  });
+
+  it("falls back to a single pass when the build produced no metafile", () => {
+    expect(FileUtils.deadDynamicImporters(undefined, "/app")).toEqual([]);
   });
 });
 

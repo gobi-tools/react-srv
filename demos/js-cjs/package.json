@@ -17,7 +17,7 @@
     "express": "^5.1.0",
     "react": "^19.3.0",
     "react-dom": "^19.3.0",
-    "react-srv": "file:../../lib/react-srv-0.0.76.tgz"
+    "react-srv": "file:../../lib/react-srv-0.0.78.tgz"
   },
   "devDependencies": {
     "@babel/plugin-transform-modules-commonjs": "^7.29.7",

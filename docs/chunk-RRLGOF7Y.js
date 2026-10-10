@@ -1,0 +1,1 @@
+import{a}from"./chunk-2W3JBRBS.js";import{a as r,u as t}from"./chunk-F6WBBOKJ.js";import{a as e}from"./chunk-7X4DHW36.js";import{jsx as o,jsxs as u}from"https://esm.sh/react@19.3.0/jsx-runtime";function n(){let m=t();return o("nav",{children:o("ul",{children:o("li",{children:u("a",{href:r.home(m),children:[o(a,{}),o("span",{children:"Home"})]})})})})}e(n,"Header");export{n as a};
