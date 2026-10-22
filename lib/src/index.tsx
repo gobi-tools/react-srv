@@ -3,13 +3,21 @@ import fs from "fs";
 import { createHash } from "crypto";
 import path from "path";
 import os from "os";
-import { createRequire } from "module";
 // 3rd party dependencies
 import * as esbuild from "esbuild";
 import serialize from "serialize-javascript";
 import fg from "fast-glob";
-
-type TSupportedFramework = "react" | "preact";
+// Framework specifics (runtimes, CDN aliases, server build options) live on
+// per-framework adapters — see ./frameworks
+import {
+  getFrameworkAdapter,
+  resolveInstalledPackageVersion,
+} from "./frameworks/index.js";
+import type {
+  TFrameworkAdapter,
+  TFrameworkRuntime,
+  TSupportedFramework,
+} from "./frameworks/index.js";
 
 type TReactSrvConfig = {
   framework: TSupportedFramework;
@@ -29,43 +37,6 @@ type TReactSrvConfig = {
 
 /** Minimal abstract component signature */
 type TFC = (props: any) => any;
-
-/** The framework functions the server-side shell renders with. */
-type TFrameworkRuntime = {
-  h: (type: any, props: any, ...children: any[]) => any;
-  renderToString: (vnode: any) => string;
-  renderToStaticMarkup: (vnode: any) => string;
-};
-
-function loadFrameworkRuntime(framework: "react" | "preact"): TFrameworkRuntime {
-  const requireFromLib = createRequire(import.meta.url);
-  try {
-    if (framework === "preact") {
-      const preact = requireFromLib("preact");
-      const rts = requireFromLib("preact-render-to-string");
-      return {
-        h: preact.h,
-        renderToString: rts.renderToString,
-        renderToStaticMarkup: rts.renderToStaticMarkup,
-      };
-    }
-    const react = requireFromLib("react");
-    const { renderToString, renderToStaticMarkup } = requireFromLib("react-dom/server");
-    return {
-      h: react.createElement,
-      renderToString,
-      renderToStaticMarkup,
-    };
-  } catch (cause) {
-    const required = framework === "preact"
-      ? '"preact" and "preact-render-to-string"'
-      : '"react" and "react-dom"';
-    const detail = cause instanceof Error ? ` (${cause.message})` : "";
-    throw new Error(
-      `react-srv: framework "${framework}" requires ${required} to be installed${detail}`
-    );
-  }
-}
 
 /**
  * The `h` of the framework loaded by the most recent ReactSrv constructor.
@@ -87,23 +58,6 @@ export function DefaultDocument({ children }) {
   );
 };
 
-const FALLBACK_VERSION = 'latest';
-
-/**
- * @param pkgName package to resolve (e.g. "react", "preact")
- * @returns the locally installed version of `pkgName`, or a CDN-safe fallback
- */
-function resolveInstalledPackageVersion(pkgName: string): string {
-  try {
-    const pkgPath = createRequire(import.meta.url).resolve(`${pkgName}/package.json`);
-    const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf8'));
-    const version = typeof pkg.version === 'string' ? pkg.version.trim() : '';
-    return version === '' ? FALLBACK_VERSION : version;
-  } catch {
-    return FALLBACK_VERSION;
-  }
-}
-
 export const DefaultReactSrvConfig: TReactSrvConfig = {
   framework: 'react',
   libLocation: 'https://esm.sh',
@@ -122,19 +76,22 @@ export const DefaultReactSrvConfig: TReactSrvConfig = {
 
 export default class ReactSrv {
   private readonly config: TReactSrvConfig;
+  private readonly framework: TFrameworkAdapter;
   private readonly frameworkRuntime: TFrameworkRuntime;
 
   constructor(readonly userConfig: Partial<TReactSrvConfig> = DefaultReactSrvConfig) {
-    const framework = userConfig.framework ?? DefaultReactSrvConfig.framework;
+    const framework = getFrameworkAdapter(
+      userConfig.framework ?? DefaultReactSrvConfig.framework
+    );
+    this.framework = framework;
     this.config = {
       ...DefaultReactSrvConfig,
       ...userConfig,
       // Pin the CDN to the installed version of whichever framework is
       // actually shipping, unless the user pinned one explicitly.
-      libVersion: userConfig.libVersion
-        ?? resolveInstalledPackageVersion(framework === "preact" ? "preact" : "react"),
+      libVersion: userConfig.libVersion ?? framework.installedVersion(),
     };
-    this.frameworkRuntime = loadFrameworkRuntime(this.config.framework);
+    this.frameworkRuntime = framework.runtime();
     activeH = this.frameworkRuntime.h;
     FileUtils.validateDir(this.config.srcPath);
   }
@@ -165,22 +122,9 @@ export default class ReactSrv {
         format: "esm",
         write: false,
         mainFields: this.config.mainFields ?? [],
-        plugins: [ReactSrv.rewriteFrameworkPathsPlugin(this.config.framework)],
-        // In preact mode pin the JSX runtime explicitly instead of trusting
-        // the project's tsconfig: the server build must emit preact vnodes.
-        // The banner gives the temp module a `require` of its own, needed by
-        // the bundled compat/rts code to load the shared preact core (Node
-        // ESM has no require; the externals are absolute, so location is
-        // irrelevant). React mode keeps today's behaviour untouched.
-        ...(this.config.framework === "preact"
-          ? {
-              jsx: "automatic" as const,
-              jsxImportSource: "preact",
-              banner: {
-                js: 'import { createRequire } from "node:module";\nconst require = createRequire(import.meta.url);',
-              },
-            }
-          : {}),
+        // Framework specifics (externals plugin, JSX pin, banner) come from
+        // the configured framework's adapter.
+        ...this.framework.serverBuild(),
       });
 
       const js = result.outputFiles[0].text;
@@ -427,70 +371,6 @@ export default class ReactSrv {
   ////////////////////////////////////////////////
 
   /**
-   * @param framework the configured framework
-   * @returns a plugin that resolves framework packages to absolute paths via
-   * the library's own location.
-   *
-   * esbuild hands plugins the ORIGINAL import path — the `alias` option only
-   * applies after plugins decline to resolve — so this plugin is also where
-   * react* -> preact mapping happens for bundles the library compiles
-   * itself (prerender pages, CLI config loading).
-   *
-   * Preact mode splits specifiers in two:
-   * - preact core/hooks/jsx-runtime are externalized to absolute paths so the
-   *   page and the library share ONE instance (hooks state and the options
-   *   patching compat does at module load depend on it). Those dist files are
-   *   statically analyzable, so Node can link their named ESM imports.
-   * - preact/compat and preact-render-to-string are BUNDLED instead: their
-   *   dist files export via dynamic Object.defineProperty loops that Node's
-   *   cjs-module-lexer cannot see, which would crash `import { ... }` at
-   *   runtime; esbuild resolves CJS named exports at the use site instead.
-   *   Their internal requires of the core hit the first case above.
-   *
-   * In react mode the plugin behaves exactly as before.
-   */
-  static rewriteFrameworkPathsPlugin(framework: "react" | "preact"): esbuild.Plugin {
-    const requireFromLib = createRequire(import.meta.url);
-    // Exact keys only: a bare "react" entry must not swallow
-    // react/jsx-runtime (compat has no jsx-runtime subpath).
-    const toPreact: Record<string, string> = {
-      "react": "preact/compat",
-      "react/jsx-runtime": "preact/jsx-runtime",
-      "react/jsx-dev-runtime": "preact/jsx-dev-runtime",
-      "react-dom": "preact/compat",
-      "react-dom/client": "preact/compat",
-      "react-dom/server": "preact-render-to-string",
-    };
-    const sharedInstance = new Set([
-      "preact",
-      "preact/hooks",
-      "preact/jsx-runtime",
-      "preact/jsx-dev-runtime",
-    ]);
-    const filter = framework === "preact"
-      ? /^(react(-dom)?|preact|preact-render-to-string)($|\/)/
-      : /^react(-dom)?($|\/)/;
-    return {
-      name: "externals-to-absolute",
-      setup(build) {
-        build.onResolve({ filter }, (args) => {
-          // Unmapped react* paths in preact mode fall through to their real
-          // package (usually a rare cjs subpath); if that package isn't
-          // installed the build fails loudly with the missing path named.
-          const target = framework === "preact" ? (toPreact[args.path] ?? args.path) : args.path;
-          const abs = requireFromLib.resolve(target);
-          if (framework === "preact" && !sharedInstance.has(target)) {
-            // Bundled: keep the absolute path so resolution does not depend
-            // on the importing project's node_modules.
-            return { path: abs };
-          }
-          return { path: abs, external: true };
-        });
-      },
-    };
-  }
-
-  /**
    * @param deadImporters absolute paths of inputs that hold no output and contain a dynamic import()
    * @returns a plugin that replaces dead dynamic imports with placeholders 
    */
@@ -519,30 +399,7 @@ export default class ReactSrv {
   ////////////////////////////////////////////////
 
   private browserBuildOptions(): esbuild.BuildOptions {
-    const { libLocation, libVersion, framework } = this.config;
-    // Preact mode serves preact-native source (`preact`, `preact/hooks`, ...)
-    // straight from the CDN — the bare "react" key prefix-covers preact
-    // subpaths like preact/jsx-runtime — while react* imports (first-party
-    // React-API code and third-party libs) go through preact/compat. React
-    // subpath keys must stay explicit: esbuild prefix-joins subpaths, which
-    // would otherwise turn `react/jsx-runtime` into `.../compat/jsx-runtime`
-    // (a 404).
-    const alias = framework === "preact"
-      ? {
-          "preact": `${libLocation}/preact@${libVersion}`,
-          "react": `${libLocation}/preact@${libVersion}/compat`,
-          "react/jsx-runtime": `${libLocation}/preact@${libVersion}/jsx-runtime`,
-          "react/jsx-dev-runtime": `${libLocation}/preact@${libVersion}/jsx-dev-runtime`,
-          "react-dom": `${libLocation}/preact@${libVersion}/compat`,
-          "react-dom/client": `${libLocation}/preact@${libVersion}/compat/client`,
-        }
-      : {
-          "react": `${libLocation}/react@${libVersion}`,
-          "react-dom": `${libLocation}/react-dom@${libVersion}`,
-          "react-dom/client": `${libLocation}/react-dom@${libVersion}/client`,
-          "react/jsx-runtime": `${libLocation}/react@${libVersion}/jsx-runtime`,
-          "react/jsx-dev-runtime": `${libLocation}/react@${libVersion}/jsx-dev-runtime`,
-        };
+    const { libLocation, libVersion } = this.config;
     return {
       bundle: true,
       format: "esm",
@@ -550,14 +407,14 @@ export default class ReactSrv {
       minify: this.config.minify === true,
       keepNames: this.config.keepNames !== false && this.config.minify === true,
       jsx: "automatic",
-      // Preact mode compiles JSX straight to preact/jsx-runtime (covered by
-      // the "preact" alias above); react mode keeps the React runtime.
+      // Adapter-owned: preact compiles JSX straight to preact/jsx-runtime
+      // (covered by its "preact" alias), react to the React runtime.
       // Third-party code importing react/jsx-runtime explicitly is redirected
-      // by the alias map in either mode.
-      jsxImportSource: framework === "preact" ? "preact" : "react",
+      // by the alias map in either case.
+      jsxImportSource: this.framework.jsxImportSource,
       mainFields: this.config.mainFields ?? [],
-      // Resolve react* imports to their CDN URLs at build time
-      alias,
+      // Redirect framework imports to their CDN URLs at build time
+      alias: this.framework.browserAliases(libLocation, libVersion),
       external: [`${libLocation}/*`],
     };
   }

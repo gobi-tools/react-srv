@@ -3,7 +3,7 @@ import fs from "fs";
 import os from "os";
 import { createHash } from "crypto";
 import * as esbuild from "esbuild";
-import ReactSrv from "../index.js";
+import { configBundleAdapters, getFrameworkAdapter } from "../frameworks/index.js";
 
 async function bundleConfig(file: string, extra: Partial<esbuild.BuildOptions> = {}) {
   const result = await esbuild.build({
@@ -42,33 +42,36 @@ async function importBundle(code: string) {
 }
 
 export async function loadConfig(file: string) {
-  // Pass 1: bundle the config as-is. Covers react projects and preact-native
-  // ones alike (their framework imports resolve from the project and get
-  // bundled in, same as before).
+  // Pass 1: bundle the config as-is. Covers every project that can resolve
+  // its own framework imports (react projects, preact-native ones).
+  let config: any;
   try {
-    const config = await importBundle(await bundleConfig(file));
-    if (config?.framework !== "preact") return config;
+    config = await importBundle(await bundleConfig(file));
   } catch {
-    // A preact project whose config uses the React API can't resolve "react"
-    // here; the preact pass below maps it. Any other failure resurfaces
-    // there with an equivalent error.
+    config = undefined; // retried through the framework-mapped candidates below
   }
-  // Pass 2: re-bundle with the react* -> preact mapping and the framework
-  // externalized to the library's own copy, so a custom Document shares the
-  // same preact instance the shell renders with (hooks state and the options
-  // patching compat does at module load depend on it). The config module
-  // executes a second time here — configs are declarative objects, so the
-  // duplicated side effects are negligible.
-  const code = await bundleConfig(file, {
-    plugins: [ReactSrv.rewriteFrameworkPathsPlugin("preact")],
-    jsx: "automatic",
-    jsxImportSource: "preact",
-    banner: {
-      // Bundled compat code still calls require() for the shared preact
-      // core; Node ESM has no require (the externals are absolute, so the
-      // temp file's location is irrelevant).
-      js: 'import { createRequire } from "node:module";\nconst require = createRequire(import.meta.url);',
-    },
-  });
-  return importBundle(code);
+  if (config !== undefined) {
+    // Frameworks that need their own config bundling get a second pass (a
+    // custom Document then shares the library's framework instance); the
+    // rest are done after pass 1.
+    const extras = config?.framework
+      ? getFrameworkAdapter(config.framework).configBundleOptions
+      : undefined;
+    if (!extras) return config;
+    return importBundle(await bundleConfig(file, extras));
+  }
+  // Pass 1 couldn't load the config as-is: the project's own imports don't
+  // resolve (e.g. a preact-only project writing the React API). Retry
+  // through each framework that declares config bundling until one loads.
+  // The config module executes a second time on the rebundle path — configs
+  // are declarative objects, so the duplicated side effects are negligible.
+  let lastError: unknown;
+  for (const adapter of configBundleAdapters()) {
+    try {
+      return await importBundle(await bundleConfig(file, adapter.configBundleOptions));
+    } catch (cause) {
+      lastError = cause;
+    }
+  }
+  throw lastError;
 }

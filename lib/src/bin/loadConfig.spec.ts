@@ -3,7 +3,7 @@ import os from "os";
 import path from "path";
 import { createRequire } from "module";
 import { afterAll, beforeEach, describe, expect, it } from "vitest";
-import { loadConfig } from "./bin/loadConfig.js";
+import { loadConfig } from "./loadConfig.js";
 
 // The loadConfig bundling is what gives a project's Document the same
 // framework instance the shell renders with — see cli.ts. Importing it from
