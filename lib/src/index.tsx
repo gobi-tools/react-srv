@@ -35,18 +35,6 @@ type TFrameworkRuntime = {
   renderToStaticMarkup: (vnode: any) => string;
 };
 
-/**
- * Loads the configured framework's runtime. Synchronous on purpose: render()
- * is a sync API, so the swap must not need await — both react-dom/server and
- * preact(-render-to-string) are requirable CJS. react/react-dom and
- * preact/preact-render-to-string are peer dependencies: whichever framework
- * is configured must be installed, and we fail fast with a clear message if
- * it isn't.
- *
- * Note: the lib's own rendering is plain `h()` calls (no JSX), so this module
- * itself never statically imports a framework runtime — react/preact are only
- * pulled in here, per the configured framework.
- */
 function loadFrameworkRuntime(framework: "react" | "preact"): TFrameworkRuntime {
   const requireFromLib = createRequire(import.meta.url);
   try {
@@ -175,7 +163,22 @@ export default class ReactSrv {
         format: "esm",
         write: false,
         mainFields: this.config.mainFields ?? [],
-        plugins: [ReactSrv.rewriteReactPathsPlugin()],
+        plugins: [ReactSrv.rewriteFrameworkPathsPlugin(this.config.framework)],
+        // In preact mode pin the JSX runtime explicitly instead of trusting
+        // the project's tsconfig: the server build must emit preact vnodes.
+        // The banner gives the temp module a `require` of its own, needed by
+        // the bundled compat/rts code to load the shared preact core (Node
+        // ESM has no require; the externals are absolute, so location is
+        // irrelevant). React mode keeps today's behaviour untouched.
+        ...(this.config.framework === "preact"
+          ? {
+              jsx: "automatic" as const,
+              jsxImportSource: "preact",
+              banner: {
+                js: 'import { createRequire } from "node:module";\nconst require = createRequire(import.meta.url);',
+              },
+            }
+          : {}),
       });
 
       const js = result.outputFiles[0].text;
@@ -422,18 +425,65 @@ export default class ReactSrv {
   ////////////////////////////////////////////////
 
   /**
-   * @returns a plugin that dynamically rewrites all react* paths to have absolute paths 
-   * via the library's own location so the same React instance the library renders with is reused 
+   * @param framework the configured framework
+   * @returns a plugin that resolves framework packages to absolute paths via
+   * the library's own location.
+   *
+   * esbuild hands plugins the ORIGINAL import path — the `alias` option only
+   * applies after plugins decline to resolve — so this plugin is also where
+   * react* -> preact mapping happens for server bundles the library compiles
+   * itself (prerender).
+   *
+   * Preact mode splits specifiers in two:
+   * - preact core/hooks/jsx-runtime are externalized to absolute paths so the
+   *   page and the library share ONE instance (hooks state and the options
+   *   patching compat does at module load depend on it). Those dist files are
+   *   statically analyzable, so Node can link their named ESM imports.
+   * - preact/compat and preact-render-to-string are BUNDLED instead: their
+   *   dist files export via dynamic Object.defineProperty loops that Node's
+   *   cjs-module-lexer cannot see, which would crash `import { ... }` at
+   *   runtime; esbuild resolves CJS named exports at the use site instead.
+   *   Their internal requires of the core hit the first case above.
+   *
+   * In react mode the plugin behaves exactly as before.
    */
-  private static rewriteReactPathsPlugin(): esbuild.Plugin {
+  private static rewriteFrameworkPathsPlugin(framework: "react" | "preact"): esbuild.Plugin {
     const requireFromLib = createRequire(import.meta.url);
+    // Exact keys only: a bare "react" entry must not swallow
+    // react/jsx-runtime (compat has no jsx-runtime subpath).
+    const toPreact: Record<string, string> = {
+      "react": "preact/compat",
+      "react/jsx-runtime": "preact/jsx-runtime",
+      "react/jsx-dev-runtime": "preact/jsx-dev-runtime",
+      "react-dom": "preact/compat",
+      "react-dom/client": "preact/compat",
+      "react-dom/server": "preact-render-to-string",
+    };
+    const sharedInstance = new Set([
+      "preact",
+      "preact/hooks",
+      "preact/jsx-runtime",
+      "preact/jsx-dev-runtime",
+    ]);
+    const filter = framework === "preact"
+      ? /^(react(-dom)?|preact|preact-render-to-string)($|\/)/
+      : /^react(-dom)?($|\/)/;
     return {
       name: "externals-to-absolute",
       setup(build) {
-        build.onResolve({ filter: /^react(-dom)?($|\/)/ }, (args) => ({
-          path: requireFromLib.resolve(args.path),
-          external: true,
-        }));
+        build.onResolve({ filter }, (args) => {
+          // Unmapped react* paths in preact mode fall through to their real
+          // package (usually a rare cjs subpath); if that package isn't
+          // installed the build fails loudly with the missing path named.
+          const target = framework === "preact" ? (toPreact[args.path] ?? args.path) : args.path;
+          const abs = requireFromLib.resolve(target);
+          if (framework === "preact" && !sharedInstance.has(target)) {
+            // Bundled: keep the absolute path so resolution does not depend
+            // on the importing project's node_modules.
+            return { path: abs };
+          }
+          return { path: abs, external: true };
+        });
       },
     };
   }
@@ -468,13 +518,16 @@ export default class ReactSrv {
 
   private browserBuildOptions(): esbuild.BuildOptions {
     const { libLocation, libVersion, framework } = this.config;
-    // In preact mode the *source* keeps using the React API (and compiles with
-    // the React automatic runtime), but every react* import is redirected to
-    // preact/compat on the CDN. Subpath keys must be spelled out explicitly:
-    // esbuild rewrites subpaths by prefix-joining, which would otherwise turn
-    // `react/jsx-runtime` into `.../preact@v/compat/jsx-runtime` (a 404).
+    // Preact mode serves preact-native source (`preact`, `preact/hooks`, ...)
+    // straight from the CDN — the bare "react" key prefix-covers preact
+    // subpaths like preact/jsx-runtime — while react* imports (first-party
+    // React-API code and third-party libs) go through preact/compat. React
+    // subpath keys must stay explicit: esbuild prefix-joins subpaths, which
+    // would otherwise turn `react/jsx-runtime` into `.../compat/jsx-runtime`
+    // (a 404).
     const alias = framework === "preact"
       ? {
+          "preact": `${libLocation}/preact@${libVersion}`,
           "react": `${libLocation}/preact@${libVersion}/compat`,
           "react/jsx-runtime": `${libLocation}/preact@${libVersion}/jsx-runtime`,
           "react/jsx-dev-runtime": `${libLocation}/preact@${libVersion}/jsx-dev-runtime`,
@@ -495,10 +548,11 @@ export default class ReactSrv {
       minify: this.config.minify === true,
       keepNames: this.config.keepNames !== false && this.config.minify === true,
       jsx: "automatic",
-      // Deliberately "react" in both modes: Preact implements the same
-      // automatic JSX runtime, and keeping the React import source means the
-      // aliased react/jsx-runtime above is what lands on preact/jsx-runtime.
-      jsxImportSource: "react",
+      // Preact mode compiles JSX straight to preact/jsx-runtime (covered by
+      // the "preact" alias above); react mode keeps the React runtime.
+      // Third-party code importing react/jsx-runtime explicitly is redirected
+      // by the alias map in either mode.
+      jsxImportSource: framework === "preact" ? "preact" : "react",
       mainFields: this.config.mainFields ?? [],
       // Resolve react* imports to their CDN URLs at build time
       alias,
