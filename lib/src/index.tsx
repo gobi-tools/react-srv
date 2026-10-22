@@ -9,8 +9,10 @@ import * as esbuild from "esbuild";
 import serialize from "serialize-javascript";
 import fg from "fast-glob";
 
+type TSupportedFramework = "react" | "preact";
+
 type TReactSrvConfig = {
-  framework: "react" | "preact";
+  framework: TSupportedFramework;
   libLocation?: string;
   libVersion?: string;
   srcPath?: string;
