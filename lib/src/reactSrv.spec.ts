@@ -1,7 +1,7 @@
 import fs from "fs";
 import os from "os";
 import path from "path";
-import { createRequire } from "module";
+import Module, { createRequire } from "module";
 import { fileURLToPath } from "url";
 import React from "react";
 import { afterAll, afterEach, beforeEach, describe, expect, it, vi } from "vitest";
@@ -994,6 +994,59 @@ describe("ReactSrv", () => {
       const code = readOutFile(hashedJs("Home.tsx"));
       expect(code).toContain(`https://esm.sh/react@${installedReactVersion}`);
       expect(code).not.toContain("https://esm.sh/preact@");
+    });
+
+    it("prerenders preact-native pages server-side, hooks included", async () => {
+      fs.writeFileSync(
+        path.join(srcPath, "Native.tsx"),
+        `import { useState } from "preact/hooks";\n` +
+          `export default function Native() {\n` +
+          `  const [n] = useState(7);\n` +
+          `  return <div>NATIVE-{n}</div>;\n` +
+          `}\n`,
+        "utf8"
+      );
+      const srv = new ReactSrv({ srcPath, outPath, framework: "preact", hydrate: false });
+      await srv.prerender();
+      const html = readOutFile("native.html");
+      expect(html.startsWith("<!DOCTYPE html>")).toBe(true);
+      expect(html).toContain('id="root"');
+      expect(html).toContain("NATIVE-7");
+    });
+
+    it("prerenders first-party React API pages through preact/compat", async () => {
+      writeComponent("Api");
+      const srv = new ReactSrv({ srcPath, outPath, framework: "preact", hydrate: false });
+      await srv.prerender();
+      // writeComponent imports useState from "react" and renders `${name}-{n}`
+      expect(readOutFile("api.html")).toContain("Api-0");
+    });
+
+    it("renders the preact shell to static markup when hydrate is false", () => {
+      const srv = new ReactSrv({ srcPath, outPath, framework: "preact", hydrate: false });
+      const html = srv.render(function Home() { return null; });
+      expect(html.startsWith("<!DOCTYPE html>")).toBe(true);
+      expect(html).toContain('id="root"');
+      expect(html).not.toContain('type="module"');
+    });
+
+    it("throws a clear error when preact is not installed", () => {
+      // Simulate a missing install by patching the CJS loader (what the
+      // library's createRequire goes through) — _load, not _resolveFilename,
+      // because Node caches resolutions per parent path and would skip a
+      // resolver patch after the earlier preact tests in this file.
+      const load = (Module as any)._load;
+      (Module as any)._load = function (request: string, ...rest: any[]) {
+        if (request === "preact") throw new Error("Cannot find module 'preact'");
+        return load.call(this, request, ...rest);
+      };
+      try {
+        expect(() => new ReactSrv({ srcPath, outPath, framework: "preact" })).toThrow(
+          'react-srv: framework "preact" requires "preact" and "preact-render-to-string" to be installed'
+        );
+      } finally {
+        (Module as any)._load = load;
+      }
     });
   });
 });
