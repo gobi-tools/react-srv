@@ -292,8 +292,7 @@ describe("ReactSrv", () => {
         // the code the entry actually uses ships as usual
         expect(readOutFile(hashedJs("Home.tsx"))).toContain("SYNC-MARKER");
 
-        // the dead module's import() was dropped by the second pass, so the
-        // target stops asking for a chunk of its own
+        // pass 2 dropped the dead module's import() call
         expect(
           logSpy.mock.calls.some(([msg]) => typeof msg === "string" && /dead dynamic import\(\) call/.test(msg))
         ).toBe(true);
@@ -308,11 +307,8 @@ describe("ReactSrv", () => {
       });
 
       it("merges code that one-chunk-per-target splitting had torn apart (dead import() calls)", async () => {
-        // mirrors react-syntax-highlighter: a package entry re-exports an async
-        // variant nobody imports, and that variant holds one import() per
-        // language, so esbuild isolates every target in a chunk of its own —
-        // even though the very same modules are also required (statically) by
-        // the sync half of the package that the app does use
+        // mirrors react-syntax-highlighter: a dead async variant holds one import()
+        // per language, each of which the live sync half also requires statically
         const pkgDir = path.join(tmpRoot, "node_modules", "fake-langs");
         fs.mkdirSync(pkgDir, { recursive: true });
         fs.writeFileSync(
@@ -361,8 +357,7 @@ describe("ReactSrv", () => {
 
         const jsFiles = readOutFiles().filter((f) => f.endsWith(".js"));
         const chunks = jsFiles.filter((f) => path.basename(f).startsWith("chunk-"));
-        // the first pass alone isolates each dynamic target: one chunk per
-        // language; after the consolidation the languages share a single chunk
+        // one chunk per language without pass 2; a single shared chunk with it
         expect(chunks.length).toBeLessThan(LANGS);
 
         // nothing was lost by rebuilding: every language still ships
@@ -382,9 +377,7 @@ describe("ReactSrv", () => {
       });
 
       it("still chunks an import() the app really performs, while pass 2 runs", async () => {
-        // pass 2 only rewrites import() calls that sit in modules the first
-        // pass proved dead; a live one must keep its own chunk, or lazy
-        // loading would silently stop code splitting
+        // pass 2 only rewrites import()s in dead modules: a live one keeps its chunk
         const pkgDir = path.join(tmpRoot, "node_modules", "fake-langs");
         fs.mkdirSync(pkgDir, { recursive: true });
         fs.writeFileSync(
@@ -401,8 +394,7 @@ describe("ReactSrv", () => {
           "utf8"
         );
 
-        // outside srcPath on purpose: pages under src are entries of their own,
-        // this one can only reach the browser as a dynamic import target
+        // outside srcPath: pages under src are entries, so this can only ship as a chunk
         const lazyDir = path.join(tmpRoot, "extra");
         fs.mkdirSync(lazyDir, { recursive: true });
         fs.writeFileSync(path.join(lazyDir, "Lazy.jsx"), `export default function Lazy() {\n  return <div>LAZY-MARKER</div>;\n}\n`, "utf8");

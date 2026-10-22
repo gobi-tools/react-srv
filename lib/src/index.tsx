@@ -153,13 +153,11 @@ export default class ReactSrv {
   ////////////////////////////////////////////////
 
   /**
-   * Transforms a React component & associated props into a HTML string that also 
-   * references a JS hydration script, either inline (dev mode) or from disk (prod mode).
+   * Renders a component & props into a HTML string that references its hydration
+   * script — inlined in dev, read from disk in prod (needs {@link ReactSrv.prebundle}).
    *
-   * If from disk, then {@link ReactSrv.prebundle} must be called beforehand.
-   * 
    * @param Component a React component
-   * @param props any props associated with it 
+   * @param props any props associated with it
    * @returns a HTML string
    */
   render(Component: React.FC<any>, props: any = {}): string {
@@ -203,13 +201,10 @@ export default class ReactSrv {
   ////////////////////////////////////////////////
 
   /**
-   * Transforms a series of JSX/TSX files (e.g. a codebase) files into JS hydration scripts
-   * in one pass to compile and another to remove dead code, and stores them on disk;
-   * 
-   * This step is needed by {@link ReactSrv.render} in prod mode as well as {@link ReactSrv.prerender}.
+   * Compiles the JSX/TSX files into hydration scripts on disk: pass 1 compiles,
+   * pass 2 (only when needed) drops dead `import()` calls so chunks consolidate.
    *
-   * @param files an array of {@link TOutputFile}, which stores JSX/TSX source file 
-   * absulte path, output paths, relative paths, etc
+   * @param files source files with their absolute and output paths
    */
   private async prepbundle(files: TOutputFile[]): Promise<void> {
     if (files.length === 0) {
@@ -309,12 +304,10 @@ export default class ReactSrv {
   }
 
   /**
-   * Transforms a JSX/TSX component (referenced by name) into a JS hydration script.
-   * 
-   * This is needed by {@link ReactSrv.render} in dev mode.
-   * 
-   * @param params an object containing pageName, rootId and an optional entry apth
-   * @returns a string containing the JS hydration script for the page 
+   * Compiles a page component (referenced by name) into an inline hydration script, for dev mode.
+   *
+   * @param params pageName, rootId and an optional entry path
+   * @returns the JS hydration script for the page
    */
   private bundle(params: { pageName: string; rootId: string; entryPath?: string }): string {
     const { pageName, rootId } = params;
@@ -465,11 +458,8 @@ export default class ReactSrv {
   }
 
   /**
-   * Issue #10: outPath is declared relative to the config file and follows
-   * `<docroot>/<optional subpath>`; the server mounts docroot at "/". So the
-   * URL prefix is everything after the docroot segment: normalize
-   * separators, drop "." and leading ".." segments, then drop the docroot
-   * itself. An absolute outPath has no knowable docroot and is rejected.
+   * Issue #10: the hydration URL prefix is outPath minus its docroot segment, which
+   * the server mounts at "/". An absolute outPath has no docroot and is rejected.
    */
   private getHydrationUrlPrefix(): string {
     const outPath = this.config.outPath;
@@ -543,9 +533,8 @@ export class FileUtils {
   }
 
   /**
-   * @returns the absolute paths of every output file reachable from this build's own
-   * entries, following the metafile's import graph. `entryOutputs` are the
-   * exact output paths the entries are expected to produce.
+   * @returns the absolute paths of every output reachable from `entryOutputs` (the
+   * exact output paths the entries are expected to produce), via the metafile's graph
    */
   static reachableOutputs(metafile: esbuild.Metafile, entryOutputs: string[]): Set<string> | null {
     const outputs = metafile.outputs;
