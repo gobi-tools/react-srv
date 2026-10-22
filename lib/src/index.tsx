@@ -9,15 +9,41 @@ import serialize from "serialize-javascript";
 import fg from "fast-glob";
 // Framework specifics (runtimes, CDN aliases, server build options) live on
 // per-framework adapters — see ./frameworks
-import {
-  getFrameworkAdapter,
-  resolveInstalledPackageVersion,
-} from "./frameworks/index.js";
-import type {
-  TFrameworkAdapter,
-  TFrameworkRuntime,
-  TSupportedFramework,
-} from "./frameworks/index.js";
+import { FrameworkAdapter } from "./frameworks/framework.js";
+import { ReactAdapter } from "./frameworks/react.js";
+import { PreactAdapter } from "./frameworks/preact.js";
+import type { TFrameworkRuntime, TSupportedFramework } from "./frameworks/framework.js";
+
+// The frameworks this build ships: adding one = an adapter file in
+// ./frameworks + a line here.
+const frameworkAdapters: Record<TSupportedFramework, FrameworkAdapter> = {
+  react: new ReactAdapter(),
+  preact: new PreactAdapter(),
+};
+
+/**
+ * @param framework the configured framework name
+ * @returns the adapter that speaks for it
+ * @throws a clear error for unknown names (e.g. from an untyped config)
+ */
+export function getFrameworkAdapter(framework: TSupportedFramework): FrameworkAdapter {
+  const adapter = frameworkAdapters[framework];
+  if (!adapter) {
+    throw new Error(
+      `react-srv: unknown framework "${framework}" — supported: ${Object.keys(frameworkAdapters).join(", ")}`
+    );
+  }
+  return adapter;
+}
+
+/**
+ * @returns the adapters whose configs need their own bundling, i.e. the
+ * candidates loadConfig retries through when a config can't load plain
+ * (see FrameworkAdapter.configBundleOptions).
+ */
+export function configBundleAdapters(): FrameworkAdapter[] {
+  return Object.values(frameworkAdapters).filter((adapter) => adapter.configBundleOptions);
+}
 
 type TReactSrvConfig = {
   framework: TSupportedFramework;
@@ -61,7 +87,7 @@ export function DefaultDocument({ children }) {
 export const DefaultReactSrvConfig: TReactSrvConfig = {
   framework: 'react',
   libLocation: 'https://esm.sh',
-  libVersion: resolveInstalledPackageVersion('react'),
+  libVersion: frameworkAdapters.react.installedVersion(),
   srcPath: './src',
   outPath: './public/hydrate',
   hydrate: true,
@@ -76,7 +102,7 @@ export const DefaultReactSrvConfig: TReactSrvConfig = {
 
 export default class ReactSrv {
   private readonly config: TReactSrvConfig;
-  private readonly framework: TFrameworkAdapter;
+  private readonly framework: FrameworkAdapter;
   private readonly frameworkRuntime: TFrameworkRuntime;
 
   constructor(readonly userConfig: Partial<TReactSrvConfig> = DefaultReactSrvConfig) {
@@ -124,7 +150,7 @@ export default class ReactSrv {
         mainFields: this.config.mainFields ?? [],
         // Framework specifics (externals plugin, JSX pin, banner) come from
         // the configured framework's adapter.
-        ...this.framework.serverBuild(),
+        ...this.framework.serverBuildOptions,
       });
 
       const js = result.outputFiles[0].text;

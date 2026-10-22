@@ -1,6 +1,6 @@
 import type * as esbuild from "esbuild";
-import { requireFromLib, resolveInstalledPackageVersion } from "./shared.js";
-import type { TFrameworkAdapter, TFrameworkRuntime } from "./types.js";
+import { FrameworkAdapter } from "./framework.js";
+import type { TFrameworkRuntime } from "./framework.js";
 
 // react* -> preact mapping for server bundles. esbuild hands plugins the
 // ORIGINAL import path — the `alias` option only applies after plugins
@@ -27,6 +27,7 @@ const sharedInstance = new Set([
 ]);
 
 /**
+ * @param requireFromLib library-rooted resolver (see FrameworkAdapter)
  * @returns a plugin that maps framework specifiers for server bundles the
  * library compiles itself (prerender pages, CLI config loading).
  *
@@ -43,7 +44,7 @@ const sharedInstance = new Set([
  * cjs subpath); if that package isn't installed the build fails loudly with
  * the missing path named.
  */
-function preactFrameworkPathsPlugin(): esbuild.Plugin {
+function preactFrameworkPathsPlugin(requireFromLib: NodeRequire): esbuild.Plugin {
   return {
     name: "externals-to-absolute",
     setup(build) {
@@ -64,47 +65,29 @@ function preactFrameworkPathsPlugin(): esbuild.Plugin {
   };
 }
 
-// Server bundles pin the JSX runtime explicitly instead of trusting the
-// project's tsconfig: the server build must emit preact vnodes. The banner
-// gives the temp module a `require` of its own, needed by the bundled
-// compat/rts code to load the shared preact core (Node ESM has no require;
-// the externals are absolute, so location is irrelevant).
-const preactServerBuild: Partial<esbuild.BuildOptions> = {
-  plugins: [preactFrameworkPathsPlugin()],
-  jsx: "automatic",
-  jsxImportSource: "preact",
-  banner: {
-    js: 'import { createRequire } from "node:module";\nconst require = createRequire(import.meta.url);',
-  },
-};
+export class PreactAdapter extends FrameworkAdapter {
+  readonly name = "preact";
+  readonly libPackage = "preact";
+  readonly requiredPackages = '"preact" and "preact-render-to-string"';
+  readonly jsxImportSource = "preact";
 
-export const PreactAdapter: TFrameworkAdapter = {
-  libPackage: "preact",
-
-  runtime(): TFrameworkRuntime {
-    try {
-      const preact = requireFromLib("preact");
-      const rts = requireFromLib("preact-render-to-string");
-      return {
-        h: preact.h,
-        renderToString: rts.renderToString,
-        renderToStaticMarkup: rts.renderToStaticMarkup,
-      };
-    } catch (cause) {
-      const detail = cause instanceof Error ? ` (${cause.message})` : "";
-      throw new Error(
-        `react-srv: framework "preact" requires "preact" and "preact-render-to-string" to be installed${detail}`
-      );
-    }
-  },
-
-  installedVersion: () => resolveInstalledPackageVersion("preact"),
-
-  serverBuild: () => preactServerBuild,
+  // Server bundles pin the JSX runtime explicitly instead of trusting the
+  // project's tsconfig: the server build must emit preact vnodes. The banner
+  // gives the temp module a `require` of its own, needed by the bundled
+  // compat/rts code to load the shared preact core (Node ESM has no require;
+  // the externals are absolute, so location is irrelevant).
+  readonly serverBuildOptions: Partial<esbuild.BuildOptions> = {
+    plugins: [preactFrameworkPathsPlugin(this.requireFromLib)],
+    jsx: "automatic",
+    jsxImportSource: "preact",
+    banner: {
+      js: 'import { createRequire } from "node:module";\nconst require = createRequire(import.meta.url);',
+    },
+  };
 
   // Configs load through the same mapping so a custom Document shares the
   // library's preact instance (loadConfig's second pass).
-  configBundleOptions: preactServerBuild,
+  readonly configBundleOptions = this.serverBuildOptions;
 
   // The browser build serves preact-native source (`preact`, `preact/hooks`,
   // ...) straight from the CDN — the bare "preact" key prefix-covers subpaths
@@ -112,14 +95,24 @@ export const PreactAdapter: TFrameworkAdapter = {
   // code and third-party libs) go through preact/compat. React subpath keys
   // must stay explicit: esbuild prefix-joins subpaths, which would otherwise
   // turn `react/jsx-runtime` into `.../compat/jsx-runtime` (a 404).
-  browserAliases: (libLocation, libVersion) => ({
-    "preact": `${libLocation}/preact@${libVersion}`,
-    "react": `${libLocation}/preact@${libVersion}/compat`,
-    "react/jsx-runtime": `${libLocation}/preact@${libVersion}/jsx-runtime`,
-    "react/jsx-dev-runtime": `${libLocation}/preact@${libVersion}/jsx-dev-runtime`,
-    "react-dom": `${libLocation}/preact@${libVersion}/compat`,
-    "react-dom/client": `${libLocation}/preact@${libVersion}/compat/client`,
-  }),
+  browserAliases(libLocation: string, libVersion: string): Record<string, string> {
+    return {
+      "preact": `${libLocation}/preact@${libVersion}`,
+      "react": `${libLocation}/preact@${libVersion}/compat`,
+      "react/jsx-runtime": `${libLocation}/preact@${libVersion}/jsx-runtime`,
+      "react/jsx-dev-runtime": `${libLocation}/preact@${libVersion}/jsx-dev-runtime`,
+      "react-dom": `${libLocation}/preact@${libVersion}/compat`,
+      "react-dom/client": `${libLocation}/preact@${libVersion}/compat/client`,
+    };
+  }
 
-  jsxImportSource: "preact",
-};
+  protected loadRuntime(): TFrameworkRuntime {
+    const preact = this.requireFromLib("preact");
+    const rts = this.requireFromLib("preact-render-to-string");
+    return {
+      h: preact.h,
+      renderToString: rts.renderToString,
+      renderToStaticMarkup: rts.renderToStaticMarkup,
+    };
+  }
+}

@@ -3,7 +3,7 @@ import fs from "fs";
 import os from "os";
 import { createHash } from "crypto";
 import * as esbuild from "esbuild";
-import { configBundleAdapters, getFrameworkAdapter } from "../frameworks/index.js";
+import { configBundleAdapters, getFrameworkAdapter } from "../index.js";
 
 async function bundleConfig(file: string, extra: Partial<esbuild.BuildOptions> = {}) {
   const result = await esbuild.build({

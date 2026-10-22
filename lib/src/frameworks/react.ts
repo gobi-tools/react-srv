@@ -1,13 +1,14 @@
 import type * as esbuild from "esbuild";
-import { requireFromLib, resolveInstalledPackageVersion } from "./shared.js";
-import type { TFrameworkAdapter, TFrameworkRuntime } from "./types.js";
+import { FrameworkAdapter } from "./framework.js";
+import type { TFrameworkRuntime } from "./framework.js";
 
 /**
+ * @param requireFromLib library-rooted resolver (see FrameworkAdapter)
  * @returns a plugin that resolves react* packages to absolute paths via the
  * library's own location so the bundled page renders with the same React
  * instance the library itself loaded.
  */
-function reactFrameworkPathsPlugin(): esbuild.Plugin {
+function reactFrameworkPathsPlugin(requireFromLib: NodeRequire): esbuild.Plugin {
   return {
     name: "externals-to-absolute",
     setup(build) {
@@ -19,44 +20,36 @@ function reactFrameworkPathsPlugin(): esbuild.Plugin {
   };
 }
 
-const reactServerBuild: Partial<esbuild.BuildOptions> = {
-  plugins: [reactFrameworkPathsPlugin()],
-};
+export class ReactAdapter extends FrameworkAdapter {
+  readonly name = "react";
+  readonly libPackage = "react";
+  readonly requiredPackages = '"react" and "react-dom"';
+  readonly jsxImportSource = "react";
 
-export const ReactAdapter: TFrameworkAdapter = {
-  libPackage: "react",
-
-  runtime(): TFrameworkRuntime {
-    try {
-      const react = requireFromLib("react");
-      const { renderToString, renderToStaticMarkup } = requireFromLib("react-dom/server");
-      return {
-        h: react.createElement,
-        renderToString,
-        renderToStaticMarkup,
-      };
-    } catch (cause) {
-      const detail = cause instanceof Error ? ` (${cause.message})` : "";
-      throw new Error(
-        `react-srv: framework "react" requires "react" and "react-dom" to be installed${detail}`
-      );
-    }
-  },
-
-  installedVersion: () => resolveInstalledPackageVersion("react"),
-
-  serverBuild: () => reactServerBuild,
-
+  readonly serverBuildOptions: Partial<esbuild.BuildOptions> = {
+    plugins: [reactFrameworkPathsPlugin(this.requireFromLib)],
+    // No jsx pin: react projects are tsconfig-driven (today's behaviour).
+  };
   // No configBundleOptions: react projects resolve their own react, so the
   // config loads in a single plain pass.
 
-  browserAliases: (libLocation, libVersion) => ({
-    "react": `${libLocation}/react@${libVersion}`,
-    "react-dom": `${libLocation}/react-dom@${libVersion}`,
-    "react-dom/client": `${libLocation}/react-dom@${libVersion}/client`,
-    "react/jsx-runtime": `${libLocation}/react@${libVersion}/jsx-runtime`,
-    "react/jsx-dev-runtime": `${libLocation}/react@${libVersion}/jsx-dev-runtime`,
-  }),
+  browserAliases(libLocation: string, libVersion: string): Record<string, string> {
+    return {
+      "react": `${libLocation}/react@${libVersion}`,
+      "react-dom": `${libLocation}/react-dom@${libVersion}`,
+      "react-dom/client": `${libLocation}/react-dom@${libVersion}/client`,
+      "react/jsx-runtime": `${libLocation}/react@${libVersion}/jsx-runtime`,
+      "react/jsx-dev-runtime": `${libLocation}/react@${libVersion}/jsx-dev-runtime`,
+    };
+  }
 
-  jsxImportSource: "react",
-};
+  protected loadRuntime(): TFrameworkRuntime {
+    const react = this.requireFromLib("react");
+    const { renderToString, renderToStaticMarkup } = this.requireFromLib("react-dom/server");
+    return {
+      h: react.createElement,
+      renderToString,
+      renderToStaticMarkup,
+    };
+  }
+}
