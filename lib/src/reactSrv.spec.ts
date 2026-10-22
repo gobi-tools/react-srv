@@ -14,6 +14,11 @@ const installedReactVersion: string = JSON.parse(
   fs.readFileSync(createRequire(import.meta.url).resolve("react/package.json"), "utf8")
 ).version;
 
+// Same pinning contract as React above, for framework: "preact" builds.
+const installedPreactVersion: string = JSON.parse(
+  fs.readFileSync(createRequire(import.meta.url).resolve("preact/package.json"), "utf8")
+).version;
+
 describe("ReactSrv", () => {
   // js/mjs outputs are `<normalised-name>.<6-hex hash of source path>.js`
   // (issue #8); html keeps its plain name
@@ -898,6 +903,99 @@ describe("ReactSrv", () => {
       });
     });
   });
+
+  describe("framework: preact", () => {
+    // Contract: source keeps writing the React API (and compiles with the
+    // React automatic runtime), but the browser bundle's every react* import
+    // is rewritten to preact/compat on the CDN — same HTML contract as
+    // before, shipped with Preact instead of React. The server-side render
+    // is untouched and still React.
+    const tmpRoot = fs.mkdtempSync(path.join(os.tmpdir(), "react-srv-preact-"));
+    const srcPath = path.join(tmpRoot, "src");
+    const outPath = path.join(tmpRoot, "out");
+
+    const writeComponent = (name: string) => {
+      fs.writeFileSync(
+        path.join(srcPath, `${name}.tsx`),
+        `import { useState } from "react";\n` +
+          `export default function ${name}() {\n` +
+          `  const [n] = useState(0);\n` +
+          `  return <div>${name}-{n}</div>;\n` +
+          `}\n`,
+        "utf8"
+      );
+    };
+
+    const readOutFile = (relPath: string): string =>
+      fs.readFileSync(path.join(outPath, relPath), "utf8");
+
+    const p = (v: string) => `https://esm.sh/preact@${v}`;
+
+    function Home() {
+      return null;
+    }
+
+    beforeEach(() => {
+      fs.rmSync(srcPath, { recursive: true, force: true });
+      fs.rmSync(outPath, { recursive: true, force: true });
+      fs.mkdirSync(srcPath, { recursive: true });
+    });
+
+    afterAll(() => {
+      fs.rmSync(tmpRoot, { recursive: true, force: true });
+    });
+
+    it("ships the hydration entry from preact/compat, pinned to the installed Preact", () => {
+      writeComponent("Home");
+      const srv = new ReactSrv({ srcPath, outPath, framework: "preact" });
+      srv.prebundle();
+      const code = readOutFile(hashedJs("Home.tsx"));
+      // wrapper: createElement + Page import from compat, hydrate from compat/client
+      expect(code).toContain(`from "${p(installedPreactVersion)}/compat"`);
+      expect(code).toContain(`from "${p(installedPreactVersion)}/compat/client"`);
+      // the component's own JSX (React automatic runtime) lands on preact/jsx-runtime
+      expect(code).toContain(`from "${p(installedPreactVersion)}/jsx-runtime"`);
+      // page source importing from "react" is aliased too:
+      expect(code).toContain("useState");
+      // hydration contract is unchanged
+      expect(code).toContain('document.getElementById("root")');
+      expect(code).toContain("hydrateRoot(");
+      expect(code).toContain("__REACT_SRV_HYDRATED__");
+      // no React may survive: neither a bare specifier nor a react CDN URL
+      expect(code).not.toMatch(/["']react(-dom)?(["'/])/);
+      expect(code).not.toContain("https://esm.sh/react@");
+    });
+
+    it("honours an explicit libVersion over the installed Preact", () => {
+      writeComponent("Home");
+      const srv = new ReactSrv({ srcPath, outPath, framework: "preact", libVersion: "10.0.0" });
+      srv.prebundle();
+      const code = readOutFile(hashedJs("Home.tsx"));
+      expect(code).toContain(`from "${p("10.0.0")}/compat/client"`);
+      expect(code).not.toContain(installedPreactVersion);
+    });
+
+    it("inlines a preact hydration bundle in dev render()", () => {
+      writeComponent("Home");
+      const srv = new ReactSrv({ srcPath, outPath, framework: "preact" });
+      const html = srv.render(Home);
+      expect(html).toContain('type="module"');
+      expect(html).toContain(`https://esm.sh/preact@${installedPreactVersion}/compat/client`);
+      expect(html).toContain(`https://esm.sh/preact@${installedPreactVersion}/jsx-runtime`);
+      expect(html).toContain("hydrateRoot(");
+      expect(html).not.toContain("https://esm.sh/react@");
+    });
+
+    it("leaves react builds alone when framework is not set", () => {
+      expect(DefaultReactSrvConfig.framework).toBe("react");
+      writeComponent("Home");
+      const srv = new ReactSrv({ srcPath, outPath });
+      srv.prebundle();
+      const code = readOutFile(hashedJs("Home.tsx"));
+      expect(code).toContain(`https://esm.sh/react@${installedReactVersion}`);
+      expect(code).not.toContain("https://esm.sh/preact@");
+    });
+  });
 });
 
 describe("FileUtils.reachableOutputs", () => {
@@ -967,20 +1065,28 @@ describe("FileUtils.deadDynamicImporters", () => {
   });
 });
 
-describe("DefaultReactSrvConfig.reactVersion", () => {
+describe("DefaultReactSrvConfig.libVersion", () => {
   // Pinning the CDN to the installed version is what keeps the server-rendered
-  // markup and the browser's hydration on the same React build, and keeps the
+  // markup and the browser's hydration on the same build, and keeps the
   // CDN URLs immutable so they can be cached indefinitely.
-  it("defaults to the locally installed React version, not 'latest'", () => {
-    expect(DefaultReactSrvConfig.reactVersion).toBe(installedReactVersion);
-    expect(DefaultReactSrvConfig.reactVersion).not.toBe("latest");
+  it("defaults to the locally installed React version (the default framework), not 'latest'", () => {
+    expect(DefaultReactSrvConfig.libVersion).toBe(installedReactVersion);
+    expect(DefaultReactSrvConfig.libVersion).not.toBe("latest");
+  });
+
+  it("re-pins to the installed Preact version when framework is 'preact'", () => {
+    const srv = new ReactSrv({
+      srcPath: path.dirname(fileURLToPath(import.meta.url)),
+      framework: "preact",
+    });
+    expect((srv as any).config.libVersion).toBe(installedPreactVersion);
   });
 
   it("still honours an explicit override", () => {
     const srv = new ReactSrv({
       srcPath: path.dirname(fileURLToPath(import.meta.url)),
-      reactVersion: "18.3.0",
+      libVersion: "18.3.0",
     });
-    expect((srv as any).config.reactVersion).toBe("18.3.0");
+    expect((srv as any).config.libVersion).toBe("18.3.0");
   });
 });

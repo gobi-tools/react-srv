@@ -4,19 +4,15 @@ import { createHash } from "crypto";
 import path from "path";
 import os from "os";
 import { createRequire } from "module";
-// react imports
-import React from "react";
-import { renderToString, renderToStaticMarkup } from "react-dom/server";
 // 3rd party dependencies
 import * as esbuild from "esbuild";
 import serialize from "serialize-javascript";
 import fg from "fast-glob";
 
 type TReactSrvConfig = {
-  /** CDN React version. Defaults to the locally installed React version, so the
-   * browser hydrates with the same build the server rendered with. */
-  reactVersion?: string;
-  reactLocation?: string;
+  framework: "react" | "preact";
+  libLocation?: string;
+  libVersion?: string;
   srcPath?: string;
   outPath?: string,
   hydrate?: boolean;
@@ -25,38 +21,103 @@ type TReactSrvConfig = {
   splitting?: boolean,
   keepNames?: boolean,
   mainFields?: string[],
-  Document?: React.FC<any>,
+  Document?: TFC,
   initProps?: any,
 };
 
+/** Minimal abstract component signature */
+type TFC = (props: any) => any;
+
+/** The framework functions the server-side shell renders with. */
+type TFrameworkRuntime = {
+  h: (type: any, props: any, ...children: any[]) => any;
+  renderToString: (vnode: any) => string;
+  renderToStaticMarkup: (vnode: any) => string;
+};
+
+/**
+ * Loads the configured framework's runtime. Synchronous on purpose: render()
+ * is a sync API, so the swap must not need await — both react-dom/server and
+ * preact(-render-to-string) are requirable CJS. react/react-dom and
+ * preact/preact-render-to-string are peer dependencies: whichever framework
+ * is configured must be installed, and we fail fast with a clear message if
+ * it isn't.
+ *
+ * Note: the lib's own rendering is plain `h()` calls (no JSX), so this module
+ * itself never statically imports a framework runtime — react/preact are only
+ * pulled in here, per the configured framework.
+ */
+function loadFrameworkRuntime(framework: "react" | "preact"): TFrameworkRuntime {
+  const requireFromLib = createRequire(import.meta.url);
+  try {
+    if (framework === "preact") {
+      const preact = requireFromLib("preact");
+      const rts = requireFromLib("preact-render-to-string");
+      return {
+        h: preact.h,
+        renderToString: rts.renderToString,
+        renderToStaticMarkup: rts.renderToStaticMarkup,
+      };
+    }
+    const react = requireFromLib("react");
+    const { renderToString, renderToStaticMarkup } = requireFromLib("react-dom/server");
+    return {
+      h: react.createElement,
+      renderToString,
+      renderToStaticMarkup,
+    };
+  } catch (cause) {
+    const required = framework === "preact"
+      ? '"preact" and "preact-render-to-string"'
+      : '"react" and "react-dom"';
+    const detail = cause instanceof Error ? ` (${cause.message})` : "";
+    throw new Error(
+      `react-srv: framework "${framework}" requires ${required} to be installed${detail}`
+    );
+  }
+}
+
+/**
+ * The `h` of the framework loaded by the most recent ReactSrv constructor.
+ * Module-level because DefaultDocument is a plain exported component with no
+ * instance to hang off — hence one framework per process (one ReactSrv per
+ * app, which is what both the CLI and a server give you anyway).
+ */
+let activeH: TFrameworkRuntime["h"] | null = null;
+
 export function DefaultDocument({ children }) {
-  return (
-    <html>
-      <head></head>
-      <body>
-        {children}
-      </body>
-    </html>
+  if (!activeH) {
+    throw new Error("react-srv: no framework loaded — construct ReactSrv before rendering");
+  }
+  return activeH(
+    "html",
+    null,
+    activeH("head", null),
+    activeH("body", null, children)
   );
 };
 
-const FALLBACK_REACT_VERSION = 'latest';
+const FALLBACK_VERSION = 'latest';
 
-function resolveInstalledReactVersion(): string {
+/**
+ * @param pkgName package to resolve (e.g. "react", "preact")
+ * @returns the locally installed version of `pkgName`, or a CDN-safe fallback
+ */
+function resolveInstalledPackageVersion(pkgName: string): string {
   try {
-    const pkgPath = createRequire(import.meta.url).resolve('react/package.json');
+    const pkgPath = createRequire(import.meta.url).resolve(`${pkgName}/package.json`);
     const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf8'));
     const version = typeof pkg.version === 'string' ? pkg.version.trim() : '';
-    console.log('gabbox', version);
-    return version === '' ? FALLBACK_REACT_VERSION : version;
+    return version === '' ? FALLBACK_VERSION : version;
   } catch {
-    return FALLBACK_REACT_VERSION;
+    return FALLBACK_VERSION;
   }
 }
 
 export const DefaultReactSrvConfig: TReactSrvConfig = {
-  reactVersion: resolveInstalledReactVersion(),
-  reactLocation: 'https://esm.sh',
+  framework: 'react',
+  libLocation: 'https://esm.sh',
+  libVersion: resolveInstalledPackageVersion('react'),
   srcPath: './src',
   outPath: './public/hydrate',
   hydrate: true,
@@ -71,12 +132,20 @@ export const DefaultReactSrvConfig: TReactSrvConfig = {
 
 export default class ReactSrv {
   private readonly config: TReactSrvConfig;
+  private readonly frameworkRuntime: TFrameworkRuntime;
 
-  constructor(readonly userConfig: TReactSrvConfig = DefaultReactSrvConfig) {
+  constructor(readonly userConfig: Partial<TReactSrvConfig> = DefaultReactSrvConfig) {
+    const framework = userConfig.framework ?? DefaultReactSrvConfig.framework;
     this.config = {
       ...DefaultReactSrvConfig,
       ...userConfig,
+      // Pin the CDN to the installed version of whichever framework is
+      // actually shipping, unless the user pinned one explicitly.
+      libVersion: userConfig.libVersion
+        ?? resolveInstalledPackageVersion(framework === "preact" ? "preact" : "react"),
     };
+    this.frameworkRuntime = loadFrameworkRuntime(this.config.framework);
+    activeH = this.frameworkRuntime.h;
     FileUtils.validateDir(this.config.srcPath);
   }
 
@@ -127,16 +196,17 @@ export default class ReactSrv {
         fs.unlinkSync(tempFile);
       }
 
-      // Render to static HTML
+      // Render to static HTML — plain h() calls (not JSX) so the shell is
+      // made of the configured framework's vnodes, matching what Page
+      // renders with on the server and hydrates with in the browser.
       const rootId = 'root';
-      const document = (
-        <this.config.Document {...props} >
-          <div id={rootId}>
-            {React.createElement(Page, props)}
-          </div>
-          <script dangerouslySetInnerHTML={{ __html: `globalThis.__INITIAL_PROPS__ = ${safeProps};` }} />
-          {hydrate && <script type="module" src={this.getRelativeHydrationPath(file.name.js)}></script>}
-        </this.config.Document>
+      const { h, renderToString, renderToStaticMarkup } = this.frameworkRuntime;
+      const document = h(
+        this.config.Document,
+        props,
+        h("div", { id: rootId }, h(Page, props)),
+        h("script", { dangerouslySetInnerHTML: { __html: `globalThis.__INITIAL_PROPS__ = ${safeProps};` } }),
+        hydrate && h("script", { type: "module", src: this.getRelativeHydrationPath(file.name.js) })
       );
       const html = hydrate ? renderToString(document) : renderToStaticMarkup(document);
       const fullHtml = `<!DOCTYPE html>\n${html}`;
@@ -156,26 +226,25 @@ export default class ReactSrv {
    * Renders a component & props into a HTML string that references its hydration
    * script — inlined in dev, read from disk in prod (needs {@link ReactSrv.prebundle}).
    *
-   * @param Component a React component
+   * @param Component the page component to render
    * @param props any props associated with it
    * @returns a HTML string
    */
-  render(Component: React.FC<any>, props: any = {}): string {
+  render(Component: TFC, props: any = {}): string {
     const rootId = "root";
     const safeProps = serialize(props, { isJSON: true });
     const pageName = this.resolvePageName(Component);
     const hydrate = this.config.hydrate === true;
     const isProd = this.config.isProd === true;
+    const { h, renderToString, renderToStaticMarkup } = this.frameworkRuntime;
 
-    const document = (
-      <this.config.Document {...props}>
-        <div id={rootId}>
-          <Component {...props} />
-        </div>
-        <script dangerouslySetInnerHTML={{ __html: `globalThis.__INITIAL_PROPS__ = ${safeProps};` }} />
-        {(isProd && hydrate) && <script type="module" src={this.getPublicHydrationPath(pageName)}></script>}
-        {(!isProd && hydrate) && <script type="module" dangerouslySetInnerHTML={{ __html: this.bundle({ pageName, rootId }) }} />}
-      </this.config.Document>
+    const document = h(
+      this.config.Document,
+      props,
+      h("div", { id: rootId }, h(Component, props)),
+      h("script", { dangerouslySetInnerHTML: { __html: `globalThis.__INITIAL_PROPS__ = ${safeProps};` } }),
+      (isProd && hydrate) && h("script", { type: "module", src: this.getPublicHydrationPath(pageName) }),
+      (!isProd && hydrate) && h("script", { type: "module", dangerouslySetInnerHTML: { __html: this.bundle({ pageName, rootId }) } })
     );
 
     const html = hydrate ? renderToString(document) : renderToStaticMarkup(document);
@@ -231,7 +300,7 @@ export default class ReactSrv {
         fs.writeFileSync(
           wrapperPath,
           [
-            `import React from "react";`,
+            `import { createElement } from "react";`,
             `import { hydrateRoot } from "react-dom/client";`,
             `import Page from ${JSON.stringify(file.absPath)};`,
             ``,
@@ -241,7 +310,7 @@ export default class ReactSrv {
             `}`,
             `if (!globalThis.__REACT_SRV_HYDRATED__) {`,
             `  globalThis.__REACT_SRV_HYDRATED__ = true;`,
-            `  hydrateRoot(root, React.createElement(Page, globalThis.__INITIAL_PROPS__ || {}));`,
+            `  hydrateRoot(root, createElement(Page, globalThis.__INITIAL_PROPS__ || {}));`,
             `}`,
             ``,
           ].join("\n"),
@@ -320,7 +389,7 @@ export default class ReactSrv {
       ...this.browserBuildOptions(),
       stdin: {
         contents: `
-        import React from "react";
+        import { createElement } from "react";
         import { hydrateRoot } from "react-dom/client";
         import Page from "./${entryBase}";
 
@@ -334,7 +403,7 @@ export default class ReactSrv {
 
           hydrateRoot(
             root,
-            React.createElement(Page, globalThis.__INITIAL_PROPS__ || {})
+            createElement(Page, globalThis.__INITIAL_PROPS__ || {})
           );
         }
       `,
@@ -398,7 +467,27 @@ export default class ReactSrv {
   ////////////////////////////////////////////////
 
   private browserBuildOptions(): esbuild.BuildOptions {
-    const { reactLocation, reactVersion } = this.config;
+    const { libLocation, libVersion, framework } = this.config;
+    // In preact mode the *source* keeps using the React API (and compiles with
+    // the React automatic runtime), but every react* import is redirected to
+    // preact/compat on the CDN. Subpath keys must be spelled out explicitly:
+    // esbuild rewrites subpaths by prefix-joining, which would otherwise turn
+    // `react/jsx-runtime` into `.../preact@v/compat/jsx-runtime` (a 404).
+    const alias = framework === "preact"
+      ? {
+          "react": `${libLocation}/preact@${libVersion}/compat`,
+          "react/jsx-runtime": `${libLocation}/preact@${libVersion}/jsx-runtime`,
+          "react/jsx-dev-runtime": `${libLocation}/preact@${libVersion}/jsx-dev-runtime`,
+          "react-dom": `${libLocation}/preact@${libVersion}/compat`,
+          "react-dom/client": `${libLocation}/preact@${libVersion}/compat/client`,
+        }
+      : {
+          "react": `${libLocation}/react@${libVersion}`,
+          "react-dom": `${libLocation}/react-dom@${libVersion}`,
+          "react-dom/client": `${libLocation}/react-dom@${libVersion}/client`,
+          "react/jsx-runtime": `${libLocation}/react@${libVersion}/jsx-runtime`,
+          "react/jsx-dev-runtime": `${libLocation}/react@${libVersion}/jsx-dev-runtime`,
+        };
     return {
       bundle: true,
       format: "esm",
@@ -406,21 +495,18 @@ export default class ReactSrv {
       minify: this.config.minify === true,
       keepNames: this.config.keepNames !== false && this.config.minify === true,
       jsx: "automatic",
+      // Deliberately "react" in both modes: Preact implements the same
+      // automatic JSX runtime, and keeping the React import source means the
+      // aliased react/jsx-runtime above is what lands on preact/jsx-runtime.
       jsxImportSource: "react",
       mainFields: this.config.mainFields ?? [],
       // Resolve react* imports to their CDN URLs at build time
-      alias: {
-        "react": `${reactLocation}/react@${reactVersion}`,
-        "react-dom": `${reactLocation}/react-dom@${reactVersion}`,
-        "react-dom/client": `${reactLocation}/react-dom@${reactVersion}/client`,
-        "react/jsx-runtime": `${reactLocation}/react@${reactVersion}/jsx-runtime`,
-        "react/jsx-dev-runtime": `${reactLocation}/react@${reactVersion}/jsx-dev-runtime`,
-      },
-      external: [`${reactLocation}/*`],
+      alias,
+      external: [`${libLocation}/*`],
     };
   }
 
-  private resolvePageName(Component: React.FC<any>): string {
+  private resolvePageName(Component: TFC): string {
     const pageName = Component.name;
     if (!pageName) {
       throw new Error(
