@@ -431,8 +431,8 @@ export default class ReactSrv {
    *
    * esbuild hands plugins the ORIGINAL import path — the `alias` option only
    * applies after plugins decline to resolve — so this plugin is also where
-   * react* -> preact mapping happens for server bundles the library compiles
-   * itself (prerender).
+   * react* -> preact mapping happens for bundles the library compiles
+   * itself (prerender pages, CLI config loading).
    *
    * Preact mode splits specifiers in two:
    * - preact core/hooks/jsx-runtime are externalized to absolute paths so the
@@ -447,7 +447,7 @@ export default class ReactSrv {
    *
    * In react mode the plugin behaves exactly as before.
    */
-  private static rewriteFrameworkPathsPlugin(framework: "react" | "preact"): esbuild.Plugin {
+  static rewriteFrameworkPathsPlugin(framework: "react" | "preact"): esbuild.Plugin {
     const requireFromLib = createRequire(import.meta.url);
     // Exact keys only: a bare "react" entry must not swallow
     // react/jsx-runtime (compat has no jsx-runtime subpath).
