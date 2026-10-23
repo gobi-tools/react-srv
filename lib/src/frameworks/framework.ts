@@ -50,20 +50,12 @@ export abstract class FrameworkAdapter {
   abstract readonly jsxImportSource: string;
 
   /**
-   * esbuild options for server bundles the library compiles itself
-   * (prerendered pages): externals plugin, JSX pin, banner — whatever the
-   * framework needs on top of the common build.
+   * esbuild options for every server bundle the library compiles itself —
+   * prerendered pages AND project configs (so a config's Document runs on
+   * the same framework instance as the shell): externals plugin, JSX pin,
+   * banner — whatever the framework needs on top of the common build.
    */
   abstract readonly serverBuildOptions: Partial<esbuild.BuildOptions>;
-
-  /**
-   * esbuild options for bundling a project config, or undefined when
-   * configs load fine in a single plain pass (react). loadConfig falls back
-   * to these when a project's own imports can't resolve — e.g. a preact-only
-   * project writing the React API — so a config's Document stays on the same
-   * framework instance as the shell.
-   */
-  readonly configBundleOptions?: Partial<esbuild.BuildOptions>;
 
   /**
    * @returns the browser-build alias map that redirects every framework

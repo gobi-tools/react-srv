@@ -3,7 +3,8 @@ import fs from "fs";
 import os from "os";
 import { createHash } from "crypto";
 import * as esbuild from "esbuild";
-import { configBundleAdapters, getFrameworkAdapter } from "../index.js";
+import { frameworkAdapters, getFrameworkAdapter } from "../index.js";
+import type { FrameworkAdapter } from "../frameworks/framework.js";
 
 async function bundleConfig(file: string, extra: Partial<esbuild.BuildOptions> = {}) {
   const result = await esbuild.build({
@@ -41,34 +42,40 @@ async function importBundle(code: string) {
   return mod.default ?? mod;
 }
 
+/** Bundle + import the config through one framework's server mapping. */
+async function loadWith(file: string, adapter: FrameworkAdapter) {
+  return importBundle(await bundleConfig(file, adapter.serverBuildOptions));
+}
+
 export async function loadConfig(file: string) {
-  // Pass 1: bundle the config as-is. Covers every project that can resolve
-  // its own framework imports (react projects, preact-native ones).
-  let config: any;
+  // The config declares the framework it needs, and only running it reveals
+  // which one: pass 1 bundles it plainly to discover `framework`.
+  let discovered: any;
   try {
-    config = await importBundle(await bundleConfig(file));
+    discovered = await importBundle(await bundleConfig(file));
   } catch {
-    config = undefined; // retried through the framework-mapped candidates below
+    discovered = undefined;
   }
-  if (config !== undefined) {
-    // Frameworks that need their own config bundling get a second pass (a
-    // custom Document then shares the library's framework instance); the
-    // rest are done after pass 1.
-    const extras = config?.framework
-      ? getFrameworkAdapter(config.framework).configBundleOptions
-      : undefined;
-    if (!extras) return config;
-    return importBundle(await bundleConfig(file, extras));
+  if (discovered !== undefined) {
+    // Pass 2 only when a framework was declared: rebundle through its server
+    // mapping, so the config's imports (and a custom Document) share the
+    // library's own framework instance — the same mapping prerendered pages
+    // get. Configs are declarative objects, so the module executing twice
+    // has negligible side effects.
+    return discovered.framework
+      ? loadWith(file, getFrameworkAdapter(discovered.framework))
+      : discovered;
   }
-  // Pass 1 couldn't load the config as-is: the project's own imports don't
-  // resolve (e.g. a preact-only project writing the React API). Retry
-  // through each framework that declares config bundling until one loads.
-  // The config module executes a second time on the rebundle path — configs
-  // are declarative objects, so the duplicated side effects are negligible.
+  // Pass 1 couldn't run the config at all: the project can't resolve its own
+  // framework imports (e.g. a preact-only project using the React API). Try
+  // each framework's mapping; whichever runs reveals the declared framework,
+  // and that one gets the final say over the mapping used (a react mapping
+  // can run a preact config and vice versa).
   let lastError: unknown;
-  for (const adapter of configBundleAdapters()) {
+  for (const adapter of frameworkAdapters()) {
     try {
-      return await importBundle(await bundleConfig(file, adapter.configBundleOptions));
+      const config = await loadWith(file, adapter);
+      return config?.framework ? loadWith(file, getFrameworkAdapter(config.framework)) : config;
     } catch (cause) {
       lastError = cause;
     }

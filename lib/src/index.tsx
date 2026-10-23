@@ -16,7 +16,7 @@ import type { TFrameworkRuntime, TSupportedFramework } from "./frameworks/framew
 
 // The frameworks this build ships: adding one = an adapter file in
 // ./frameworks + a line here.
-const frameworkAdapters: Record<TSupportedFramework, FrameworkAdapter> = {
+const adapters: Record<TSupportedFramework, FrameworkAdapter> = {
   react: new ReactAdapter(),
   preact: new PreactAdapter(),
 };
@@ -27,22 +27,18 @@ const frameworkAdapters: Record<TSupportedFramework, FrameworkAdapter> = {
  * @throws a clear error for unknown names (e.g. from an untyped config)
  */
 export function getFrameworkAdapter(framework: TSupportedFramework): FrameworkAdapter {
-  const adapter = frameworkAdapters[framework];
+  const adapter = adapters[framework];
   if (!adapter) {
     throw new Error(
-      `react-srv: unknown framework "${framework}" — supported: ${Object.keys(frameworkAdapters).join(", ")}`
+      `react-srv: unknown framework "${framework}" — supported: ${Object.keys(adapters).join(", ")}`
     );
   }
   return adapter;
 }
 
-/**
- * @returns the adapters whose configs need their own bundling, i.e. the
- * candidates loadConfig retries through when a config can't load plain
- * (see FrameworkAdapter.configBundleOptions).
- */
-export function configBundleAdapters(): FrameworkAdapter[] {
-  return Object.values(frameworkAdapters).filter((adapter) => adapter.configBundleOptions);
+/** @returns every shipped adapter, in registration order. */
+export function frameworkAdapters(): FrameworkAdapter[] {
+  return Object.values(adapters);
 }
 
 type TReactSrvConfig = {
@@ -87,7 +83,7 @@ export function DefaultDocument({ children }) {
 export const DefaultReactSrvConfig: TReactSrvConfig = {
   framework: 'react',
   libLocation: 'https://esm.sh',
-  libVersion: frameworkAdapters.react.installedVersion(),
+  libVersion: adapters.react.installedVersion(),
   srcPath: './src',
   outPath: './public/hydrate',
   hydrate: true,

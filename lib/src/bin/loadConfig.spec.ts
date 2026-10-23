@@ -35,7 +35,7 @@ describe("loadConfig", () => {
     fs.rmSync(tmpRoot, { recursive: true, force: true });
   });
 
-  it("loads a react config from the project in one pass", async () => {
+  it("loads a react config from the project", async () => {
     linkReact();
     const fp = writeConfig(
       "config.ts",

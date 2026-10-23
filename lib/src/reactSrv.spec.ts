@@ -1014,6 +1014,24 @@ describe("ReactSrv", () => {
       expect(html).toContain("NATIVE-7");
     });
 
+    it("prerenders preact pages that use fragments (jsx-runtime hides Fragment behind a CJS getter)", async () => {
+      // Regression: preact/jsx-runtime's CJS dist defines Fragment via
+      // Object.defineProperty(... get ...), which Node's cjs-module-lexer
+      // can't see — externalizing it made `import { Fragment }` in the temp
+      // shell crash. It must be bundled (esbuild resolves CJS exports at the
+      // use site) while its internal preact require stays the shared core.
+      fs.writeFileSync(
+        path.join(srcPath, "Frag.tsx"),
+        `export default function Frag() {\n` + `  return <><span>frag-in</span>FRAG-MARKER</>;\n` + `}\n`,
+        "utf8"
+      );
+      const srv = new ReactSrv({ srcPath, outPath, framework: "preact", hydrate: false });
+      await srv.prerender();
+      const html = readOutFile("frag.html");
+      expect(html).toContain("frag-in");
+      expect(html).toContain("FRAG-MARKER");
+    });
+
     it("prerenders first-party React API pages through preact/compat", async () => {
       writeComponent("Api");
       const srv = new ReactSrv({ srcPath, outPath, framework: "preact", hydrate: false });

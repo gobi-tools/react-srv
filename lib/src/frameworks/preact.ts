@@ -16,15 +16,12 @@ const toPreact: Record<string, string> = {
   "react-dom/server": "preact-render-to-string",
 };
 
-// Everything resolved to these is externalized to an absolute path so the
-// bundled page and the library share ONE framework instance. Their dist
-// files are statically analyzable, so Node can link their named ESM imports.
-const sharedInstance = new Set([
-  "preact",
-  "preact/hooks",
-  "preact/jsx-runtime",
-  "preact/jsx-dev-runtime",
-]);
+// The stateful core: externalized to absolute paths so the bundled page and
+// the library share ONE framework instance — hooks state and the options
+// patching compat does at module load depend on it. Their dist files use
+// plain `exports.x = ...` assignments, so Node's cjs-module-lexer links
+// their named imports fine.
+const sharedInstance = new Set(["preact", "preact/hooks"]);
 
 /**
  * @param requireFromLib library-rooted resolver (see FrameworkAdapter)
@@ -32,13 +29,16 @@ const sharedInstance = new Set([
  * library compiles itself (prerender pages, CLI config loading).
  *
  * Preact mode splits specifiers in two:
- * - preact core/hooks/jsx-runtime are externalized to absolute paths (see
- *   sharedInstance above).
- * - preact/compat and preact-render-to-string are BUNDLED instead: their
- *   dist files export via dynamic Object.defineProperty loops that Node's
- *   cjs-module-lexer cannot see, which would crash `import { ... }` at
- *   runtime; esbuild resolves CJS named exports at the use site instead.
- *   Their internal requires of the core hit the first case above.
+ * - preact core and preact/hooks are externalized to absolute paths (see
+ *   sharedInstance above) — the shared, stateful instance.
+ * - preact/compat, preact/jsx-runtime, preact/jsx-dev-runtime and
+ *   preact-render-to-string are BUNDLED instead: their dist files define
+ *   some exports via `Object.defineProperty(... get ...)` (compat and rts
+ *   use dynamic export loops, jsx-runtime hides `Fragment` behind a getter),
+ *   which Node's cjs-module-lexer cannot see — `import { ... }` in the temp
+ *   module would crash — while esbuild resolves CJS named exports at the use
+ *   site. Their internal requires of the core hit the first case above, so
+ *   the bundled copies still share the one instance.
  *
  * Unmapped react* paths fall through to their real package (usually a rare
  * cjs subpath); if that package isn't installed the build fails loudly with
@@ -84,10 +84,6 @@ export class PreactAdapter extends FrameworkAdapter {
       js: 'import { createRequire } from "node:module";\nconst require = createRequire(import.meta.url);',
     },
   };
-
-  // Configs load through the same mapping so a custom Document shares the
-  // library's preact instance (loadConfig's second pass).
-  readonly configBundleOptions = this.serverBuildOptions;
 
   // The browser build serves preact-native source (`preact`, `preact/hooks`,
   // ...) straight from the CDN — the bare "preact" key prefix-covers subpaths

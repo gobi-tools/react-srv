@@ -30,8 +30,6 @@ export class ReactAdapter extends FrameworkAdapter {
     plugins: [reactFrameworkPathsPlugin(this.requireFromLib)],
     // No jsx pin: react projects are tsconfig-driven (today's behaviour).
   };
-  // No configBundleOptions: react projects resolve their own react, so the
-  // config loads in a single plain pass.
 
   browserAliases(libLocation: string, libVersion: string): Record<string, string> {
     return {
