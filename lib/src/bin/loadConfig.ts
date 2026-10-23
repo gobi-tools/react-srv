@@ -7,17 +7,17 @@ import { frameworkAdapters, getFrameworkAdapter, type TReactSrvConfig } from "..
 import type { FrameworkAdapter } from "../frameworks/framework.js";
 
 /**
- * @param file the project's config module (TS/JS, default export)
+ * @param fpath the project's config module (TS/JS, default export)
  * @returns the config; its `framework` is verified to name a supported
  * adapter
  * @throws when no pass can run the config, or the framework is unknown
  */
-export async function loadConfig(file: string): Promise<Partial<TReactSrvConfig>> {
+export async function loadConfig(fpath: string): Promise<Partial<TReactSrvConfig>> {
   // The config declares the framework it needs, and only running it reveals
   // which one: pass 1 bundles it plainly to discover `framework`.
   let discovered: Partial<TReactSrvConfig> | undefined;
   try {
-    discovered = await importBundle(await bundleConfig(file));
+    discovered = await importBundle(await bundleConfig(fpath));
   } catch {
     discovered = undefined;
   }
@@ -28,7 +28,7 @@ export async function loadConfig(file: string): Promise<Partial<TReactSrvConfig>
     // get. Configs are declarative objects, so the module executing twice
     // has negligible side effects.
     return discovered.framework
-      ? loadWith(file, getFrameworkAdapter(discovered.framework))
+      ? loadWith(fpath, getFrameworkAdapter(discovered.framework))
       : discovered;
   }
   // Pass 1 couldn't run the config at all: the project can't resolve its own
@@ -39,8 +39,8 @@ export async function loadConfig(file: string): Promise<Partial<TReactSrvConfig>
   let lastError: unknown;
   for (const adapter of frameworkAdapters()) {
     try {
-      const config = await loadWith(file, adapter);
-      return config.framework ? loadWith(file, getFrameworkAdapter(config.framework)) : config;
+      const config = await loadWith(fpath, adapter);
+      return config.framework ? loadWith(fpath, getFrameworkAdapter(config.framework)) : config;
     } catch (cause) {
       lastError = cause;
     }
