@@ -12,6 +12,7 @@ export type TFrameworkRuntime = {
 /** The frameworks the library can speak for; widen when adding one. */
 export type TSupportedFramework = "react" | "preact";
 
+export const FALLBACK_FRAMEWORK: TSupportedFramework = 'react';
 const FALLBACK_VERSION = "latest";
 
 /**

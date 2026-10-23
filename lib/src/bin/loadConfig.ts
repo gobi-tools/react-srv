@@ -4,58 +4,56 @@ import os from "os";
 import { createHash } from "crypto";
 import * as esbuild from "esbuild";
 import { getFrameworkAdapter, type TReactSrvConfig } from "../index.js";
-import type { FrameworkAdapter, TSupportedFramework } from "../frameworks/framework.js";
+import { FALLBACK_FRAMEWORK, type FrameworkAdapter, type TSupportedFramework } from "../frameworks/framework.js";
 
 /**
- * @param file the project's config module (TS/JS, default export)
- * @returns the config, bundled through its framework's server mapping so the
- * config's imports (and a custom Document) share the library's own framework
- * instance — the same mapping prerendered pages get
- * @throws when the framework name is unsupported, or the config can't be
- * read, bundled or run
+ * @param fpath a filepath for the project's config
+ * @returns the config object, after it's been converted to valid JS/TS
+ * @throws when the framework name is unsupported, or the config can't be read, bundled or run
  */
-export async function loadConfig(file: string): Promise<Partial<TReactSrvConfig>> {
-  const framework = peekFramework(fs.readFileSync(file, "utf8"));
-  return await loadWith(file, getFrameworkAdapter(framework));
+export async function loadConfig(fpath: string): Promise<Partial<TReactSrvConfig>> {
+  const code = fs.readFileSync(fpath, "utf8");
+  const framework = peekFramework(code);
+  return await loadWith(fpath, getFrameworkAdapter(framework));
 }
 
-// A config declares its framework, and that declaration decides how the
-// config's own imports get mapped — so it must be known before the module
-// can run. Virtually every config writes it as a literal, which a source
-// scan finds; a config that computes the value (spread, import, env var)
-// doesn't match, falls back to "react", and is corrected by the loaded
-// value in loadConfig below.
-const FRAMEWORK_RE = /\bframework\s*:\s*["'`]([^"'`]+)["'`]/;
-
-/** @returns the framework `source` declares, or "react" when it isn't a literal */
+/**
+ * 
+ * @param source the source code of the project's config
+ * @returns the type of framework (react, preact, etc)
+ */
 function peekFramework(source: string): TSupportedFramework {
-  return (FRAMEWORK_RE.exec(source)?.[1] ?? "react") as TSupportedFramework;
+  const FRAMEWORK_REGEX = /\bframework\s*:\s*["'`]([^"'`]+)["'`]/;
+  return (FRAMEWORK_REGEX.exec(source)?.[1] ?? FALLBACK_FRAMEWORK) as TSupportedFramework;
 }
 
-/** Bundle + import the config through one framework's server mapping. */
+/**
+ * 
+ * @param fpath the filepath for the  project's config
+ * @param adapter the correct framework adapter
+ * @returns the config object, after it's been converted to valid JS/TS
+ */
 async function loadWith(
-  file: string,
+  fpath: string,
   adapter: FrameworkAdapter
 ): Promise<Partial<TReactSrvConfig>> {
   const result = await esbuild.build({
-    entryPoints: [file],
+    entryPoints: [fpath],
     bundle: true,
     platform: "node",
     format: "esm",
     write: false,
-    // Quiet by default: a failed build is rethrown, and its message already
-    // carries esbuild's full formatted diagnostics.
-    logLevel: "silent",
     ...adapter.serverBuildOptions,
   });
   return importBundle(result.outputFiles[0].text);
 }
 
-/** @returns the config module's default export, read as {@link TReactSrvConfig} */
+/**
+ * 
+ * @param code the compiled JS/TS code  
+ * @returns the config module's default export, read as {@link TReactSrvConfig}
+ */
 async function importBundle(code: string): Promise<Partial<TReactSrvConfig>> {
-  // Write under the OS temp dir in a per-process folder (same scheme the
-  // prerender shell uses); the content hash in the file name keeps imports
-  // of different bundles from hitting Node's module cache.
   const tempDir = path.join(os.tmpdir(), "react-srv", String(process.pid));
   fs.mkdirSync(tempDir, { recursive: true });
   const contentKey = createHash("sha1").update(code).digest("hex");

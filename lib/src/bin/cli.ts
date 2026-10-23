@@ -32,6 +32,11 @@ program.parse();
 
 // --- utilities ---
 
+/**
+ * 
+ * @param file the name of the config file, on disk
+ * @returns an instance of {@link ReactSrv} based on the config specified in the file
+ */
 async function createLibInstance(file?: string) {
   const config = !!file ? await loadConfig(resolveAbsPath(file)) : DefaultReactSrvConfig;
 
