@@ -9,8 +9,7 @@ import serialize from "serialize-javascript";
 import fg from "fast-glob";
 // internal framwork mappers
 import { FrameworkAdapter } from "./frameworks/framework.js";
-import type { TFrameworkRuntime } from "./frameworks/framework.js";
-import { FRAMEWORK_ADAPTERS, type TSupportedFramework } from "./frameworks/index.js";
+import { FRAMEWORK_ADAPTERS, type TSupportedFramework, type TFrameworkRuntime } from "./frameworks/index.js";
 
 /** The config a project's config module must export as its default. */
 export type TReactSrvConfig = {

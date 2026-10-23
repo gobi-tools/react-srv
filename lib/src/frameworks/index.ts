@@ -11,3 +11,4 @@ export const FALLBACK_FRAMEWORK: TSupportedFramework = 'react';
 
 export type TSupportedFramework = "react" | "preact";
 
+export { TFrameworkRuntime } from './framework.js';

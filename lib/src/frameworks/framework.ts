@@ -12,21 +12,6 @@ export type TFrameworkRuntime = {
 const FALLBACK_VERSION = "latest";
 
 /**
- * @param pkgName package to resolve (e.g. "react", "preact")
- * @returns the locally installed version of `pkgName`, or a CDN-safe fallback
- */
-function resolveInstalledPackageVersion(pkgName: string): string {
-  try {
-    const pkgPath = createRequire(import.meta.url).resolve(`${pkgName}/package.json`);
-    const pkg = JSON.parse(fs.readFileSync(pkgPath, "utf8"));
-    const version = typeof pkg.version === "string" ? pkg.version.trim() : "";
-    return version === "" ? FALLBACK_VERSION : version;
-  } catch {
-    return FALLBACK_VERSION;
-  }
-}
-
-/**
  * The contract for one supported framework. All framework-specific
  * knowledge (runtimes, CDN aliases, server build options) lives on the
  * concrete adapters; the library's orchestration code only ever talks to
@@ -89,6 +74,13 @@ export abstract class FrameworkAdapter {
 
   /** @returns the locally installed framework version (the CDN pin default) */
   installedVersion(): string {
-    return resolveInstalledPackageVersion(this.libPackage);
+    try {
+      const pkgPath = createRequire(import.meta.url).resolve(`${this.libPackage}/package.json`);
+      const pkg = JSON.parse(fs.readFileSync(pkgPath, "utf8"));
+      const version = typeof pkg.version === "string" ? pkg.version.trim() : "";
+      return version === "" ? FALLBACK_VERSION : version;
+    } catch {
+      return FALLBACK_VERSION;
+    }
   }
 }
