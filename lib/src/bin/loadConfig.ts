@@ -48,25 +48,6 @@ export async function loadConfig(file: string): Promise<Partial<TReactSrvConfig>
   throw lastError;
 }
 
-async function bundleConfig(
-  file: string,
-  extra: Partial<esbuild.BuildOptions> = {}
-): Promise<string> {
-  const result = await esbuild.build({
-    entryPoints: [file],
-    bundle: true,
-    platform: "node",
-    format: "esm",
-    write: false,
-    // Silent because pass 1 below "fails" on purpose for preact projects that
-    // use the React API; the thrown error still carries the full formatted
-    // message for any caller that reports it.
-    logLevel: "silent",
-    ...extra,
-  });
-  return result.outputFiles[0].text;
-}
-
 /** @returns the config module's default export, read as {@link TReactSrvConfig} */
 async function importBundle(code: string): Promise<Partial<TReactSrvConfig>> {
   // Write under the OS temp dir in a per-process folder (same scheme the
@@ -86,6 +67,25 @@ async function importBundle(code: string): Promise<Partial<TReactSrvConfig>> {
     fs.rmSync(tempFile, { force: true });
   }
   return (mod.default ?? mod) as Partial<TReactSrvConfig>;
+}
+
+async function bundleConfig(
+  file: string,
+  extra: Partial<esbuild.BuildOptions> = {}
+): Promise<string> {
+  const result = await esbuild.build({
+    entryPoints: [file],
+    bundle: true,
+    platform: "node",
+    format: "esm",
+    write: false,
+    // Silent because pass 1 below "fails" on purpose for preact projects that
+    // use the React API; the thrown error still carries the full formatted
+    // message for any caller that reports it.
+    logLevel: "silent",
+    ...extra,
+  });
+  return result.outputFiles[0].text;
 }
 
 /** Bundle + import the config through one framework's server mapping. */
