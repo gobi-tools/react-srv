@@ -7,34 +7,10 @@ import os from "os";
 import * as esbuild from "esbuild";
 import serialize from "serialize-javascript";
 import fg from "fast-glob";
-// Framework specifics (runtimes, CDN aliases, server build options) live on
-// per-framework adapters — see ./frameworks
+// internal framwork mappers
 import { FrameworkAdapter } from "./frameworks/framework.js";
-import { ReactAdapter } from "./frameworks/react.js";
-import { PreactAdapter } from "./frameworks/preact.js";
-import type { TFrameworkRuntime, TSupportedFramework } from "./frameworks/framework.js";
-
-// The frameworks this build ships: adding one = an adapter file in
-// ./frameworks + a line here.
-const adapters: Record<TSupportedFramework, FrameworkAdapter> = {
-  react: new ReactAdapter(),
-  preact: new PreactAdapter(),
-};
-
-/**
- * @param framework the configured framework name
- * @returns the adapter that speaks for it
- * @throws a clear error for unknown names (e.g. from an untyped config)
- */
-export function getFrameworkAdapter(framework: TSupportedFramework): FrameworkAdapter {
-  const adapter = adapters[framework];
-  if (!adapter) {
-    throw new Error(
-      `react-srv: unknown framework "${framework}" — supported: ${Object.keys(adapters).join(", ")}`
-    );
-  }
-  return adapter;
-}
+import type { TFrameworkRuntime } from "./frameworks/framework.js";
+import { FRAMEWORK_ADAPTERS, type TSupportedFramework } from "./frameworks/index.js";
 
 /** The config a project's config module must export as its default. */
 export type TReactSrvConfig = {
@@ -79,7 +55,7 @@ export function DefaultDocument({ children }) {
 export const DefaultReactSrvConfig: TReactSrvConfig = {
   framework: 'react',
   libLocation: 'https://esm.sh',
-  libVersion: adapters.react.installedVersion(),
+  libVersion: FRAMEWORK_ADAPTERS.react.installedVersion(),
   srcPath: './src',
   outPath: './public/hydrate',
   hydrate: true,
@@ -98,9 +74,9 @@ export default class ReactSrv {
   private readonly frameworkRuntime: TFrameworkRuntime;
 
   constructor(readonly userConfig: Partial<TReactSrvConfig> = DefaultReactSrvConfig) {
-    const framework = getFrameworkAdapter(
+    const framework = FRAMEWORK_ADAPTERS[
       userConfig.framework ?? DefaultReactSrvConfig.framework
-    );
+    ];
     this.framework = framework;
     this.config = {
       ...DefaultReactSrvConfig,

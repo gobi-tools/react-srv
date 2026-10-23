@@ -3,8 +3,9 @@ import fs from "fs";
 import os from "os";
 import { createHash } from "crypto";
 import * as esbuild from "esbuild";
-import { getFrameworkAdapter, type TReactSrvConfig } from "../index.js";
-import { FALLBACK_FRAMEWORK, type FrameworkAdapter, type TSupportedFramework } from "../frameworks/framework.js";
+import { type TReactSrvConfig } from "../index.js";
+import { type FrameworkAdapter } from "../frameworks/framework.js";
+import { FALLBACK_FRAMEWORK, FRAMEWORK_ADAPTERS, type TSupportedFramework } from "../frameworks/index.js";
 
 /**
  * @param fpath a filepath for the project's config
@@ -14,7 +15,7 @@ import { FALLBACK_FRAMEWORK, type FrameworkAdapter, type TSupportedFramework } f
 export async function loadConfig(fpath: string): Promise<Partial<TReactSrvConfig>> {
   const code = fs.readFileSync(fpath, "utf8");
   const framework = peekFramework(code);
-  return await loadWith(fpath, getFrameworkAdapter(framework));
+  return await loadWith(fpath, FRAMEWORK_ADAPTERS[framework]);
 }
 
 /**
