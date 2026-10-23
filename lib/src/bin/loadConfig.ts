@@ -3,49 +3,20 @@ import fs from "fs";
 import os from "os";
 import { createHash } from "crypto";
 import * as esbuild from "esbuild";
-import { frameworkAdapters, getFrameworkAdapter, type TReactSrvConfig } from "../index.js";
-import type { FrameworkAdapter } from "../frameworks/framework.js";
+import { getFrameworkAdapter, type TReactSrvConfig } from "../index.js";
+import type { FrameworkAdapter, TSupportedFramework } from "../frameworks/framework.js";
 
-/**
- * @param fpath the project's config module (TS/JS, default export)
- * @returns the config; its `framework` is verified to name a supported
- * adapter
- * @throws when no pass can run the config, or the framework is unknown
- */
-export async function loadConfig(fpath: string): Promise<Partial<TReactSrvConfig>> {
-  // The config declares the framework it needs, and only running it reveals
-  // which one: pass 1 bundles it plainly to discover `framework`.
-  let discovered: Partial<TReactSrvConfig> | undefined;
-  try {
-    discovered = await importBundle(await bundleConfig(fpath));
-  } catch {
-    discovered = undefined;
-  }
-  if (discovered !== undefined) {
-    // Pass 2 only when a framework was declared: rebundle through its server
-    // mapping, so the config's imports (and a custom Document) share the
-    // library's own framework instance — the same mapping prerendered pages
-    // get. Configs are declarative objects, so the module executing twice
-    // has negligible side effects.
-    return discovered.framework
-      ? loadWith(fpath, getFrameworkAdapter(discovered.framework))
-      : discovered;
-  }
-  // Pass 1 couldn't run the config at all: the project can't resolve its own
-  // framework imports (e.g. a preact-only project using the React API). Try
-  // each framework's mapping; whichever runs reveals the declared framework,
-  // and that one gets the final say over the mapping used (a react mapping
-  // can run a preact config and vice versa).
-  let lastError: unknown;
-  for (const adapter of frameworkAdapters()) {
-    try {
-      const config = await loadWith(fpath, adapter);
-      return config.framework ? loadWith(fpath, getFrameworkAdapter(config.framework)) : config;
-    } catch (cause) {
-      lastError = cause;
-    }
-  }
-  throw lastError;
+// A config declares its framework, and that declaration decides how the
+// config's own imports get mapped — so it must be known before the module
+// can run. Virtually every config writes it as a literal, which a source
+// scan finds; a config that computes the value (spread, import, env var)
+// doesn't match, falls back to "react", and is corrected by the loaded
+// value in loadConfig below.
+const FRAMEWORK_RE = /\bframework\s*:\s*["'`]([^"'`]+)["'`]/;
+
+/** @returns the framework `source` declares, or "react" when it isn't a literal */
+function peekFramework(source: string): TSupportedFramework {
+  return (FRAMEWORK_RE.exec(source)?.[1] ?? "react") as TSupportedFramework;
 }
 
 /** @returns the config module's default export, read as {@link TReactSrvConfig} */
@@ -69,31 +40,43 @@ async function importBundle(code: string): Promise<Partial<TReactSrvConfig>> {
   return (mod.default ?? mod) as Partial<TReactSrvConfig>;
 }
 
-async function bundleConfig(
+/** Bundle + import the config through one framework's server mapping. */
+async function loadWith(
   file: string,
-  extra: Partial<esbuild.BuildOptions> = {}
-): Promise<string> {
+  adapter: FrameworkAdapter
+): Promise<Partial<TReactSrvConfig>> {
   const result = await esbuild.build({
     entryPoints: [file],
     bundle: true,
     platform: "node",
     format: "esm",
     write: false,
-    // Silent because pass 1 below "fails" on purpose for preact projects that
-    // use the React API; the thrown error still carries the full formatted
-    // message for any caller that reports it.
+    // Quiet by default: a failed build is rethrown, and its message already
+    // carries esbuild's full formatted diagnostics.
     logLevel: "silent",
-    ...extra,
+    ...adapter.serverBuildOptions,
   });
-  return result.outputFiles[0].text;
+  return importBundle(result.outputFiles[0].text);
 }
 
-/** Bundle + import the config through one framework's server mapping. */
-async function loadWith(
-  file: string,
-  adapter: FrameworkAdapter
-): Promise<Partial<TReactSrvConfig>> {
-  return importBundle(await bundleConfig(file, adapter.serverBuildOptions));
+/**
+ * @param file the project's config module (TS/JS, default export)
+ * @returns the config, bundled through its framework's server mapping so the
+ * config's imports (and a custom Document) share the library's own framework
+ * instance — the same mapping prerendered pages get
+ * @throws when the framework name is unsupported, or the config can't be
+ * read, bundled or run
+ */
+export async function loadConfig(file: string): Promise<Partial<TReactSrvConfig>> {
+  const framework = peekFramework(fs.readFileSync(file, "utf8"));
+  let config = await loadWith(file, getFrameworkAdapter(framework));
+  // The scan is a hint, not a guarantee: when a config computes its
+  // framework, the loaded value is the truth — redo the load under that
+  // framework's mapping. Configs are declarative objects; executing twice
+  // has negligible side effects.
+  const declared = config.framework ?? "react";
+  if (declared !== framework) {
+    config = await loadWith(file, getFrameworkAdapter(declared));
+  }
+  return config;
 }
-
-

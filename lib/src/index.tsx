@@ -36,11 +36,6 @@ export function getFrameworkAdapter(framework: TSupportedFramework): FrameworkAd
   return adapter;
 }
 
-/** @returns every shipped adapter, in registration order. */
-export function frameworkAdapters(): FrameworkAdapter[] {
-  return Object.values(adapters);
-}
-
 /** The config a project's config module must export as its default. */
 export type TReactSrvConfig = {
   framework: TSupportedFramework;

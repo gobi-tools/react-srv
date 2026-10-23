@@ -1,7 +1,6 @@
 import fs from "fs";
 import os from "os";
 import path from "path";
-import { createRequire } from "module";
 import { afterAll, beforeEach, describe, expect, it } from "vitest";
 import { loadConfig } from "./loadConfig.js";
 
@@ -18,14 +17,6 @@ describe("loadConfig", () => {
     return fp;
   };
 
-  // A react project fixture: pass 1 must resolve "react" from the project.
-  const linkReact = () => {
-    const reactDir = path.dirname(createRequire(import.meta.url).resolve("react/package.json"));
-    const nm = path.join(tmpRoot, "node_modules");
-    fs.mkdirSync(nm, { recursive: true });
-    fs.symlinkSync(reactDir, path.join(nm, "react"), "dir");
-  };
-
   beforeEach(() => {
     fs.rmSync(tmpRoot, { recursive: true, force: true });
     fs.mkdirSync(tmpRoot, { recursive: true });
@@ -36,7 +27,8 @@ describe("loadConfig", () => {
   });
 
   it("loads a react config from the project", async () => {
-    linkReact();
+    // no node_modules in the fixture: the config's react imports come from
+    // the library's own install (react's server mapping externalizes them)
     const fp = writeConfig(
       "config.ts",
       `import { createElement } from "react";\n` +
@@ -54,8 +46,8 @@ describe("loadConfig", () => {
   });
 
   it("loads a preact config whose source uses the React API (react is mapped)", async () => {
-    // no node_modules here: "react" can't resolve from the project, so the
-    // config only loads through the react -> preact/compat mapping
+    // no node_modules here: the preact mapping supplies "react" as
+    // preact/compat from the library's own install
     const fp = writeConfig(
       "config.ts",
       `import { createElement, useState } from "react";\n` +
@@ -83,5 +75,30 @@ describe("loadConfig", () => {
     const config = await loadConfig(fp);
     expect(config.framework).toBe("preact");
     expect(config.Document({ children: null }).type).toBe("p");
+  });
+
+  it("follows a framework computed at runtime (invisible to the source scan)", async () => {
+    // The scan finds no literal, so the config first loads under the react
+    // default; the loaded `framework` is then the truth and the config is
+    // reloaded under the preact mapping — i.e. the module executed twice.
+    const g = globalThis as any;
+    const fp = writeConfig(
+      "config.ts",
+      `import { createElement } from "react";\n` +
+        `(globalThis as any).__CONFIG_RUNS = ((globalThis as any).__CONFIG_RUNS ?? 0) + 1;\n` +
+        `export default {\n` +
+        `  framework: ["pre", "act"].join(""),\n` +
+        `  Document: (props: any) =>\n` +
+        `    createElement("p", null, "computed-doc", props.children),\n` +
+        `};\n`
+    );
+    try {
+      const config = await loadConfig(fp);
+      expect(config.framework).toBe("preact");
+      expect(config.Document({ children: null }).type).toBe("p");
+      expect(g.__CONFIG_RUNS).toBe(2);
+    } finally {
+      delete g.__CONFIG_RUNS;
+    }
   });
 });
