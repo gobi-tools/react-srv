@@ -6,6 +6,48 @@ import * as esbuild from "esbuild";
 import { frameworkAdapters, getFrameworkAdapter, type TReactSrvConfig } from "../index.js";
 import type { FrameworkAdapter } from "../frameworks/framework.js";
 
+/**
+ * @param file the project's config module (TS/JS, default export)
+ * @returns the config; its `framework` is verified to name a supported
+ * adapter
+ * @throws when no pass can run the config, or the framework is unknown
+ */
+export async function loadConfig(file: string): Promise<Partial<TReactSrvConfig>> {
+  // The config declares the framework it needs, and only running it reveals
+  // which one: pass 1 bundles it plainly to discover `framework`.
+  let discovered: Partial<TReactSrvConfig> | undefined;
+  try {
+    discovered = await importBundle(await bundleConfig(file));
+  } catch {
+    discovered = undefined;
+  }
+  if (discovered !== undefined) {
+    // Pass 2 only when a framework was declared: rebundle through its server
+    // mapping, so the config's imports (and a custom Document) share the
+    // library's own framework instance — the same mapping prerendered pages
+    // get. Configs are declarative objects, so the module executing twice
+    // has negligible side effects.
+    return discovered.framework
+      ? loadWith(file, getFrameworkAdapter(discovered.framework))
+      : discovered;
+  }
+  // Pass 1 couldn't run the config at all: the project can't resolve its own
+  // framework imports (e.g. a preact-only project using the React API). Try
+  // each framework's mapping; whichever runs reveals the declared framework,
+  // and that one gets the final say over the mapping used (a react mapping
+  // can run a preact config and vice versa).
+  let lastError: unknown;
+  for (const adapter of frameworkAdapters()) {
+    try {
+      const config = await loadWith(file, adapter);
+      return config.framework ? loadWith(file, getFrameworkAdapter(config.framework)) : config;
+    } catch (cause) {
+      lastError = cause;
+    }
+  }
+  throw lastError;
+}
+
 async function bundleConfig(
   file: string,
   extra: Partial<esbuild.BuildOptions> = {}
@@ -54,44 +96,4 @@ async function loadWith(
   return importBundle(await bundleConfig(file, adapter.serverBuildOptions));
 }
 
-/**
- * @param file the project's config module (TS/JS, default export)
- * @returns the config; its `framework` is verified to name a supported
- * adapter
- * @throws when no pass can run the config, or the framework is unknown
- */
-export async function loadConfig(file: string): Promise<Partial<TReactSrvConfig>> {
-  // The config declares the framework it needs, and only running it reveals
-  // which one: pass 1 bundles it plainly to discover `framework`.
-  let discovered: Partial<TReactSrvConfig> | undefined;
-  try {
-    discovered = await importBundle(await bundleConfig(file));
-  } catch {
-    discovered = undefined;
-  }
-  if (discovered !== undefined) {
-    // Pass 2 only when a framework was declared: rebundle through its server
-    // mapping, so the config's imports (and a custom Document) share the
-    // library's own framework instance — the same mapping prerendered pages
-    // get. Configs are declarative objects, so the module executing twice
-    // has negligible side effects.
-    return discovered.framework
-      ? loadWith(file, getFrameworkAdapter(discovered.framework))
-      : discovered;
-  }
-  // Pass 1 couldn't run the config at all: the project can't resolve its own
-  // framework imports (e.g. a preact-only project using the React API). Try
-  // each framework's mapping; whichever runs reveals the declared framework,
-  // and that one gets the final say over the mapping used (a react mapping
-  // can run a preact config and vice versa).
-  let lastError: unknown;
-  for (const adapter of frameworkAdapters()) {
-    try {
-      const config = await loadWith(file, adapter);
-      return config.framework ? loadWith(file, getFrameworkAdapter(config.framework)) : config;
-    } catch (cause) {
-      lastError = cause;
-    }
-  }
-  throw lastError;
-}
+

@@ -6,30 +6,15 @@ import ReactSrv, { DefaultReactSrvConfig } from "../index.js";
 import { loadConfig } from "./loadConfig.js";
 
 const program = new Command();
-
 program.name("react-srv");
-
-function resolveConfig(file: string) {
-  return path.resolve(process.cwd(), file);
-}
-
-async function createSrv(file?: string) {
-  const config = !!file ? await loadConfig(resolveConfig(file)) : DefaultReactSrvConfig;
-
-  if (!config || typeof config !== "object") {
-    throw new Error("Invalid config export");
-  }
-
-  return new ReactSrv(config);
-}
 
 // --- bundle ---
 program
   .command("bundle")
   .description("Bundle the project")
-  .option("-f, --file <path>", "Config file")
+  .option("-f, --file <path>", "Config file path")
   .action(async (opts) => {
-    const srv = await createSrv(opts.file);
+    const srv = await createLibInstance(opts.file);
     await srv.prebundle();
   });
 
@@ -39,8 +24,24 @@ program
   .description("Prerender static output")
   .option("-f, --file <path>", "Config file")
   .action(async (opts) => {
-    const srv = await createSrv(opts.file);
+    const srv = await createLibInstance(opts.file);
     await srv.prerender();
   });
 
 program.parse();
+
+// --- utilities ---
+
+async function createLibInstance(file?: string) {
+  const config = !!file ? await loadConfig(resolveAbsPath(file)) : DefaultReactSrvConfig;
+
+  if (!config || typeof config !== "object") {
+    throw new Error("Invalid config export");
+  }
+
+  return new ReactSrv(config);
+}
+
+function resolveAbsPath(file: string): string {
+  return path.resolve(process.cwd(), file);
+}
