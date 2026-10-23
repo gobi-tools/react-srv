@@ -41,7 +41,8 @@ export function frameworkAdapters(): FrameworkAdapter[] {
   return Object.values(adapters);
 }
 
-type TReactSrvConfig = {
+/** The config a project's config module must export as its default. */
+export type TReactSrvConfig = {
   framework: TSupportedFramework;
   libLocation?: string;
   libVersion?: string;

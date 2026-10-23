@@ -3,10 +3,13 @@ import fs from "fs";
 import os from "os";
 import { createHash } from "crypto";
 import * as esbuild from "esbuild";
-import { frameworkAdapters, getFrameworkAdapter } from "../index.js";
+import { frameworkAdapters, getFrameworkAdapter, type TReactSrvConfig } from "../index.js";
 import type { FrameworkAdapter } from "../frameworks/framework.js";
 
-async function bundleConfig(file: string, extra: Partial<esbuild.BuildOptions> = {}) {
+async function bundleConfig(
+  file: string,
+  extra: Partial<esbuild.BuildOptions> = {}
+): Promise<string> {
   const result = await esbuild.build({
     entryPoints: [file],
     bundle: true,
@@ -22,7 +25,8 @@ async function bundleConfig(file: string, extra: Partial<esbuild.BuildOptions> =
   return result.outputFiles[0].text;
 }
 
-async function importBundle(code: string) {
+/** @returns the config module's default export, read as {@link TReactSrvConfig} */
+async function importBundle(code: string): Promise<Partial<TReactSrvConfig>> {
   // Write under the OS temp dir in a per-process folder (same scheme the
   // prerender shell uses); the content hash in the file name keeps imports
   // of different bundles from hitting Node's module cache.
@@ -39,18 +43,27 @@ async function importBundle(code: string) {
     // after import, the file itself is only litter.
     fs.rmSync(tempFile, { force: true });
   }
-  return mod.default ?? mod;
+  return (mod.default ?? mod) as Partial<TReactSrvConfig>;
 }
 
 /** Bundle + import the config through one framework's server mapping. */
-async function loadWith(file: string, adapter: FrameworkAdapter) {
+async function loadWith(
+  file: string,
+  adapter: FrameworkAdapter
+): Promise<Partial<TReactSrvConfig>> {
   return importBundle(await bundleConfig(file, adapter.serverBuildOptions));
 }
 
-export async function loadConfig(file: string) {
+/**
+ * @param file the project's config module (TS/JS, default export)
+ * @returns the config; its `framework` is verified to name a supported
+ * adapter
+ * @throws when no pass can run the config, or the framework is unknown
+ */
+export async function loadConfig(file: string): Promise<Partial<TReactSrvConfig>> {
   // The config declares the framework it needs, and only running it reveals
   // which one: pass 1 bundles it plainly to discover `framework`.
-  let discovered: any;
+  let discovered: Partial<TReactSrvConfig> | undefined;
   try {
     discovered = await importBundle(await bundleConfig(file));
   } catch {
@@ -75,7 +88,7 @@ export async function loadConfig(file: string) {
   for (const adapter of frameworkAdapters()) {
     try {
       const config = await loadWith(file, adapter);
-      return config?.framework ? loadWith(file, getFrameworkAdapter(config.framework)) : config;
+      return config.framework ? loadWith(file, getFrameworkAdapter(config.framework)) : config;
     } catch (cause) {
       lastError = cause;
     }
