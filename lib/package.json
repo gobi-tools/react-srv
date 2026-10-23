@@ -1,6 +1,6 @@
 {
   "name": "react-srv",
-  "version": "0.0.78",
+  "version": "0.0.82",
   "description": "Lightweight JSX renderer for Node",
   "scripts": {
     "build": "tsc",
@@ -26,14 +26,32 @@
     "serialize-javascript": "^7.0.0"
   },
   "peerDependencies": {
+    "preact": ">=10",
+    "preact-render-to-string": ">=6",
     "react": "^18 || ^19",
     "react-dom": "^18 || ^19"
+  },
+  "peerDependenciesMeta": {
+    "preact": {
+      "optional": true
+    },
+    "preact-render-to-string": {
+      "optional": true
+    },
+    "react": {
+      "optional": true
+    },
+    "react-dom": {
+      "optional": true
+    }
   },
   "devDependencies": {
     "@types/node": "^24.10.1",
     "@types/react": "^19.2.0",
     "@types/react-dom": "^19.2.0",
     "@types/serialize-javascript": "^5.0.4",
+    "preact": "^10.29.8",
+    "preact-render-to-string": "^6.8.1",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "typescript": "^5.9.3",
