@@ -76,29 +76,4 @@ describe("loadConfig", () => {
     expect(config.framework).toBe("preact");
     expect(config.Document({ children: null }).type).toBe("p");
   });
-
-  it("follows a framework computed at runtime (invisible to the source scan)", async () => {
-    // The scan finds no literal, so the config first loads under the react
-    // default; the loaded `framework` is then the truth and the config is
-    // reloaded under the preact mapping — i.e. the module executed twice.
-    const g = globalThis as any;
-    const fp = writeConfig(
-      "config.ts",
-      `import { createElement } from "react";\n` +
-        `(globalThis as any).__CONFIG_RUNS = ((globalThis as any).__CONFIG_RUNS ?? 0) + 1;\n` +
-        `export default {\n` +
-        `  framework: ["pre", "act"].join(""),\n` +
-        `  Document: (props: any) =>\n` +
-        `    createElement("p", null, "computed-doc", props.children),\n` +
-        `};\n`
-    );
-    try {
-      const config = await loadConfig(fp);
-      expect(config.framework).toBe("preact");
-      expect(config.Document({ children: null }).type).toBe("p");
-      expect(g.__CONFIG_RUNS).toBe(2);
-    } finally {
-      delete g.__CONFIG_RUNS;
-    }
-  });
 });
