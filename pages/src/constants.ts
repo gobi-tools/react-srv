@@ -12,6 +12,8 @@ export const REACT_HOOKS_URL = 'https://react.dev/reference/react/hooks';
 export const REACT_HYDRATION_URL = 'https://react.dev/reference/react-dom/client/hydrateRoot';
 export const REACT_RENDER_URL = 'https://react.dev/reference/react-dom/server/renderToString';
 
+export const PREACT_URL = 'https://preactjs.com/';
+
 export const TSX_URL = 'https://github.com/privatenumber/tsx';
 export const BABEL_URL = 'https://babeljs.io/';
 export const ESM_URL = 'https://esm.sh/';

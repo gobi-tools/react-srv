@@ -1,4 +1,4 @@
-import { BABEL_URL, REACT_URL, TSupportedLanguage, TSupportedLibrary, TSX_URL } from "../constants";
+import { BABEL_URL, PREACT_URL, REACT_URL, TSupportedLanguage, TSupportedLibrary, TSX_URL } from "../constants";
 import SettingsIcon from "./SettingsIcon";
 import { useRoute } from "../common/useRoute";
 import { RouteMaster } from "../common/routes";
@@ -36,6 +36,44 @@ npm i @types/react-dom --save-dev`}</CodeHighlight>
     </figure>
   </>
 }
+
+function PreactTypescriptSetup(props: { library: TSupportedLibrary, language: TSupportedLanguage }) {
+  const route = useRoute();
+
+  return <>
+    <p>
+      First, install the latest versions of <a href={RouteMaster.home(route, props.library, props.language)}>react-srv</a> and <a href={PREACT_URL}>Preact</a>.
+    </p>
+    <figure>
+      <CodeHighlight lang={'bash'}>{`npm i react-srv
+      
+npm i preact
+npm i preact-iso
+npm i preact-render-to-string // optional
+`}</CodeHighlight>
+      <figcaption>{'shell'}</figcaption>
+    </figure>
+    <p>
+      Then, to make sure Preact is defined correctly at runtime, add the following entries to your <code>tsconfig.json</code> file.
+    </p>
+    <figure>
+      <CodeHighlight lang={'javascript'}>{`{
+  "compilerOptions: {
+    ...
+    "jsx": "react-jsx",
+    "jsxImportSource": "preact",
+    "paths": {
+      "react": ["./node_modules/preact/compat/"],
+      "react-dom": ["./node_modules/preact/compat/"],
+      "react-dom/*": ["./node_modules/preact/compat/*"]
+    }
+  }
+}`}</CodeHighlight>
+      <figcaption>{'tsconfig.json'}</figcaption>
+    </figure>
+  </>
+}
+
 
 function ReactJSESMSetup(props: { library: TSupportedLibrary, language: TSupportedLanguage }) {
   const route = useRoute();
@@ -131,9 +169,10 @@ export default function SetupSection(props: { library: TSupportedLibrary, langua
       <hgroup>
         <h2>Setup</h2>
       </hgroup>
-      {props.language === 'typescript' && <ReactTypescriptSetup library={props.library} language={props.language} />}
-      {props.language === 'javascript-esm' && <ReactJSESMSetup library={props.library} language={props.language} />}
-      {props.language === 'javascript-cjs' && <ReactJSCJSSetup library={props.library} language={props.language} />}
+      {props.library === 'preact' && props.language === 'typescript' && <PreactTypescriptSetup library={props.library} language={props.language} />}
+      {props.library === 'react' && props.language === 'typescript' && <ReactTypescriptSetup library={props.library} language={props.language} />}
+      {props.library === 'react' && props.language === 'javascript-esm' && <ReactJSESMSetup library={props.library} language={props.language} />}
+      {props.library === 'react' && props.language === 'javascript-cjs' && <ReactJSCJSSetup library={props.library} language={props.language} />}
       <article className="success">
         <p role="group">
           <SettingsIcon />

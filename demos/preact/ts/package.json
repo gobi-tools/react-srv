@@ -19,7 +19,6 @@
     "react-srv": "file:../../../lib/react-srv-0.0.82.tgz"
   },
   "devDependencies": {
-    "@preact/preset-vite": "^2.10.6",
     "@types/express": "^5.0.6",
     "tsx": "^4.20.6",
     "typescript": "^5.9.3"
