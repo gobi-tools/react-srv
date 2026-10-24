@@ -31,7 +31,7 @@ export default function Static(props: { library: TSupportedLibrary, language: TS
           Then you can add the following step to your build pipeline in <code>package.json</code>:
         </p>
         <figure>
-          <CodeHighlight lang={'json'}>{`...
+          <CodeHighlight lang={'javascript'}>{`...
 "scripts": {
   "render": "react-srv render -f src/react-srv.config.ts && ... other build steps"
 },`}</CodeHighlight>

@@ -5,7 +5,7 @@ export default function SampleHTML(
   props: { library: TSupportedLibrary, language: TSupportedLanguage }
 ) {
   return <figure>
-    <CodeHighlight lang={'javascript'}>{`<html>
+    <CodeHighlight lang={'xml'}>{`<html>
   <head><title>Page</title></head>
   <body>...</body>
   <script>... set initial props ...</script>

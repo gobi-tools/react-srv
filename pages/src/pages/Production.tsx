@@ -47,7 +47,7 @@ export default function Production(props: { library: TSupportedLibrary, language
           You can reference the config file in the <code>bundle</code> command in <code>package.json</code>
         </p>
         <figure>
-          <CodeHighlight lang={'json'}>{`...
+          <CodeHighlight lang={'javascript'}>{`...
 "scripts": {
   "build": "react-srv bundle -f src/react-srv.config.ts && ... other build steps",
   "start": "NODE_ENV=production node dist/server.js"
