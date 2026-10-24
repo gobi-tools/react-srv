@@ -2,6 +2,8 @@ import CodeHighlight from "../components/CodeHighlight";
 import Header from "../components/Header";
 import SettingsIcon from "../components/SettingsIcon";
 import { DEMO_PROD_URL, PRODUCT_NAME, TSupportedLanguage, TSupportedLibrary } from "../constants";
+import SampleConfigProd from "../samples/SampleConfigProd";
+import SampleHTML from "../samples/SampleHTML";
 
 export default function Production(props: { library: TSupportedLibrary, language: TSupportedLanguage }) {
   return <>
@@ -17,17 +19,10 @@ export default function Production(props: { library: TSupportedLibrary, language
             a JSX component into HTML and Javascript:
           </p>
         </hgroup>
-        <figure>
-          <CodeHighlight lang={'xml'}>{`<html>
-  <head><title>Page</title></head>
-  <body>...</body>
-  <script>... set initial props ...</script>
-  <script type="module">... inline hydration script ... </script>
-</html>`}</CodeHighlight>
-        </figure>
+        <SampleHTML library={props.library} language={props.language} />
         <p>
           The markup is created from the component itself and the hydration script is
-          created by reading the source file, <code>Page.tsx</code> or <code>Page.jsx</code>, from disk.
+          created by reading the source file - <code>{`Page.${props.language === 'typescript' ? 'tsx' : 'jsx'}`}</code> - from disk.
         </p>
         <p>
           This is good for development but it's not ideal for production, first because the
@@ -47,16 +42,7 @@ export default function Production(props: { library: TSupportedLibrary, language
         <p>
           You can also, separately, choose to minify the code or not.
         </p>
-        <figure>
-          <CodeHighlight lang={'javascript'}>{`export default {
-  Document,
-  srcPath: './src', // default
-  outPath: './public/hydrate', // default
-  isProd: process.env.NODE_ENV === 'production', // serve inline or precompiled code
-  minify: true, // minify JS or not
-  splitting: true, // split large JS files into small ones that can be reused and cached
-}`}</CodeHighlight>
-        </figure>
+        <SampleConfigProd library={props.library} language={props.language} />
         <p>
           You can reference the config file in the <code>bundle</code> command in <code>package.json</code>
         </p>
@@ -66,6 +52,7 @@ export default function Production(props: { library: TSupportedLibrary, language
   "build": "react-srv bundle -f src/react-srv.config.ts && ... other build steps",
   "start": "NODE_ENV=production node dist/server.js"
 },`}</CodeHighlight>
+          <figcaption>{'package.json'}</figcaption>
         </figure>
         <p>
           The last thing you need to do is to make sure the <code>/public</code> folder is
@@ -73,14 +60,14 @@ export default function Production(props: { library: TSupportedLibrary, language
         </p>
 
         <article className="success">
-        <p role="group">
-          <SettingsIcon />
-          <b>Example</b>
-        </p>
-        <p>
-          Check out production ready example for Typescript and Javascript <a href={DEMO_PROD_URL} target="_blank">here</a>.
-        </p>
-      </article>
+          <p role="group">
+            <SettingsIcon />
+            <b>Example</b>
+          </p>
+          <p>
+            Check out production ready example for Typescript and Javascript <a href={DEMO_PROD_URL} target="_blank">here</a>.
+          </p>
+        </article>
       </section>
     </main>
   </>

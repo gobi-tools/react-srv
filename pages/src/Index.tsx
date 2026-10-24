@@ -14,7 +14,7 @@ import SampleConfigWithDocument from "./samples/SampleConfigWithDocument";
 import SampleComponent from "./samples/SampleComponent";
 import SampleProps from "./samples/SampleProps";
 import SamplePropsServer from "./samples/SamplePropsServer";
-import SampeHooks from "./samples/SampleHooks";
+import SampleHooks from "./samples/SampleHooks";
 
 export default function Index(props: { library: TSupportedLibrary, language: TSupportedLanguage }) {
   const route = useRoute();
@@ -86,8 +86,7 @@ export default function Index(props: { library: TSupportedLibrary, language: TSu
         <hgroup>
           <h2>Components</h2>
           <p>
-            Just like in <a href={REACT_COMPONENTS_URL} target="_blanl">any React app</a>,
-            you can split a large page into multiple components.
+            You can split a large page into multiple components.
           </p>
         </hgroup>
         <SampleComponent library={props.library} language={props.language} />
@@ -97,7 +96,7 @@ export default function Index(props: { library: TSupportedLibrary, language: TSu
         <hgroup>
           <h2>Props</h2>
           <p>
-            Pages and components don't need to be static. You can define any <a href={REACT_PROPS_URL} target="_blank">props</a> ...
+            Pages and components don't need to be static. You can define any <i>props</i> ...
           </p>
         </hgroup>
         <SampleProps library={props.library} language={props.language} />
@@ -111,10 +110,10 @@ export default function Index(props: { library: TSupportedLibrary, language: TSu
         <hgroup>
           <h2>Hooks</h2>
           <p>
-            For interactivity you can use all types of <a href={REACT_HOOKS_URL} target="_blank">React hooks</a>, like <code>useState</code>, <code>useEffect</code>, etc.
+            For interactivity you can use all types of <i>hooks</i>, like <code>useState</code>, <code>useEffect</code>, etc.
           </p>
         </hgroup>
-        <SampeHooks library={props.library} language={props.language}/>
+        <SampleHooks library={props.library} language={props.language}/>
       </section>
 
       <section>

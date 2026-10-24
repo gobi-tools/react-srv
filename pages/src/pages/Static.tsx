@@ -1,6 +1,7 @@
 import { RouteMaster } from "../common/routes";
 import { useRoute } from "../common/useRoute";
 import CodeHighlight from "../components/CodeHighlight";
+import SampleConfigStatic from "../samples/SampleConfigStatic";
 import Header from "./../components/Header";
 import SettingsIcon from "./../components/SettingsIcon";
 import { DEMO_STATIC_URL, PRODUCT_NAME, SSG_URL, TSupportedLanguage, TSupportedLibrary } from "./../constants";
@@ -25,15 +26,7 @@ export default function Static(props: { library: TSupportedLibrary, language: TS
           You can specify the source and output destinations and whether you want to keep <b>javascript hydration</b> (default)
           or disable it completely for a pure static experiece, in the config file:
         </p>
-        <figure>
-          <CodeHighlight lang={'javascript'}>{`export default {
-  Document,
-  srcPath: './src',
-  outPath: './public',
-  hydrate: true, // or false
-  minify: true, // // minify JS or not
-}`}</CodeHighlight>
-        </figure>
+        <SampleConfigStatic library={props.library} language={props.language} />
         <p>
           Then you can add the following step to your build pipeline in <code>package.json</code>:
         </p>
@@ -42,6 +35,7 @@ export default function Static(props: { library: TSupportedLibrary, language: TS
 "scripts": {
   "render": "react-srv render -f src/react-srv.config.ts && ... other build steps"
 },`}</CodeHighlight>
+          <figcaption>{'package.jsson'}</figcaption>
         </figure>
         <p>
           The last thing you need to do is to make sure the <code>/public</code> folder is

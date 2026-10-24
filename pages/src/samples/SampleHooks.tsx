@@ -1,7 +1,7 @@
 import CodeHighlight from "../components/CodeHighlight";
 import { TSupportedLibrary, TSupportedLanguage } from "../constants";
 
-export default function SampeHooks(
+export default function SampleHooks(
   props: { library: TSupportedLibrary, language: TSupportedLanguage }
 ) {
   return <figure>

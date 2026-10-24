@@ -1,4 +1,4 @@
-import { BABEL_URL, TSupportedLanguage, TSupportedLibrary, TSX_URL } from "../constants";
+import { BABEL_URL, REACT_URL, TSupportedLanguage, TSupportedLibrary, TSX_URL } from "../constants";
 import SettingsIcon from "./SettingsIcon";
 import { useRoute } from "../common/useRoute";
 import { RouteMaster } from "../common/routes";
@@ -9,10 +9,17 @@ function TypescriptSetup(props: { library: TSupportedLibrary, language: TSupport
 
   return <>
     <p>
-      First, install the latest versions of <a href={RouteMaster.home(route, props.library, props.language)}>react-srv</a>.
+      First, install the latest versions of <a href={RouteMaster.home(route, props.library, props.language)}>react-srv</a> and <a href={REACT_URL}>React</a>.
     </p>
     <figure>
-      <CodeHighlight lang={'bash'}>{`npm i react-srv`}</CodeHighlight>
+      <CodeHighlight lang={'bash'}>{`npm i react-srv
+      
+npm i react
+npm i react-dom
+
+npm i @types/react --save-dev
+npm i @types/react-dom --save-dev`}</CodeHighlight>
+      <figcaption>{'shell'}</figcaption>
     </figure>
     <p>
       Then, to make sure React is defined correctly at runtime, add the following entries to your <code>tsconfig.json</code> file.
@@ -25,6 +32,7 @@ function TypescriptSetup(props: { library: TSupportedLibrary, language: TSupport
     "jsxImportSource": "react"
   }
 }`}</CodeHighlight>
+      <figcaption>{'tsconfig.json'}</figcaption>
     </figure>
   </>
 }
@@ -34,13 +42,17 @@ function JSESMSetup(props: { library: TSupportedLibrary, language: TSupportedLan
 
   return <>
     <p>
-      First, install the latest versions of <a href={RouteMaster.home(route, props.library, props.language)}>react-srv</a> and <a href={TSX_URL} target="_blank">tsx</a>.
+      First, install the latest versions of <a href={RouteMaster.home(route, props.library, props.language)}>react-srv</a>, <a href={REACT_URL}>React</a> and <a href={TSX_URL} target="_blank">tsx</a>.
     </p>
     <figure>
       <CodeHighlight lang={'bash'}>{`npm i react-srv
 
+npm i react
+npm i react-dom
+
 # install tsx as a dev dependency
 npm i tsx --save-dev`}</CodeHighlight>
+      <figcaption>{'shell'}</figcaption>
     </figure>
     <p>
       Then, to make sure React is defined correctly at runtime, you'll need to add a <code>tsconfig.json</code> file.
@@ -53,12 +65,14 @@ npm i tsx --save-dev`}</CodeHighlight>
     "allowJs": true
   }
 }`}</CodeHighlight>
+      <figcaption>{'tsconfig.json'}</figcaption>
     </figure>
     <p>
       Finally, you'll need to run your app with <code>tsx</code> so you avoid the <code className="error">Unknown file extension ".jsx"</code> error.
     </p>
     <figure>
       <CodeHighlight lang={'bash'}>{`tsx src/server.js`}</CodeHighlight>
+      <figcaption>{'shell'}</figcaption>
     </figure>
   </>
 }
@@ -68,15 +82,19 @@ function JSCJSSetup(props: { library: TSupportedLibrary, language: TSupportedLan
 
   return <>
     <p>
-      First, install the latest versions of <a href={RouteMaster.home(route, props.library, props.language)}>react-srv</a> and <a href={BABEL_URL} target="_blank">babel</a>.
+      First, install the latest versions of <a href={RouteMaster.home(route, props.library, props.language)}>react-srv</a>, <a href={REACT_URL}>React</a> and <a href={BABEL_URL} target="_blank">babel</a>.
     </p>
     <figure>
       <CodeHighlight lang={'bash'}>{`npm i react-srv
+
+npm i react
+npm i react-dom
 
 # install a few babel dependencies
 npm i @babel/preset-react --save-dev
 npm i @babel/register --save-dev
 npm i @babel/plugin-transform-modules-commonjs --save-dev`}</CodeHighlight>
+      <figcaption>{'shell'}</figcaption>
     </figure>
     <p>
       Then, add a <code>.babelrc</code> file where we'll setup the react preset so the server recognises JSX syntax and a plugin
@@ -88,18 +106,21 @@ npm i @babel/plugin-transform-modules-commonjs --save-dev`}</CodeHighlight>
   "plugins": ["@babel/plugin-transform-modules-commonjs"]
 }
 `}</CodeHighlight>
+      <figcaption>{'.babelrc'}</figcaption>
     </figure>
     <p>
       Then, in the same file where you setup <code>ReactSrv</code>, make sure you add the following line.
     </p>
     <figure>
       <CodeHighlight lang={'javascript'}>{`require('@babel/register')({ extensions: ['.js', '.jsx'] });`}</CodeHighlight>
+      <figcaption>{'server.js'}</figcaption>
     </figure>
     <p>
       This will allow other files to <code>require</code> files with the <code>.jsx</code> extension:
     </p>
     <figure>
       <CodeHighlight lang={'javascript'}>{`const Page = require('./pages/Page.jsx').default;`}</CodeHighlight>
+      <figcaption>{'server.js'}</figcaption>
     </figure>
   </>
 }
