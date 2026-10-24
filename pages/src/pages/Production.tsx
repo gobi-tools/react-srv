@@ -6,7 +6,7 @@ import { DEMO_PROD_URL, PRODUCT_NAME } from "../constants";
 export default function Production() {
   return <>
     <header>
-      <Header />
+      <Header showHome={true} />
     </header>
     <main>
       <section>

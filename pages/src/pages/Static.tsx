@@ -10,7 +10,7 @@ export default function Static() {
 
   return <>
     <header>
-      <Header />
+      <Header showHome={true} />
     </header>
     <main>
       <section>

@@ -5,34 +5,43 @@ import CodeHighlight from "./components/CodeHighlight";
 import GitHubIcon from "./components/GitHubIcon";
 import SetupSection from "./components/SetupSection";
 import { PRODUCT_NAME, REACT_COMPONENTS_URL, REACT_HOOKS_URL, REACT_PROPS_URL, SSG_URL, SSR_URL } from "./constants";
+import Header from "./components/Header";
 
 export default function Index() {
   const route = useRoute();
 
   return <>
     <header>
+      <Header showHome={false} />
+    </header>
+    <header>
       <div className="align-center">
         <hgroup>
           <h1>{PRODUCT_NAME}</h1>
           <p>
-            Add React to your server side rendered or statically generated website.
+            Add React or Preact to your server side rendered or statically generated website.
           </p>
         </hgroup>
         <p className="row align-center disable-mobile">
-          <a href="https://github.com/gobi-tools/react-srv" target="_blank">
-            <button>
-              <GitHubIcon />
-              <span>Source (v{pkg.version})</span>
-            </button>
+          <a target="_blank">
+            <button>Example</button>
           </a>
           <a href={RouteMaster.demo(route)} target="_blank">
-            <button type="reset">
-              Demo
-            </button>
+            <button type="reset">Demo</button>
           </a>
         </p>
+        <div className="row align-center disable-mobile">
+          <form onSubmit={(event) => event.preventDefault()}>
+            <div role="group">
+              <mark><span className="slight-valign">Version {pkg.version}</span></mark>
+              <button type="reset" onClick={() => window.open(RouteMaster.External.GitHubRepo, '_blank')}>
+                <GitHubIcon />
+              </button>
+            </div>
+          </form>
+        </div>
       </div>
-    </header>
+    </header >
     <main>
       <section>
         <p>
@@ -44,12 +53,14 @@ export default function Index() {
     <h1>Hello, world!</h1>
   </>
 }`}</CodeHighlight>
+          <figcaption>{'Page.tsx'}</figcaption>
         </figure>
         <p>
           Optionally add a <code>react-srv.config.ts</code> or <code>.js</code> file:
         </p>
         <figure>
           <CodeHighlight lang={'javascript'}>{`export default {}`}</CodeHighlight>
+          <figcaption>{'react-srv.config.ts'}</figcaption>
         </figure>
         <p>
           And {PRODUCT_NAME} will render it as static HTML you can send down the wire:
@@ -64,6 +75,7 @@ app.get('/', (_, res) => {
   return res.status(200).send(react.render(Page));
 });
 `}</CodeHighlight>
+          <figcaption>{'server.ts'}</figcaption>
         </figure>
       </section>
 
@@ -87,6 +99,7 @@ app.get('/', (_, res) => {
     </body>
   </html>
 }`}</CodeHighlight>
+          <figcaption>{'Document.tsx'}</figcaption>
         </figure>
         <p>
           You can reference it in the config file:
@@ -95,6 +108,7 @@ app.get('/', (_, res) => {
           <CodeHighlight lang={'javascript'}>{`import Document from './Document';
 
 export default { Document };`}</CodeHighlight>
+          <figcaption>{'react-srv.config.ts'}</figcaption>
         </figure>
       </section>
 
@@ -117,6 +131,7 @@ export default function Page() {
     <Greeting/>
   </>
 }`}</CodeHighlight>
+          <figcaption>{'Page.tsx'}</figcaption>
         </figure>
       </section>
 
@@ -134,6 +149,7 @@ export default function Page() {
     <Greeting/>
   </>
 }`}</CodeHighlight>
+          <figcaption>{'Page.tsx'}</figcaption>
         </figure>
         <p>
           ... and pass them to the rendering function.
@@ -143,6 +159,7 @@ export default function Page() {
   const name = req.query['name'];
   return res.status(200).send(react.render(Page, { name }));
 });`}</CodeHighlight>
+          <figcaption>{'server.ts'}</figcaption>
         </figure>
       </section>
 
@@ -171,12 +188,13 @@ export default function Page(props) {
     <Button/>
   </>
 }`}</CodeHighlight>
+          <figcaption>{'Page.ts'}</figcaption>
         </figure>
       </section>
 
       <section>
         <SetupSection />
-        <hr/>
+        <hr />
         <article>
           <p>
             <b>Production</b>

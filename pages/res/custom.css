@@ -1,0 +1,35 @@
+:root {
+  --border-radius-control-button: 3px;
+  --border-radius-control-input: 3px;
+  --border-radius-code: 3px;
+  --border-radius-blocks: 3px;
+  --border-radius-card: 3px;
+
+  --border-width-blocks: 0px;
+}
+
+figure:has(>pre:first-child):has(>figcaption:last-child) {
+  border-width: 2px;
+  border-style: solid;
+  border-radius: var(--border-radius-blocks);
+  border-color: var(--color-borders-light-1);
+  overflow: hidden;
+
+  &>pre>code {
+    border-radius: 0;
+    border-width: 0;
+  }
+
+  &>figcaption {
+    font-size: smaller;
+    padding: var(--space-2xs);
+    border-top-width: 2px;
+    border-top-style: solid;
+    border-color: var(--color-borders-light-1);
+    background: var(--color-surface-light-3);
+  }
+}
+
+.slight-valign {
+  padding-top: 2px;
+}

@@ -1,3 +1,5 @@
+import { PUB_SUBDOMAIN } from "../constants";
+
 export default function Document({ title, children }) {
   return (
     <html lang="en">
@@ -10,6 +12,8 @@ export default function Document({ title, children }) {
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <meta name="color-scheme" content="light dark" />
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/gobi-tools/css-theme@refs/heads/main/dist/theme.default.min.css" />
+        <link rel="stylesheet" href={`/res/custom.css`} />
+        <link rel="stylesheet" href={`/${PUB_SUBDOMAIN}/res/custom.css`} />
       </head>
       <body>
         {children}

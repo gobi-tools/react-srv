@@ -7,6 +7,10 @@ const PAGE_DEMO_URL = 'pages/demo.html';
 export class RouteMaster {
   static baseRoute: string = '';
 
+  static External = {
+    GitHubRepo: 'https://github.com/gobi-tools/react-srv',
+  }
+
   static home(domain: string): string {
     const base = RouteMaster.getBase(domain);
     return `${base}${PAGE_HOME_URL}`;

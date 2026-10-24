@@ -7,7 +7,7 @@
   "type": "commonjs",
   "main": "index.js",
   "scripts": {
-    "docs": "rm -rf ../docs && react-srv render -f src/react-srv.config.ts"
+    "docs": "rm -rf ../docs && react-srv render -f src/react-srv.config.ts && cp -r res ../docs/res"
   },
   "dependencies": {
     "express": "^5.2.1",
