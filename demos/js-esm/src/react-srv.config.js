@@ -1,4 +1,4 @@
-import Document from './documents/Document';
+import Document from './documents/Document.jsx';
 
 export default { 
   Document, 

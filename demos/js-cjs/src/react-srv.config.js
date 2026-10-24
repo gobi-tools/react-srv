@@ -1,4 +1,3 @@
-// const ReactSrv = require('react-srv').default;
 const Document = require('./documents/Document.jsx').default;
 
 module.exports = {

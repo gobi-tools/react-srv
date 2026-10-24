@@ -7,10 +7,18 @@ import SetupSection from "./components/SetupSection";
 import { PRODUCT_NAME, REACT_COMPONENTS_URL, REACT_HOOKS_URL, REACT_PROPS_URL, SSG_URL, SSR_URL, TSupportedLanguage, TSupportedLibrary } from "./constants";
 import Header from "./components/Header";
 import SampleHelloWorld from "./samples/SampleHelloWorld";
+import SampleSimpleConfig from "./samples/SampleSimpleConfig";
+import SampleSimpleServer from "./samples/SampleSimpleServer";
+import SampleDocument from "./samples/SampleDocument";
+import SampleConfigWithDocument from "./samples/SampleConfigWithDocument";
+import SampleComponent from "./samples/SampleComponent";
+import SampleProps from "./samples/SampleProps";
+import SamplePropsServer from "./samples/SamplePropsServer";
+import SampeHooks from "./samples/SampleHooks";
 
 export default function Index(props: { library: TSupportedLibrary, language: TSupportedLanguage }) {
   const route = useRoute();
-  
+
   return <>
     <header>
       <Header showHome={false} library={props.library} language={props.language} />
@@ -49,36 +57,14 @@ export default function Index(props: { library: TSupportedLibrary, language: TSu
           All you need to do is define a component as a default export in a file of the same name:
         </p>
         <SampleHelloWorld library={props.library} language={props.language} />
-        {/* <figure>
-          <CodeHighlight lang={'javascript'}>{`export default function Page() {
-  return <>
-    <h1>Hello, world!</h1>
-  </>
-}`}</CodeHighlight>
-          <figcaption>{`Page.${props.language === 'typescript' ? 'tsx' : 'jsx'}`}</figcaption>
-        </figure> */}
         <p>
-          Optionally add a <code>react-srv.config.ts</code> or <code>.js</code> file:
+          Optionally add a config file:
         </p>
-        <figure>
-          <CodeHighlight lang={'javascript'}>{`export default {}`}</CodeHighlight>
-          <figcaption>{'react-srv.config.ts'}</figcaption>
-        </figure>
+        <SampleSimpleConfig library={props.library} language={props.language} />
         <p>
           And {PRODUCT_NAME} will render it as static HTML you can send down the wire:
         </p>
-        <figure>
-          <CodeHighlight lang={'javascript'}>{`import config from './react-srv.config';
-
-const app = express();
-const react = new ReactSrv(config);
-
-app.get('/', (_, res) => {
-  return res.status(200).send(react.render(Page));
-});
-`}</CodeHighlight>
-          <figcaption>{'server.ts'}</figcaption>
-        </figure>
+        <SampleSimpleServer library={props.library} language={props.language} />
       </section>
 
       <section>
@@ -89,29 +75,11 @@ app.get('/', (_, res) => {
             specify titles, stylesheets, scaling, etc.
           </p>
         </hgroup>
-        <figure>
-          <CodeHighlight lang={'javascript'}>{`export default function Document({ children }) {
-  return <html lang="en">
-    <head>
-      <title>Title</title>
-      {/*... all other meta tags, link tags, etc */}
-    </head>
-    <body>
-      {children}
-    </body>
-  </html>
-}`}</CodeHighlight>
-          <figcaption>{'Document.tsx'}</figcaption>
-        </figure>
+        <SampleDocument library={props.library} language={props.language} />
         <p>
           You can reference it in the config file:
         </p>
-        <figure>
-          <CodeHighlight lang={'javascript'}>{`import Document from './Document';
-
-export default { Document };`}</CodeHighlight>
-          <figcaption>{'react-srv.config.ts'}</figcaption>
-        </figure>
+        <SampleConfigWithDocument library={props.library} language={props.language} />
       </section>
 
       <section>
@@ -122,19 +90,7 @@ export default { Document };`}</CodeHighlight>
             you can split a large page into multiple components.
           </p>
         </hgroup>
-        <figure>
-          <CodeHighlight lang={'javascript'}>{`function Greeting() { 
-  return <p>Today is a fine day!</p>
-}
-
-export default function Page() {
-  return <>
-    <h1>Hello, world!</h1>
-    <Greeting/>
-  </>
-}`}</CodeHighlight>
-          <figcaption>{'Page.tsx'}</figcaption>
-        </figure>
+        <SampleComponent library={props.library} language={props.language} />
       </section>
 
       <section>
@@ -144,25 +100,11 @@ export default function Page() {
             Pages and components don't need to be static. You can define any <a href={REACT_PROPS_URL} target="_blank">props</a> ...
           </p>
         </hgroup>
-        <figure>
-          <CodeHighlight lang={'javascript'}>{`export default function Page(props) {
-  return <>
-    <h1>Hello, {props.name}!</h1>
-    <Greeting/>
-  </>
-}`}</CodeHighlight>
-          <figcaption>{'Page.tsx'}</figcaption>
-        </figure>
+        <SampleProps library={props.library} language={props.language} />
         <p>
           ... and pass them to the rendering function.
         </p>
-        <figure>
-          <CodeHighlight lang={'javascript'}>{`app.get('/', (req, res) => {
-  const name = req.query['name'];
-  return res.status(200).send(react.render(Page, { name }));
-});`}</CodeHighlight>
-          <figcaption>{'server.ts'}</figcaption>
-        </figure>
+        <SamplePropsServer library={props.library} language={props.language} />
       </section>
 
       <section>
@@ -172,26 +114,7 @@ export default function Page() {
             For interactivity you can use all types of <a href={REACT_HOOKS_URL} target="_blank">React hooks</a>, like <code>useState</code>, <code>useEffect</code>, etc.
           </p>
         </hgroup>
-        <figure>
-          <CodeHighlight lang={'javascript'}>{`function Button () {
-  const [clicks, setClicks] = useState(0);
-
-  return <p>
-    <button onClick={() => setClicks(clicks+1)}>Clicks {clicks}</button>
-  </p>
-}
-
-...
-
-export default function Page(props) {
-  return <>
-    <h1>Hello, {props.name}!</h1>
-    <Greeting/>
-    <Button/>
-  </>
-}`}</CodeHighlight>
-          <figcaption>{'Page.ts'}</figcaption>
-        </figure>
+        <SampeHooks library={props.library} language={props.language}/>
       </section>
 
       <section>
