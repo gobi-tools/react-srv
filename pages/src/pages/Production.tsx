@@ -1,12 +1,12 @@
 import CodeHighlight from "../components/CodeHighlight";
 import Header from "../components/Header";
 import SettingsIcon from "../components/SettingsIcon";
-import { DEMO_PROD_URL, PRODUCT_NAME } from "../constants";
+import { DEMO_PROD_URL, PRODUCT_NAME, TSupportedLanguage, TSupportedLibrary } from "../constants";
 
-export default function Production() {
+export default function Production(props: { library: TSupportedLibrary, language: TSupportedLanguage }) {
   return <>
     <header>
-      <Header showHome={true} />
+      <Header showHome={true} library={props.library} language={props.language} />
     </header>
     <main>
       <section>

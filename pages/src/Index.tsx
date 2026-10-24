@@ -4,25 +4,21 @@ import { useRoute } from "./common/useRoute";
 import CodeHighlight from "./components/CodeHighlight";
 import GitHubIcon from "./components/GitHubIcon";
 import SetupSection from "./components/SetupSection";
-import { PRODUCT_NAME, REACT_COMPONENTS_URL, REACT_HOOKS_URL, REACT_PROPS_URL, SSG_URL, SSR_URL } from "./constants";
+import { PRODUCT_NAME, REACT_COMPONENTS_URL, REACT_HOOKS_URL, REACT_PROPS_URL, SSG_URL, SSR_URL, TSupportedLanguage, TSupportedLibrary } from "./constants";
 import Header from "./components/Header";
-import { useLibrary } from "./common/useLibrary";
-import { useLanguage } from "./common/useLanguage";
+import SampleHelloWorld from "./samples/SampleHelloWorld";
 
-export default function Index() {
+export default function Index(props: { library: TSupportedLibrary, language: TSupportedLanguage }) {
   const route = useRoute();
-  const library = useLibrary();
-  const language = useLanguage();
-
+  
   return <>
     <header>
-      <Header showHome={false} />
+      <Header showHome={false} library={props.library} language={props.language} />
     </header>
     <header>
       <div className="align-center">
         <hgroup>
           <h1>{PRODUCT_NAME}</h1>
-          <p className="error">{library} - {language}</p>
           <p>
             Add React or Preact to your server side rendered or statically generated website.
           </p>
@@ -52,14 +48,15 @@ export default function Index() {
         <p>
           All you need to do is define a component as a default export in a file of the same name:
         </p>
-        <figure>
+        <SampleHelloWorld library={props.library} language={props.language} />
+        {/* <figure>
           <CodeHighlight lang={'javascript'}>{`export default function Page() {
   return <>
     <h1>Hello, world!</h1>
   </>
 }`}</CodeHighlight>
-          <figcaption>{'Page.tsx'}</figcaption>
-        </figure>
+          <figcaption>{`Page.${props.language === 'typescript' ? 'tsx' : 'jsx'}`}</figcaption>
+        </figure> */}
         <p>
           Optionally add a <code>react-srv.config.ts</code> or <code>.js</code> file:
         </p>
@@ -208,7 +205,7 @@ export default function Page(props) {
             Look at best practices for <a href={SSR_URL} target="_blank">server side rendering (SSR)</a> in production.
           </p>
           <p>
-            <a href={RouteMaster.production(route, library, language)}>Learn more</a>
+            <a href={RouteMaster.production(route, props.library, props.language)}>Learn more</a>
           </p>
         </article>
         <article>
@@ -219,7 +216,7 @@ export default function Page(props) {
             {PRODUCT_NAME} can directly output HTML for <a href={SSG_URL} target="_blank">static site generation (SSG)</a>.
           </p>
           <p>
-            <a href={RouteMaster.stat(route, library, language)}>Learn more</a>
+            <a href={RouteMaster.stat(route, props.library, props.language)}>Learn more</a>
           </p>
         </article>
         <article>
@@ -230,7 +227,7 @@ export default function Page(props) {
             Check version support and more advanced React setup.
           </p>
           <p>
-            <a href={RouteMaster.versions(route, library, language)}>Learn more</a>
+            <a href={RouteMaster.versions(route, props.library, props.language)}>Learn more</a>
           </p>
         </article>
       </section>

@@ -9,7 +9,6 @@ export function useLibrary() {
       const search = window.location.search
       const params = new URLSearchParams(search);
       const newLib = params.get("library") as TSupportedLibrary ?? 'react';
-      console.log(newLib);
       setLibrary(newLib);
     }
   }, []);

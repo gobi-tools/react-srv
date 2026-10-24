@@ -1,20 +1,16 @@
 import { RouteMaster } from "../common/routes";
-import { useLanguage } from "../common/useLanguage";
-import { useLibrary } from "../common/useLibrary";
 import { useRoute } from "../common/useRoute";
 import CodeHighlight from "../components/CodeHighlight";
 import Header from "./../components/Header";
 import SettingsIcon from "./../components/SettingsIcon";
-import { DEMO_STATIC_URL, PRODUCT_NAME, SSG_URL } from "./../constants";
+import { DEMO_STATIC_URL, PRODUCT_NAME, SSG_URL, TSupportedLanguage, TSupportedLibrary } from "./../constants";
 
-export default function Static() {
+export default function Static(props: { library: TSupportedLibrary, language: TSupportedLanguage }) {
   const route = useRoute();
-  const library = useLibrary();
-  const language = useLanguage();
 
   return <>
     <header>
-      <Header showHome={true} />
+      <Header showHome={true} library={props.library} language={props.language} />
     </header>
     <main>
       <section>
@@ -22,7 +18,7 @@ export default function Static() {
           <h2>Static site generation (SSG)</h2>
           <p>
             {PRODUCT_NAME} can be used for direct static site generation (<a href={SSG_URL} target="_blank">SSG</a>).
-            If you've read the section on <a href={RouteMaster.production(route, library, language)}>getting to production</a>, then you're already ninety percent there.
+            If you've read the section on <a href={RouteMaster.production(route, props.library, props.language)}>getting to production</a>, then you're already ninety percent there.
           </p>
         </hgroup>
         <p>

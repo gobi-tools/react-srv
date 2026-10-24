@@ -13,32 +13,36 @@ export class RouteMaster {
     GitHubRepo: 'https://github.com/gobi-tools/react-srv',
   }
 
-  static changeLanguage(language: TSupportedLanguage) {
-    RouteMaster.reload("language", language);
-  }
+  static replace(path: string, library: TSupportedLibrary, language: TSupportedLanguage) {
+    const base = RouteMaster.getBase();
+    const paths = path
+      .split('/')
+      .filter(s => s !== '')
+      .filter(s => !['preact', 'react'].includes(s))
+      .filter(s => !['typescript', 'javascript-esm', 'javascript-cjs'].includes(s));
 
-  static changeLibrary(library: TSupportedLibrary) {
-    RouteMaster.reload("library", library);
+    const newPath = paths.join('/');
+    return `${base}${RouteMaster.createPathParams(library, language)}${newPath}`;
   }
 
   static home(domain: string, library: TSupportedLibrary, language: TSupportedLanguage): string {
     const base = RouteMaster.getBase(domain);
-    return `${base}${PAGE_HOME_URL}${RouteMaster.createSearchParams(library, language)}`;
+    return `${base}${RouteMaster.createPathParams(library, language)}${PAGE_HOME_URL}`;
   }
 
   static production(domain: string, library: TSupportedLibrary, language: TSupportedLanguage): string {
     const base = RouteMaster.getBase(domain);
-    return `${base}${PAGE_PRODUCTION_URL}${RouteMaster.createSearchParams(library, language)}`;
+    return `${base}${RouteMaster.createPathParams(library, language)}${PAGE_PRODUCTION_URL}`;
   }
 
   static stat(domain: string, library: TSupportedLibrary, language: TSupportedLanguage): string {
     const base = RouteMaster.getBase(domain);
-    return `${base}${PAGE_STATIC_URL}${RouteMaster.createSearchParams(library, language)}`;
+    return `${base}${RouteMaster.createPathParams(library, language)}${PAGE_STATIC_URL}`;
   }
 
   static versions(domain: string, library: TSupportedLibrary, language: TSupportedLanguage): string {
     const base = RouteMaster.getBase(domain);
-    return `${base}${PAGE_VERSIONS_URL}${RouteMaster.createSearchParams(library, language)}`;
+    return `${base}${RouteMaster.createPathParams(library, language)}${PAGE_VERSIONS_URL}`;
   }
 
   static demo(domain: string): string {
@@ -51,8 +55,8 @@ export class RouteMaster {
     return domain === '' ? '/' : `/${domain}/`;
   }
 
-  private static createSearchParams(library: TSupportedLibrary, language: TSupportedLanguage): string {
-    return `?library=${library}&language=${language}`;
+  private static createPathParams(library: TSupportedLibrary, language: TSupportedLanguage): string {
+    return `${library}/${language}/`;
   }
 
   private static reload(key: string, value: string): void {

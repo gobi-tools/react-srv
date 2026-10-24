@@ -1,19 +1,15 @@
 import { RouteMaster } from "../common/routes";
-import { useLanguage } from "../common/useLanguage";
-import { useLibrary } from "../common/useLibrary";
 import { useRoute } from "../common/useRoute";
 import CodeHighlight from "../components/CodeHighlight";
 import Header from "../components/Header";
-import { ESM_URL, NODE_NPM_PEER_DEPS, PRODUCT_NAME, REACT_DOM_NPM_URL, REACT_NPM_URL, REACT_VERSIONS_EARLIEST_URL, REACT_VERSIONS_LATEST_URL } from "../constants";
+import { ESM_URL, NODE_NPM_PEER_DEPS, PRODUCT_NAME, REACT_DOM_NPM_URL, REACT_NPM_URL, REACT_VERSIONS_EARLIEST_URL, REACT_VERSIONS_LATEST_URL, TSupportedLanguage, TSupportedLibrary } from "../constants";
 
-export default function Static() {
+export default function Static(props: { library: TSupportedLibrary, language: TSupportedLanguage }) {
   const route = useRoute();
-  const library = useLibrary();
-  const language = useLanguage();
 
   return <>
     <header>
-      <Header showHome={true} />
+      <Header showHome={true} library={props.library} language={props.language} />
     </header>
     <main>
       <section>
@@ -50,7 +46,7 @@ npm i @types/react-dom@version --save-dev`}</CodeHighlight>
         </article>
         <p>
           Furthermore, {PRODUCT_NAME} doesn't bundle React in any of the JS scripts it outputs,
-          either in <a href={RouteMaster.production(route, library, language)}>SSR</a> or <a href={RouteMaster.stat(route, library, language)}>SSG</a> mode.
+          either in <a href={RouteMaster.production(route, props.library, props.language)}>SSR</a> or <a href={RouteMaster.stat(route, props.library, props.language)}>SSG</a> mode.
         </p>
         <p>
           It instead references React from a CDN, <a href={ESM_URL} target="_blank">esm.sh</a> by default.

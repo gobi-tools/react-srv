@@ -9,7 +9,6 @@ export function useLanguage() {
       const search = window.location.search
       const params = new URLSearchParams(search);
       const newLanguage = params.get("language") as TSupportedLanguage ?? 'typescript';
-      console.log(newLanguage);
       setLibrary(newLanguage);
     }
   }, []);
