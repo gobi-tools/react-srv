@@ -11,6 +11,20 @@ export class RouteMaster {
 
   static External = {
     GitHubRepo: 'https://github.com/gobi-tools/react-srv',
+    Example: function (library: TSupportedLibrary, language: TSupportedLanguage): string {
+      switch (library) {
+        case 'react': {
+          switch (language) {
+            case 'typescript': return 'https://github.com/gobi-tools/react-srv/tree/main/demos/ts';
+            case 'javascript-esm': return 'https://github.com/gobi-tools/react-srv/tree/main/demos/js-esm';
+            case 'javascript-cjs': return 'https://github.com/gobi-tools/react-srv/tree/main/demos/js-cjs'
+          }
+        }
+        case 'preact': {
+          return 'https://github.com/gobi-tools/react-srv/tree/main/demos/react'
+        }
+      }
+    }
   }
 
   static replace(path: string, library: TSupportedLibrary, language: TSupportedLanguage) {

@@ -32,7 +32,7 @@ export default function Index(props: { library: TSupportedLibrary, language: TSu
           </p>
         </hgroup>
         <p className="row align-center disable-mobile">
-          <a target="_blank">
+          <a href={RouteMaster.External.Example(props.library, props.language)} target="_blank">
             <button>Example</button>
           </a>
           <a href={RouteMaster.demo(route)} target="_blank">
@@ -118,7 +118,7 @@ export default function Index(props: { library: TSupportedLibrary, language: TSu
       </section>
 
       <section>
-        <SetupSection />
+        <SetupSection library={props.library} language={props.language} />
         <hr />
         <article>
           <p>

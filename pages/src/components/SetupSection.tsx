@@ -1,18 +1,15 @@
-import { BABEL_URL, DEMO_JS_CJS_URL, DEMO_JS_ESM_URL, DEMO_TS_URL, REACT_URL, TSX_URL } from "../constants";
-import { useState } from "react";
+import { BABEL_URL, TSupportedLanguage, TSupportedLibrary, TSX_URL } from "../constants";
 import SettingsIcon from "./SettingsIcon";
 import { useRoute } from "../common/useRoute";
 import { RouteMaster } from "../common/routes";
 import CodeHighlight from "./CodeHighlight";
 
-type TEnvironment = 'ts' | 'js-esm' | 'js-cjs';
-
-function TypescriptSetup() {
+function TypescriptSetup(props: { library: TSupportedLibrary, language: TSupportedLanguage }) {
   const route = useRoute();
 
   return <>
     <p>
-      First, install the latest versions of <a href={RouteMaster.home(route)}>react-srv</a>.
+      First, install the latest versions of <a href={RouteMaster.home(route, props.library, props.language)}>react-srv</a>.
     </p>
     <figure>
       <CodeHighlight lang={'bash'}>{`npm i react-srv`}</CodeHighlight>
@@ -29,24 +26,15 @@ function TypescriptSetup() {
   }
 }`}</CodeHighlight>
     </figure>
-    <article className="success">
-      <p role="group">
-        <SettingsIcon />
-        <b>Example</b>
-      </p>
-      <p>
-        Check out a fully set up TypeScript project <a href={DEMO_TS_URL} target="_blank">here</a>.
-      </p>
-    </article>
   </>
 }
 
-function JSESMSetup() {
+function JSESMSetup(props: { library: TSupportedLibrary, language: TSupportedLanguage }) {
   const route = useRoute();
 
   return <>
     <p>
-      First, install the latest versions of <a href={RouteMaster.home(route)}>react-srv</a> and <a href={TSX_URL} target="_blank">tsx</a>.
+      First, install the latest versions of <a href={RouteMaster.home(route, props.library, props.language)}>react-srv</a> and <a href={TSX_URL} target="_blank">tsx</a>.
     </p>
     <figure>
       <CodeHighlight lang={'bash'}>{`npm i react-srv
@@ -72,24 +60,15 @@ npm i tsx --save-dev`}</CodeHighlight>
     <figure>
       <CodeHighlight lang={'bash'}>{`tsx src/server.js`}</CodeHighlight>
     </figure>
-    <article className="success">
-      <p role="group">
-        <SettingsIcon />
-        <b>Example</b>
-      </p>
-      <p>
-        Check out a fully set up ESM Javascript project <a href={DEMO_JS_ESM_URL} target="_blank">here</a>.
-      </p>
-    </article>
   </>
 }
 
-function JSCJSSetup() {
+function JSCJSSetup(props: { library: TSupportedLibrary, language: TSupportedLanguage }) {
   const route = useRoute();
 
   return <>
     <p>
-      First, install the latest versions of <a href={RouteMaster.home(route)}>react-srv</a> and <a href={BABEL_URL} target="_blank">babel</a>.
+      First, install the latest versions of <a href={RouteMaster.home(route, props.library, props.language)}>react-srv</a> and <a href={BABEL_URL} target="_blank">babel</a>.
     </p>
     <figure>
       <CodeHighlight lang={'bash'}>{`npm i react-srv
@@ -100,7 +79,7 @@ npm i @babel/register --save-dev
 npm i @babel/plugin-transform-modules-commonjs --save-dev`}</CodeHighlight>
     </figure>
     <p>
-      Then, add a <code>.babelrc</code> file where we'll setup the react preset so the server recognises JSX syntax and a plugin 
+      Then, add a <code>.babelrc</code> file where we'll setup the react preset so the server recognises JSX syntax and a plugin
       for module resolution inside <code>.jsx</code> files.
     </p>
     <figure>
@@ -122,44 +101,27 @@ npm i @babel/plugin-transform-modules-commonjs --save-dev`}</CodeHighlight>
     <figure>
       <CodeHighlight lang={'javascript'}>{`const Page = require('./pages/Page.jsx').default;`}</CodeHighlight>
     </figure>
-    <article className="success">
-      <p role="group">
-        <SettingsIcon />
-        <b>Example</b>
-      </p>
-      <p>
-        Check out a fully set up CommonJS Javascript project <a href={DEMO_JS_CJS_URL} target="_blank">here</a>.
-      </p>
-    </article>
   </>
 }
 
-export default function SetupSection() {
-  const [environment, selectEnvironment] = useState<TEnvironment>('ts');
-
+export default function SetupSection(props: { library: TSupportedLibrary, language: TSupportedLanguage }) {
   return (
     <>
       <hgroup>
         <h2>Setup</h2>
-        <p>
-          Setup is slightly different based on the platform you're running:
-        </p>
       </hgroup>
-      <menu>
-        <li aria-selected={environment === 'ts'}>
-          <a onClick={() => selectEnvironment('ts')}>Typescript</a>
-        </li>
-        <li aria-selected={environment === 'js-esm'}>
-          <a onClick={() => selectEnvironment('js-esm')}>Javascript (ESM)</a>
-        </li>
-        <li aria-selected={environment === 'js-cjs'}>
-          <a onClick={() => selectEnvironment('js-cjs')}>Javascript (CJS)</a>
-        </li>
-      </menu>
-      <br />
-      {environment === 'ts' && <TypescriptSetup />}
-      {environment === 'js-esm' && <JSESMSetup />}
-      {environment === 'js-cjs' && <JSCJSSetup />}
+      {props.language === 'typescript' && <TypescriptSetup library={props.library} language={props.language} />}
+      {props.language === 'javascript-esm' && <JSESMSetup library={props.library} language={props.language} />}
+      {props.language === 'javascript-cjs' && <JSCJSSetup library={props.library} language={props.language} />}
+      <article className="success">
+        <p role="group">
+          <SettingsIcon />
+          <b>Example</b>
+        </p>
+        <p>
+          Check out a fully set up project <a href={RouteMaster.External.Example(props.library, props.language)} target="_blank">here</a>.
+        </p>
+      </article>
     </>
   )
 }
