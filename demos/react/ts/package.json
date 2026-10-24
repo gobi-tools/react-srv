@@ -13,14 +13,14 @@
   },
   "dependencies": {
     "express": "^5.2.1",
-    "preact": "^11.0.0",
-    "preact-iso": "^2.12.2",
-    "preact-render-to-string": "^6.8.1",
-    "react-srv": "file:../../lib/react-srv-0.0.82.tgz"
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0",
+    "react-srv": "file:../../../lib/react-srv-0.0.82.tgz"
   },
   "devDependencies": {
-    "@preact/preset-vite": "^2.10.6",
     "@types/express": "^5.0.6",
+    "@types/react": "^18.0.0",
+    "@types/react-dom": "^18.0.0",
     "tsx": "^4.20.6",
     "typescript": "^5.9.3"
   }

@@ -15,13 +15,13 @@ export class RouteMaster {
       switch (library) {
         case 'react': {
           switch (language) {
-            case 'typescript': return 'https://github.com/gobi-tools/react-srv/tree/main/demos/ts';
-            case 'javascript-esm': return 'https://github.com/gobi-tools/react-srv/tree/main/demos/js-esm';
-            case 'javascript-cjs': return 'https://github.com/gobi-tools/react-srv/tree/main/demos/js-cjs'
+            case 'typescript': return 'https://github.com/gobi-tools/react-srv/tree/main/demos/react/ts';
+            case 'javascript-esm': return 'https://github.com/gobi-tools/react-srv/tree/main/demos/react/js-esm';
+            case 'javascript-cjs': return 'https://github.com/gobi-tools/react-srv/tree/main/demos/react/js-cjs'
           }
         }
         case 'preact': {
-          return 'https://github.com/gobi-tools/react-srv/tree/main/demos/react'
+          return 'https://github.com/gobi-tools/react-srv/tree/main/demos/preact/ts'
         }
       }
     }

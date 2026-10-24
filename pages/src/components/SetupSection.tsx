@@ -4,7 +4,7 @@ import { useRoute } from "../common/useRoute";
 import { RouteMaster } from "../common/routes";
 import CodeHighlight from "./CodeHighlight";
 
-function TypescriptSetup(props: { library: TSupportedLibrary, language: TSupportedLanguage }) {
+function ReactTypescriptSetup(props: { library: TSupportedLibrary, language: TSupportedLanguage }) {
   const route = useRoute();
 
   return <>
@@ -37,7 +37,7 @@ npm i @types/react-dom --save-dev`}</CodeHighlight>
   </>
 }
 
-function JSESMSetup(props: { library: TSupportedLibrary, language: TSupportedLanguage }) {
+function ReactJSESMSetup(props: { library: TSupportedLibrary, language: TSupportedLanguage }) {
   const route = useRoute();
 
   return <>
@@ -77,7 +77,7 @@ npm i tsx --save-dev`}</CodeHighlight>
   </>
 }
 
-function JSCJSSetup(props: { library: TSupportedLibrary, language: TSupportedLanguage }) {
+function ReactJSCJSSetup(props: { library: TSupportedLibrary, language: TSupportedLanguage }) {
   const route = useRoute();
 
   return <>
@@ -131,9 +131,9 @@ export default function SetupSection(props: { library: TSupportedLibrary, langua
       <hgroup>
         <h2>Setup</h2>
       </hgroup>
-      {props.language === 'typescript' && <TypescriptSetup library={props.library} language={props.language} />}
-      {props.language === 'javascript-esm' && <JSESMSetup library={props.library} language={props.language} />}
-      {props.language === 'javascript-cjs' && <JSCJSSetup library={props.library} language={props.language} />}
+      {props.language === 'typescript' && <ReactTypescriptSetup library={props.library} language={props.language} />}
+      {props.language === 'javascript-esm' && <ReactJSESMSetup library={props.library} language={props.language} />}
+      {props.language === 'javascript-cjs' && <ReactJSCJSSetup library={props.library} language={props.language} />}
       <article className="success">
         <p role="group">
           <SettingsIcon />
