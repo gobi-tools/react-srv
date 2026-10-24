@@ -28,6 +28,6 @@ npm run start
 ```
 
 The end result will be the same. A simple 
-Node server running on `http://128.0.0.1:3000` exposing a number of endpoints that respond with a React page ([SSR](https://developer.mozilla.org/en-US/docs/Glossary/SSR)).
+Node server running on `http://128.0.0.1:3000` exposing a number of endpoints that respond with a server-side rendered ([SSR](https://developer.mozilla.org/en-US/docs/Glossary/SSR)) page.
 
 If you want to explore a statically generated website ([SSG](https://developer.mozilla.org/en-US/docs/Glossary/SSG)) look at the [project's documentation](https://github.com/gobi-tools/react-srv/tree/main/pages).   

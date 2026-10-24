@@ -1,28 +1,29 @@
-import { useState } from 'react';
-import Info from '../components/Info';
+import { useState } from "react"
+import Info from "../components/Info";
 
-function Greeting () {
-  return <p>
-    Today is a fine day!
-  </p>
+function Greeting(props) {
+  return <h1>
+    Hello{props.name ? `, ${props.name}` : ', World'}!
+  </h1>
 };
 
-function Button () {
+function Button() {
   const [clicks, setClicks] = useState(0);
 
   return <p>
-    <button onClick={() => setClicks(clicks+1)}>Clicks {clicks}</button>
+    <button onClick={() => setClicks(clicks + 1)}>Clicks {clicks}</button>
   </p>
 }
 
 export default function Page(props) {
   return <>
-    <h1>Hello, {props.name}!</h1>
-    <Greeting/>
-    <Button/>
+    <Info />
+    <hr />
+    <Greeting name={props.name} />
+    <Button />
+    <hr/>
     <p>
       <a href="/about">About</a>
     </p>
-    <Info/>
   </>
 }

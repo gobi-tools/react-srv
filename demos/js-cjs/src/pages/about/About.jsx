@@ -1,12 +1,11 @@
-import Info from '../../components/Info';
+import Info from "../../components/Info";
 
 export default function About() {
   return <>
-    <h2>About</h2>
-    <p>Demo app</p>
-    <p>
-      <a href="/">Home</a>
-    </p>
-    <Info/>
+    <Info />
+    <hr />
+    <h1>About</h1>
+    <hr />
+    <p><a href="/">Home</a></p>
   </>
 }

@@ -11,7 +11,7 @@ const port = 3000
 const react = new ReactSrv(config);
 
 app.get('/', (req, res) => {
-  const name = req.query['name'] ?? 'World';
+  const name = req.query['name'];
   const html = react.render(Page, { name })
   return res.status(200).send(html);
 });
