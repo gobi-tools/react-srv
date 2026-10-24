@@ -1,4 +1,6 @@
 import { RouteMaster } from "../common/routes";
+import { useLanguage } from "../common/useLanguage";
+import { useLibrary } from "../common/useLibrary";
 import { useRoute } from "../common/useRoute";
 import CodeHighlight from "../components/CodeHighlight";
 import Header from "../components/Header";
@@ -6,6 +8,8 @@ import { ESM_URL, NODE_NPM_PEER_DEPS, PRODUCT_NAME, REACT_DOM_NPM_URL, REACT_NPM
 
 export default function Static() {
   const route = useRoute();
+  const library = useLibrary();
+  const language = useLanguage();
 
   return <>
     <header>
@@ -21,11 +25,11 @@ export default function Static() {
           </p>
         </hgroup>
         <p>
-          {PRODUCT_NAME} also requires the <a href={REACT_NPM_URL} target="_blank">react</a> and <a href={REACT_DOM_NPM_URL} target="_blank">react-dom</a> packages 
+          {PRODUCT_NAME} also requires the <a href={REACT_NPM_URL} target="_blank">react</a> and <a href={REACT_DOM_NPM_URL} target="_blank">react-dom</a> packages
           to be installed.
         </p>
         <p>
-          Whilst they are setup as <a href={NODE_NPM_PEER_DEPS} target="_blank">peer dependencies</a> (so NPM will choose the most suitable option), 
+          Whilst they are setup as <a href={NODE_NPM_PEER_DEPS} target="_blank">peer dependencies</a> (so NPM will choose the most suitable option),
           it's always good to pin the version you want explicitly:
         </p>
 
@@ -45,11 +49,11 @@ npm i @types/react-dom@version --save-dev`}</CodeHighlight>
           </p>
         </article>
         <p>
-          Furthermore, {PRODUCT_NAME} doesn't bundle React in any of the JS scripts it outputs, 
-          either in <a href={RouteMaster.production(route)}>SSR</a> or <a href={RouteMaster.stat(route)}>SSG</a> mode. 
+          Furthermore, {PRODUCT_NAME} doesn't bundle React in any of the JS scripts it outputs,
+          either in <a href={RouteMaster.production(route, library, language)}>SSR</a> or <a href={RouteMaster.stat(route, library, language)}>SSG</a> mode.
         </p>
         <p>
-          It instead references React from a CDN, <a href={ESM_URL} target="_blank">esm.sh</a> by default. 
+          It instead references React from a CDN, <a href={ESM_URL} target="_blank">esm.sh</a> by default.
           You can change this in the config:
         </p>
         <CodeHighlight lang={'javascript'}>{`export default {
@@ -58,7 +62,7 @@ npm i @types/react-dom@version --save-dev`}</CodeHighlight>
   reactLocation: 'https://esm.sh', // or your own location
 }`}</CodeHighlight>
         <p>
-          By doing this we ensure we serve as little JS as possible to hydrate. React itself will usually 
+          By doing this we ensure we serve as little JS as possible to hydrate. React itself will usually
           only get loaded once, for the first page that a user might see. After that it should be cached by the browser.
         </p>
       </section>

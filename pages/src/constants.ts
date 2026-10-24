@@ -28,3 +28,6 @@ export const SSR_URL = 'https://developer.mozilla.org/en-US/docs/Glossary/SSR';
 export const SSG_URL = 'https://en.wikipedia.org/wiki/Static_site_generator';
 
 export const PUB_SUBDOMAIN = 'react-srv';
+
+export type TSupportedLibrary = 'react' | 'preact';
+export type TSupportedLanguage = 'typescript' | 'javascript-esm' | 'javascript-cjs';

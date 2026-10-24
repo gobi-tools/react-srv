@@ -1,3 +1,5 @@
+import { TSupportedLanguage, TSupportedLibrary } from "../constants";
+
 const PAGE_HOME_URL = 'index.html';
 const PAGE_PRODUCTION_URL = 'pages/production.html';
 const PAGE_STATIC_URL = 'pages/static.html';
@@ -11,24 +13,32 @@ export class RouteMaster {
     GitHubRepo: 'https://github.com/gobi-tools/react-srv',
   }
 
-  static home(domain: string): string {
-    const base = RouteMaster.getBase(domain);
-    return `${base}${PAGE_HOME_URL}`;
+  static changeLanguage(language: TSupportedLanguage) {
+    RouteMaster.reload("language", language);
   }
 
-  static production(domain: string): string {
-    const base = RouteMaster.getBase(domain);
-    return `${base}${PAGE_PRODUCTION_URL}`;
+  static changeLibrary(library: TSupportedLibrary) {
+    RouteMaster.reload("library", library);
   }
 
-  static stat(domain: string): string {
+  static home(domain: string, library: TSupportedLibrary, language: TSupportedLanguage): string {
     const base = RouteMaster.getBase(domain);
-    return `${base}${PAGE_STATIC_URL}`;
+    return `${base}${PAGE_HOME_URL}${RouteMaster.createSearchParams(library, language)}`;
   }
 
-  static versions(domain: string): string {
+  static production(domain: string, library: TSupportedLibrary, language: TSupportedLanguage): string {
     const base = RouteMaster.getBase(domain);
-    return `${base}${PAGE_VERSIONS_URL}`;
+    return `${base}${PAGE_PRODUCTION_URL}${RouteMaster.createSearchParams(library, language)}`;
+  }
+
+  static stat(domain: string, library: TSupportedLibrary, language: TSupportedLanguage): string {
+    const base = RouteMaster.getBase(domain);
+    return `${base}${PAGE_STATIC_URL}${RouteMaster.createSearchParams(library, language)}`;
+  }
+
+  static versions(domain: string, library: TSupportedLibrary, language: TSupportedLanguage): string {
+    const base = RouteMaster.getBase(domain);
+    return `${base}${PAGE_VERSIONS_URL}${RouteMaster.createSearchParams(library, language)}`;
   }
 
   static demo(domain: string): string {
@@ -39,5 +49,16 @@ export class RouteMaster {
   private static getBase(domain?: string): string {
     if (!domain) return '/';
     return domain === '' ? '/' : `/${domain}/`;
+  }
+
+  private static createSearchParams(library: TSupportedLibrary, language: TSupportedLanguage): string {
+    return `?library=${library}&language=${language}`;
+  }
+
+  private static reload(key: string, value: string): void {
+    if (!window) return;
+    const url = new URL(window.location.href);
+    url.searchParams.set(key, value);
+    window.location.href = url.toString();
   }
 }

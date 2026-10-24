@@ -6,9 +6,13 @@ import GitHubIcon from "./components/GitHubIcon";
 import SetupSection from "./components/SetupSection";
 import { PRODUCT_NAME, REACT_COMPONENTS_URL, REACT_HOOKS_URL, REACT_PROPS_URL, SSG_URL, SSR_URL } from "./constants";
 import Header from "./components/Header";
+import { useLibrary } from "./common/useLibrary";
+import { useLanguage } from "./common/useLanguage";
 
 export default function Index() {
   const route = useRoute();
+  const library = useLibrary();
+  const language = useLanguage();
 
   return <>
     <header>
@@ -18,6 +22,7 @@ export default function Index() {
       <div className="align-center">
         <hgroup>
           <h1>{PRODUCT_NAME}</h1>
+          <p className="error">{library} - {language}</p>
           <p>
             Add React or Preact to your server side rendered or statically generated website.
           </p>
@@ -45,7 +50,7 @@ export default function Index() {
     <main>
       <section>
         <p>
-          All you need to do is define a React component as a default export of a <code>.tsx</code> or <code>.jsx</code> file of the same name:
+          All you need to do is define a component as a default export in a file of the same name:
         </p>
         <figure>
           <CodeHighlight lang={'javascript'}>{`export default function Page() {
@@ -203,7 +208,7 @@ export default function Page(props) {
             Look at best practices for <a href={SSR_URL} target="_blank">server side rendering (SSR)</a> in production.
           </p>
           <p>
-            <a href={RouteMaster.production(route)}>Learn more</a>
+            <a href={RouteMaster.production(route, library, language)}>Learn more</a>
           </p>
         </article>
         <article>
@@ -214,7 +219,7 @@ export default function Page(props) {
             {PRODUCT_NAME} can directly output HTML for <a href={SSG_URL} target="_blank">static site generation (SSG)</a>.
           </p>
           <p>
-            <a href={RouteMaster.stat(route)}>Learn more</a>
+            <a href={RouteMaster.stat(route, library, language)}>Learn more</a>
           </p>
         </article>
         <article>
@@ -225,7 +230,7 @@ export default function Page(props) {
             Check version support and more advanced React setup.
           </p>
           <p>
-            <a href={RouteMaster.versions(route)}>Learn more</a>
+            <a href={RouteMaster.versions(route, library, language)}>Learn more</a>
           </p>
         </article>
       </section>
