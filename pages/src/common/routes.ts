@@ -40,8 +40,11 @@ export class RouteMaster {
       .filter(s => !['preact', 'react'].includes(s))
       .filter(s => !['typescript', 'javascript-esm', 'javascript-cjs'].includes(s));
 
+
     const newPath = paths.join('/');
-    return `${base}${RouteMaster.createPathParams(library, language)}${newPath}`;
+    const result = `${base}${RouteMaster.createPathParams(library, language)}${newPath}`;
+    console.log(base, paths, result);
+    return result;
   }
 
   static home(domain: string, library: TSupportedLibrary, language: TSupportedLanguage): string {
@@ -76,12 +79,5 @@ export class RouteMaster {
 
   private static createPathParams(library: TSupportedLibrary, language: TSupportedLanguage): string {
     return `${library}/${language}/`;
-  }
-
-  private static reload(key: string, value: string): void {
-    if (!window) return;
-    const url = new URL(window.location.href);
-    url.searchParams.set(key, value);
-    window.location.href = url.toString();
   }
 }
