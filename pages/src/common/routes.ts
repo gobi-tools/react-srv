@@ -21,7 +21,11 @@ export class RouteMaster {
           }
         }
         case 'preact': {
-          return 'https://github.com/gobi-tools/react-srv/tree/main/demos/preact/ts'
+          switch (language) {
+            case 'typescript': return 'https://github.com/gobi-tools/react-srv/tree/main/demos/preact/ts';
+            case 'javascript-esm': return 'https://github.com/gobi-tools/react-srv/tree/main/demos/preact/js-esm';
+            case 'javascript-cjs': return 'https://github.com/gobi-tools/react-srv/tree/main/demos/preact/js-cjs'
+          }
         }
       }
     }

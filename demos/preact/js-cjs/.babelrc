@@ -1,4 +1,14 @@
 {
-  "presets": [["@babel/preset-react", { "runtime": "automatic", "importSource": "preact" }]],
-  "plugins": ["@babel/plugin-transform-modules-commonjs"]
+  "presets": [
+    [
+      "@babel/preset-react",
+      {
+        "runtime": "automatic",
+        "importSource": "preact"
+      }
+    ]
+  ],
+  "plugins": [
+    "@babel/plugin-transform-modules-commonjs"
+  ]
 }

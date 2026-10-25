@@ -10,11 +10,9 @@ import { renderToString, renderToStaticMarkup } from 'preact-render-to-string';
 const app = express();
 app.use(express.static('public'));
 
-// Hand react-srv the same preact instance these pages import: under tsx an
-// ESM server and the library's own require() would otherwise load two
-// copies of preact, and hooks state lives on this one.
 const react = new ReactSrv({
   ...config,
+  // avoid having two copies of Preact
   runtime: { h, renderToString, renderToStaticMarkup },
 });
 
