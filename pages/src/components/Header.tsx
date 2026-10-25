@@ -10,8 +10,6 @@ export default function Header(props: { showHome: boolean, library: TSupportedLi
     const library = e.target.value as TSupportedLibrary;
     const language = props.language;
 
-    console.log(library, language);
-
     if (typeof window !== 'undefined') {
       const path = window.location.pathname;
       const href = RouteMaster.replace(path, library, language);

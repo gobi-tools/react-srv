@@ -36,6 +36,7 @@ export class RouteMaster {
     const paths = path
       .split('/')
       .filter(s => s !== '')
+      .filter(s => base !== s)
       .filter(s => !['preact', 'react'].includes(s))
       .filter(s => !['typescript', 'javascript-esm', 'javascript-cjs'].includes(s));
 
