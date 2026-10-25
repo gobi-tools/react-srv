@@ -36,10 +36,9 @@ export class RouteMaster {
     const paths = path
       .split('/')
       .filter(s => s !== '')
-      .filter(s => base !== s)
+      .filter(s => !base.includes(s))
       .filter(s => !['preact', 'react'].includes(s))
       .filter(s => !['typescript', 'javascript-esm', 'javascript-cjs'].includes(s));
-
 
     const newPath = paths.join('/');
     const result = `${base}${RouteMaster.createPathParams(library, language)}${newPath}`;
