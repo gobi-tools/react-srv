@@ -14,6 +14,16 @@ import { FRAMEWORK_ADAPTERS, type TSupportedFramework, type TFrameworkRuntime } 
 /** The config a project's config module must export as its default. */
 export type TReactSrvConfig = {
   framework: TSupportedFramework;
+  /**
+   * Programmatic override for the shell's render functions (h + server
+   * renderers). A dev server running under a hybrid loader (tsx, vite, ...)
+   * loads the framework through a different module pipeline than the library
+   * would on its own — for ESM-first frameworks like preact that means two
+   * instances, and hooks state lives on the app's copy only. Inject the
+   * instance YOUR app imports so pages and shell share one. Not a config-file
+   * field: pass it when constructing ReactSrv.
+   */
+  runtime?: TFrameworkRuntime;
   libLocation?: string;
   libVersion?: string;
   srcPath?: string;
@@ -84,7 +94,9 @@ export default class ReactSrv {
       // actually shipping, unless the user pinned one explicitly.
       libVersion: userConfig.libVersion ?? framework.installedVersion(),
     };
-    this.frameworkRuntime = framework.runtime();
+    // The caller's runtime wins: it is proof of which framework instance the
+    // app's own modules use, and the shell must render with that same one.
+    this.frameworkRuntime = userConfig.runtime ?? framework.runtime();
     activeH = this.frameworkRuntime.h;
     FileUtils.validateDir(this.config.srcPath);
   }

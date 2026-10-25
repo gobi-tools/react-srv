@@ -1,0 +1,15 @@
+{
+  "compilerOptions": {
+    /* Preact Config */
+		"jsx": "react-jsx",
+		"jsxImportSource": "preact",
+		"skipLibCheck": true,
+    "allowJs": true,
+    "paths": {
+			"react": ["./node_modules/preact/compat/dist/compat.mjs"],
+			"react-dom": ["./node_modules/preact/compat/dist/compat.mjs"],
+			"react-dom/client": ["./node_modules/preact/compat/client.mjs"],
+			"react-dom/server": ["./node_modules/preact/compat/server.mjs"]
+		}
+  }
+}

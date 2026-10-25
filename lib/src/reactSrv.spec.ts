@@ -902,6 +902,37 @@ describe("ReactSrv", () => {
         expect(html).toContain("HOME-CONTENT");
       });
     });
+
+    describe("injected runtime", () => {
+      it("renders with the given runtime and never loads the framework itself", () => {
+        // Simulate a framework the library must not touch: if construction
+        // called framework.runtime(), _load would throw (same trick as the
+        // missing-preact test below).
+        const load = (Module as any)._load;
+        (Module as any)._load = function (request: string, ...rest: any[]) {
+          if (request === "react" || request === "react-dom/server") {
+            throw new Error("framework must not be loaded");
+          }
+          return load.call(this, request, ...rest);
+        };
+        try {
+          const srv = new ReactSrv({
+            srcPath,
+            hydrate: false,
+            runtime: {
+              h: () => null,
+              renderToString: () => "<div>INJECTED</div>",
+              renderToStaticMarkup: () => "<div>INJECTED</div>",
+            },
+          });
+          const html = srv.render(Home);
+          expect(html.startsWith("<!DOCTYPE html>")).toBe(true);
+          expect(html).toContain("<div>INJECTED</div>");
+        } finally {
+          (Module as any)._load = load;
+        }
+      });
+    });
   });
 
   describe("framework: preact", () => {

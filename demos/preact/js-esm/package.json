@@ -1,0 +1,26 @@
+{
+  "name": "demo",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "type": "module",
+  "scripts": {
+    "bundle": "rm -rf public && react-srv bundle -f src/react-srv.config.js",
+    "build": "npm run bundle && rm -rf dist/ && cp -r src/ dist/",
+    "dev": "tsx src/server.js",
+    "start": "NODE_ENV=production tsx dist/server.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^5.1.0",
+    "preact": "^11.0.0",
+    "preact-iso": "^2.12.2",
+    "preact-render-to-string": "^6.8.1",
+    "react-srv": "file:../../../lib/react-srv-0.0.82.tgz"
+  },
+  "devDependencies": {
+    "tsx": "^4.21.0"
+  }
+}
