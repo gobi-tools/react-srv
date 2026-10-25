@@ -12,7 +12,7 @@ export default function Header(props: { showHome: boolean, library: TSupportedLi
 
     if (typeof window !== 'undefined') {
       const path = window.location.pathname;
-      const href = RouteMaster.replace(path, library, language);
+      const href = RouteMaster.replace(route, path, library, language);
       window.location.href = href;
     }
   }
@@ -23,7 +23,7 @@ export default function Header(props: { showHome: boolean, library: TSupportedLi
     
     if (typeof window !== 'undefined') {
       const path = window.location.pathname;
-      const href = RouteMaster.replace(path, library, language);
+      const href = RouteMaster.replace(route, path, library, language);
       window.location.href = href;
     }
   }

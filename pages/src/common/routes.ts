@@ -31,8 +31,8 @@ export class RouteMaster {
     }
   }
 
-  static replace(path: string, library: TSupportedLibrary, language: TSupportedLanguage) {
-    const base = RouteMaster.getBase();
+  static replace(domain: string, path: string, library: TSupportedLibrary, language: TSupportedLanguage) {
+    const base = RouteMaster.getBase(domain);
     const paths = path
       .split('/')
       .filter(s => s !== '')
