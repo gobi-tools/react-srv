@@ -41,9 +41,7 @@ export class RouteMaster {
       .filter(s => !['typescript', 'javascript-esm', 'javascript-cjs'].includes(s));
 
     const newPath = paths.join('/');
-    const result = `${base}${RouteMaster.createPathParams(library, language)}${newPath}`;
-    console.log(base, paths, result);
-    return result;
+    return `${base}${RouteMaster.createPathParams(library, language)}${newPath}`;
   }
 
   static home(domain: string, library: TSupportedLibrary, language: TSupportedLanguage): string {
