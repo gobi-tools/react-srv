@@ -149,7 +149,7 @@ function PreactTSSetup(props: { library: TSupportedLibrary, language: TSupported
       
 npm i preact
 npm i preact-iso
-npm i preact-render-to-string // needed for SSR/SSG
+npm i preact-render-to-string # needed for SSR/SSG
 `}</CodeHighlight>
       <figcaption>{'shell'}</figcaption>
     </figure>
@@ -186,7 +186,7 @@ function PreactJSESMSetup(props: { library: TSupportedLibrary, language: TSuppor
 
 npm i preact
 npm i preact-iso
-npm i preact-render-to-string // needed for SSR/SSG
+npm i preact-render-to-string # needed for SSR/SSG
 
 # install tsx as a dev dependency
 npm i tsx --save-dev`}</CodeHighlight>
@@ -235,7 +235,7 @@ function PreactJSCJSSetup(props: { library: TSupportedLibrary, language: TSuppor
 
 npm i preact
 npm i preact-iso
-npm i preact-render-to-string // needed for SSR/SSG
+npm i preact-render-to-string # needed for SSR/SSG
 
 # install a few babel dependencies
 npm i @babel/preset-react --save-dev
