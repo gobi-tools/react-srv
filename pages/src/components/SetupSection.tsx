@@ -14,6 +14,7 @@ function ReactTypescriptSetup(props: { library: TSupportedLibrary, language: TSu
     <figure>
       <CodeHighlight lang={'bash'}>{`npm i react-srv
       
+# preferrably same version
 npm i react
 npm i react-dom
 
@@ -37,44 +38,6 @@ npm i @types/react-dom --save-dev`}</CodeHighlight>
   </>
 }
 
-function PreactTypescriptSetup(props: { library: TSupportedLibrary, language: TSupportedLanguage }) {
-  const route = useRoute();
-
-  return <>
-    <p>
-      First, install the latest versions of <a href={RouteMaster.home(route, props.library, props.language)}>react-srv</a> and <a href={PREACT_URL}>Preact</a>.
-    </p>
-    <figure>
-      <CodeHighlight lang={'bash'}>{`npm i react-srv
-      
-npm i preact
-npm i preact-iso
-npm i preact-render-to-string // optional
-`}</CodeHighlight>
-      <figcaption>{'shell'}</figcaption>
-    </figure>
-    <p>
-      Then, to make sure Preact is defined correctly at runtime, add the following entries to your <code>tsconfig.json</code> file.
-    </p>
-    <figure>
-      <CodeHighlight lang={'javascript'}>{`{
-  "compilerOptions: {
-    ...
-    "jsx": "react-jsx",
-    "jsxImportSource": "preact",
-    "paths": {
-      "react": ["./node_modules/preact/compat/"],
-      "react-dom": ["./node_modules/preact/compat/"],
-      "react-dom/*": ["./node_modules/preact/compat/*"]
-    }
-  }
-}`}</CodeHighlight>
-      <figcaption>{'tsconfig.json'}</figcaption>
-    </figure>
-  </>
-}
-
-
 function ReactJSESMSetup(props: { library: TSupportedLibrary, language: TSupportedLanguage }) {
   const route = useRoute();
 
@@ -85,6 +48,7 @@ function ReactJSESMSetup(props: { library: TSupportedLibrary, language: TSupport
     <figure>
       <CodeHighlight lang={'bash'}>{`npm i react-srv
 
+# preferrably same version
 npm i react
 npm i react-dom
 
@@ -125,6 +89,7 @@ function ReactJSCJSSetup(props: { library: TSupportedLibrary, language: TSupport
     <figure>
       <CodeHighlight lang={'bash'}>{`npm i react-srv
 
+# preferrably same version
 npm i react
 npm i react-dom
 
@@ -159,6 +124,43 @@ npm i @babel/plugin-transform-modules-commonjs --save-dev`}</CodeHighlight>
     <figure>
       <CodeHighlight lang={'javascript'}>{`const Page = require('./pages/Page.jsx').default;`}</CodeHighlight>
       <figcaption>{'server.js'}</figcaption>
+    </figure>
+  </>
+}
+
+function PreactTypescriptSetup(props: { library: TSupportedLibrary, language: TSupportedLanguage }) {
+  const route = useRoute();
+
+  return <>
+    <p>
+      First, install the latest versions of <a href={RouteMaster.home(route, props.library, props.language)}>react-srv</a> and <a href={PREACT_URL}>Preact</a>.
+    </p>
+    <figure>
+      <CodeHighlight lang={'bash'}>{`npm i react-srv
+      
+npm i preact
+npm i preact-iso
+npm i preact-render-to-string // optional
+`}</CodeHighlight>
+      <figcaption>{'shell'}</figcaption>
+    </figure>
+    <p>
+      Then, to make sure Preact is defined correctly at runtime, add the following entries to your <code>tsconfig.json</code> file.
+    </p>
+    <figure>
+      <CodeHighlight lang={'javascript'}>{`{
+  "compilerOptions: {
+    ...
+    "jsx": "react-jsx",
+    "jsxImportSource": "preact",
+    "paths": {
+      "react": ["./node_modules/preact/compat/"],
+      "react-dom": ["./node_modules/preact/compat/"],
+      "react-dom/*": ["./node_modules/preact/compat/*"]
+    }
+  }
+}`}</CodeHighlight>
+      <figcaption>{'tsconfig.json'}</figcaption>
     </figure>
   </>
 }

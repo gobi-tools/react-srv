@@ -30,3 +30,8 @@ export const PUB_SUBDOMAIN = 'react-srv';
 
 export type TSupportedLibrary = 'react' | 'preact';
 export type TSupportedLanguage = 'typescript' | 'javascript-esm' | 'javascript-cjs';
+
+export const LIBRARY_SUPPORT: { [key in TSupportedLibrary] : { min: string, max: string }} = {
+  'react': { min: '18.0.0', max: 'latest' },
+  'preact': { min: '10.0.0', max: 'latest'},
+};

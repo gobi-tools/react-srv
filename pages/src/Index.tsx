@@ -143,10 +143,10 @@ export default function Index(props: { library: TSupportedLibrary, language: TSu
         </article>
         <article>
           <p>
-            <b>React Support</b>
+            <b>Support</b>
           </p>
           <p>
-            Check version support and more advanced React setup.
+            Check version support and more advanced setup.
           </p>
           <p>
             <a href={RouteMaster.versions(route, props.library, props.language)}>Learn more</a>
